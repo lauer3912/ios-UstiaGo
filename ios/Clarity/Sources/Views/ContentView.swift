@@ -4,7 +4,8 @@ struct ContentView: View {
     @EnvironmentObject var appState: AppState
     
     var body: some View {
-        ZStack(hex: ClarityTheme.bgPrimary) {
+        ZStack {
+            ClarityTheme.bgPrimary.ignoresSafeArea()
             TabView(selection: $appState.selectedTab) {
                 TodayView()
                     .tabItem {
@@ -37,17 +38,6 @@ struct ContentView: View {
                     .tag(AppState.Tab.settings)
             }
             .tint(ClarityTheme.accentPrimary)
-        }
-    }
-}
-
-// MARK: - Background Extension
-
-extension View {
-    func ZStack(hex color: Color) -> some View {
-        ZStack {
-            color.ignoresSafeArea()
-            self
         }
     }
 }

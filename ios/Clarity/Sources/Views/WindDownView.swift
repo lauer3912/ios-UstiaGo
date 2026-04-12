@@ -83,7 +83,7 @@ struct WindDownView: View {
                                 .font(.system(size: 24))
                                 .foregroundColor(isWindDownTime ? ClarityTheme.accentPrimary : ClarityTheme.accentWarm)
                             Text(isWindDownTime ? "ON" : "SOON")
-                                .font(.system(size: 10, weight: .600))
+                                .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(ClarityTheme.textTertiary)
                         }
                     }

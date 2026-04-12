@@ -78,13 +78,13 @@ extension Color {
 // MARK: - Font Extensions
 
 extension Font {
-    static let clarityTitle = Font.system(size: 28, weight: .700, design: .rounded)
-    static let clarityHeadline = Font.system(size: 20, weight: .600, design: .rounded)
-    static let claritySubheadline = Font.system(size: 16, weight: .500, design: .rounded)
-    static let clarityBody = Font.system(size: 15, weight: .400, design: .default)
-    static let clarityCaption = Font.system(size: 13, weight: .400, design: .default)
-    static let clarityMono = Font.system(size: 48, weight: .300, design: .monospaced)
-    static let clarityMonoSmall = Font.system(size: 14, weight: .400, design: .monospaced)
+    static let clarityTitle = Font.system(size: 28, weight: .bold, design: .rounded)
+    static let clarityHeadline = Font.system(size: 20, weight: .semibold, design: .rounded)
+    static let claritySubheadline = Font.system(size: 16, weight: .medium, design: .rounded)
+    static let clarityBody = Font.system(size: 15, weight: .regular, design: .default)
+    static let clarityCaption = Font.system(size: 13, weight: .regular, design: .default)
+    static let clarityMono = Font.system(size: 48, weight: .light, design: .monospaced)
+    static let clarityMonoSmall = Font.system(size: 14, weight: .regular, design: .monospaced)
 }
 
 // MARK: - View Modifiers

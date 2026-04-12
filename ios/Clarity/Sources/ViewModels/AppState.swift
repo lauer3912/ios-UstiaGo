@@ -125,7 +125,7 @@ class AppState: ObservableObject {
         
         // Session count
         let totalSessions = completedSessions.count
-        for (count, (id, threshold)) in [(10, "sessions_10"), (100, "sessions_100")] {
+        for (count, id) in [(10, "sessions_10"), (100, "sessions_100")] {
             if let idx = achievements.firstIndex(where: { $0.id == id && !$0.isUnlocked }) {
                 if totalSessions >= count {
                     achievements[idx].unlockedAt = Date()
@@ -136,7 +136,7 @@ class AppState: ObservableObject {
         
         // Hours accumulated
         let totalHours = completedSessions.reduce(0) { $0 + $1.duration } / 3600
-        for (hours, (id, threshold)) in [(10, "hours_10"), (50, "hours_50")] {
+        for (hours, id) in [(10, "hours_10"), (50, "hours_50")] {
             if let idx = achievements.firstIndex(where: { $0.id == id && !$0.isUnlocked }) {
                 if totalHours >= hours {
                     achievements[idx].unlockedAt = Date()

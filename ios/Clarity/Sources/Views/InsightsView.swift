@@ -236,7 +236,7 @@ struct WeeklyBarChart: View {
                         .frame(width: 36, height: CGFloat(day.focusMinutes) / CGFloat(maxMinutes) * 100 + 4)
                     
                     Text(day.dayInitial)
-                        .font(.system(size: 12, weight: .500))
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundColor(ClarityTheme.textTertiary)
                 }
                 .frame(maxWidth: .infinity)
@@ -274,7 +274,7 @@ struct AchievementCell: View {
             }
             
             Text(achievement.name)
-                .font(.system(size: 11, weight: .500))
+                .font(.system(size: 11, weight: .medium))
                 .foregroundColor(achievement.isUnlocked ? ClarityTheme.textPrimary : ClarityTheme.textTertiary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)

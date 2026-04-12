@@ -78,7 +78,7 @@ struct FocusView: View {
                             .font(.clarityCaption)
                             .foregroundColor(ClarityTheme.textTertiary)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical: 20)
+                            .padding(.vertical, 20)
                     } else {
                         ForEach(Array(recentSessions)) { session in
                             SessionRow(session: session)
@@ -343,7 +343,7 @@ struct AmbientSoundGrid: View {
                         Image(systemName: sound.1)
                             .font(.system(size: 20))
                         Text(sound.2)
-                            .font(.system(size: 10, weight: .500))
+                            .font(.system(size: 10, weight: .medium))
                     }
                     .foregroundColor(selectedSound == sound.0 ? ClarityTheme.accentPrimary : ClarityTheme.textSecondary)
                     .frame(maxWidth: .infinity)

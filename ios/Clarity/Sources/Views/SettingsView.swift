@@ -338,7 +338,7 @@ struct SettingsActionRow: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .600))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(ClarityTheme.textTertiary)
             }
             .padding(16)

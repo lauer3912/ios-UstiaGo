@@ -311,7 +311,7 @@ struct AchievementBadge: View {
             }
             
             Text(achievement.name)
-                .font(.system(size: 10, weight: .500))
+                .font(.system(size: 10, weight: .medium))
                 .foregroundColor(achievement.isUnlocked ? ClarityTheme.textPrimary : ClarityTheme.textTertiary)
                 .lineLimit(1)
         }
