@@ -3,29 +3,32 @@ import SwiftUI
 // MARK: - Theme
 
 enum ClarityTheme {
-    // Backgrounds
-    static let bgPrimary = Color(hex: "#0F0F13")
-    static let bgSecondary = Color(hex: "#1A1A21")
-    static let surface = Color(hex: "#24242E")
+    // Backgrounds - Apple Design inspired
+    static let bgPrimary = Color(hex: "#1D1D1F")
+    static let bgSecondary = Color(hex: "#2C2C2E")
+    static let surface = Color(hex: "#3A3A3C")
+    static let bgElevated = Color(hex: "#48484A")
     
-    // Accents
+    // Accents - Apple Focus Colors
     static let accentPrimary = Color(hex: "#7C6AFF")
     static let accentSecondary = Color(hex: "#5EEAD4")
     static let accentWarm = Color(hex: "#F59E0B")
     
-    // Text
-    static let textPrimary = Color(hex: "#F4F4F6")
-    static let textSecondary = Color(hex: "#8B8B9E")
-    static let textTertiary = Color(hex: "#55556A")
+    // Text - Apple text colors
+    static let textPrimary = Color(hex: "#F5F5F7")
+    static let textSecondary = Color(hex: "#98989D")
+    static let textTertiary = Color(hex: "#636366")
     
     // Borders & Dividers
-    static let border = Color(hex: "#2E2E3A")
+    static let border = Color(hex: "#3A3A3C")
     
-    // Semantic
-    static let success = Color(hex: "#34D399")
-    static let destructive = Color(hex: "#F87171")
+    // Semantic - Apple semantic colors
+    static let success = Color(hex: "#30D158")
+    static let destructive = Color(hex: "#FF453A")
+    static let warning = Color(hex: "#FFD60A")
+    static let info = Color(hex: "#64D2FF")
     
-    // Gradient
+    // Gradient - Apple-style gradients
     static let gradientPrimary = LinearGradient(
         colors: [Color(hex: "#7C6AFF"), Color(hex: "#5EEAD4")],
         startPoint: .topLeading,
@@ -33,10 +36,39 @@ enum ClarityTheme {
     )
     
     static let gradientWarm = LinearGradient(
-        colors: [Color(hex: "#F59E0B"), Color(hex: "#F87171")],
+        colors: [Color(hex: "#F59E0B"), Color(hex: "#FF9F0A")],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+    
+    static let gradientFocus = LinearGradient(
+        colors: [Color(hex: "#BF5AF2"), Color(hex: "#FF375F")],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+}
+
+// MARK: - Apple Design Spacing
+
+enum ClaritySpacing {
+    static let xxs: CGFloat = 4
+    static let xs: CGFloat = 8
+    static let sm: CGFloat = 12
+    static let md: CGFloat = 16
+    static let lg: CGFloat = 20
+    static let xl: CGFloat = 24
+    static let xxl: CGFloat = 32
+    static let xxxl: CGFloat = 40
+}
+
+// MARK: - Apple Design Radius
+
+enum ClarityRadius {
+    static let small: CGFloat = 8
+    static let medium: CGFloat = 12
+    static let large: CGFloat = 16
+    static let xlarge: CGFloat = 20
+    static let pill: CGFloat = 980
 }
 
 // MARK: - Color Extension
@@ -75,26 +107,38 @@ extension Color {
     }
 }
 
-// MARK: - Font Extensions
+// MARK: - Font Extensions - Apple SF Pro
 
 extension Font {
-    static let clarityTitle = Font.system(size: 28, weight: .bold, design: .rounded)
-    static let clarityHeadline = Font.system(size: 20, weight: .semibold, design: .rounded)
-    static let claritySubheadline = Font.system(size: 16, weight: .medium, design: .rounded)
-    static let clarityBody = Font.system(size: 15, weight: .regular, design: .default)
-    static let clarityCaption = Font.system(size: 13, weight: .regular, design: .default)
+    // Apple-style typography scale
+    static let clarityLargeTitle = Font.system(size: 34, weight: .bold, design: .default)
+    static let clarityTitle1 = Font.system(size: 28, weight: .bold, design: .default)
+    static let clarityTitle2 = Font.system(size: 22, weight: .bold, design: .default)
+    static let clarityTitle3 = Font.system(size: 20, weight: .semibold, design: .default)
+    static let clarityHeadline = Font.system(size: 17, weight: .semibold, design: .default)
+    static let claritySubheadline = Font.system(size: 15, weight: .medium, design: .default)
+    static let clarityBody = Font.system(size: 17, weight: .regular, design: .default)
+    static let clarityCallout = Font.system(size: 16, weight: .regular, design: .default)
+    static let clarityFootnote = Font.system(size: 13, weight: .regular, design: .default)
+    static let clarityCaption1 = Font.system(size: 12, weight: .regular, design: .default)
+    static let clarityCaption2 = Font.system(size: 11, weight: .regular, design: .default)
+    
+    // Legacy names for compatibility
+    static let clarityTitle = clarityTitle1
     static let clarityMono = Font.system(size: 48, weight: .light, design: .monospaced)
     static let clarityMonoSmall = Font.system(size: 14, weight: .regular, design: .monospaced)
 }
 
-// MARK: - View Modifiers
+// MARK: - View Modifiers - Apple Style
 
 struct ClarityCard: ViewModifier {
+    var padding: CGFloat = ClaritySpacing.lg
+    
     func body(content: Content) -> some View {
         content
-            .padding(20)
+            .padding(padding)
             .background(ClarityTheme.bgSecondary)
-            .cornerRadius(20)
+            .cornerRadius(ClarityRadius.xlarge)
     }
 }
 
@@ -105,19 +149,37 @@ struct ClarityButton: ViewModifier {
         content
             .font(.claritySubheadline)
             .foregroundColor(isPrimary ? .white : ClarityTheme.accentPrimary)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 14)
+            .padding(.horizontal, ClaritySpacing.xl)
+            .padding(.vertical, ClaritySpacing.sm)
             .background(isPrimary ? ClarityTheme.accentPrimary : ClarityTheme.surface)
-            .cornerRadius(14)
+            .cornerRadius(ClarityRadius.medium)
+    }
+}
+
+struct ClarityPill: ViewModifier {
+    var color: Color = ClarityTheme.accentPrimary
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.clarityCaption1)
+            .foregroundColor(color)
+            .padding(.horizontal, ClaritySpacing.xs)
+            .padding(.vertical, ClaritySpacing.xxs)
+            .background(color.opacity(0.2))
+            .cornerRadius(ClarityRadius.pill)
     }
 }
 
 extension View {
-    func clarityCard() -> some View {
-        modifier(ClarityCard())
+    func clarityCard(padding: CGFloat = ClaritySpacing.lg) -> some View {
+        modifier(ClarityCard(padding: padding))
     }
     
     func clarityButton(isPrimary: Bool = true) -> some View {
         modifier(ClarityButton(isPrimary: isPrimary))
+    }
+    
+    func clarityPill(color: Color = ClarityTheme.accentPrimary) -> some View {
+        modifier(ClarityPill(color: color))
     }
 }
