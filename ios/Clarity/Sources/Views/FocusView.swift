@@ -315,18 +315,7 @@ struct SessionRow: View {
 // MARK: - Ambient Sound Grid
 
 struct AmbientSoundGrid: View {
-    @State private var selectedSound: String = "none"
-    
-    private let sounds = [
-        ("none", "speaker.slash", "None"),
-        ("rain", "cloud.rain", "Rain"),
-        ("forest", "leaf", "Forest"),
-        ("ocean", "water.waves", "Ocean"),
-        ("coffee", "cup.and.saucer", "Coffee"),
-        ("fire", "flame", "Fireplace"),
-        ("white", "waveform", "White Noise"),
-        ("brown", "waveform.path", "Brown Noise")
-    ]
+    @StateObject private var soundManager = ClaritySoundManager.shared
     
     var body: some View {
         LazyVGrid(columns: [
@@ -335,20 +324,24 @@ struct AmbientSoundGrid: View {
             GridItem(.flexible()),
             GridItem(.flexible())
         ], spacing: 12) {
-            ForEach(sounds, id: \.0) { sound in
+            ForEach(ClaritySoundType.allCases, id: \.rawValue) { sound in
                 Button {
-                    selectedSound = sound.0
+                    if sound == .none {
+                        soundManager.stop()
+                    } else {
+                        soundManager.play(sound: sound)
+                    }
                 } label: {
                     VStack(spacing: 6) {
-                        Image(systemName: sound.1)
+                        Image(systemName: sound.icon)
                             .font(.system(size: 20))
-                        Text(sound.2)
+                        Text(sound.displayName)
                             .font(.system(size: 10, weight: .medium))
                     }
-                    .foregroundColor(selectedSound == sound.0 ? ClarityTheme.accentPrimary : ClarityTheme.textSecondary)
+                    .foregroundColor(soundManager.currentSound == sound ? ClarityTheme.accentPrimary : ClarityTheme.textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(selectedSound == sound.0 ? ClarityTheme.accentPrimary.opacity(0.15) : ClarityTheme.bgSecondary)
+                    .background(soundManager.currentSound == sound ? ClarityTheme.accentPrimary.opacity(0.15) : ClarityTheme.bgSecondary)
                     .cornerRadius(12)
                 }
             }
