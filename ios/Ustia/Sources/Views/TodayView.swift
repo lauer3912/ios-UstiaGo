@@ -21,23 +21,23 @@ struct TodayView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(greeting)
                             .font(.clarityTitle)
-                            .foregroundColor(ClarityTheme.textSecondary)
+                            .foregroundColor(UstiaTheme.textSecondary)
                         Text("Ready to focus?")
                             .font(.clarityCaption)
-                            .foregroundColor(ClarityTheme.textTertiary)
+                            .foregroundColor(UstiaTheme.textTertiary)
                     }
                     Spacer()
                     // Streak badge
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
-                            .foregroundColor(ClarityTheme.accentWarm)
+                            .foregroundColor(UstiaTheme.accentWarm)
                         Text("\(appState.currentStreak)")
                             .font(.claritySubheadline)
-                            .foregroundColor(ClarityTheme.accentWarm)
+                            .foregroundColor(UstiaTheme.accentWarm)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(ClarityTheme.accentWarm.opacity(0.15))
+                    .background(UstiaTheme.accentWarm.opacity(0.15))
                     .cornerRadius(20)
                 }
                 
@@ -53,7 +53,7 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Quick Start")
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textSecondary)
+                        .foregroundColor(UstiaTheme.textSecondary)
                     
                     HStack(spacing: 12) {
                         ForEach(appState.focusModes.prefix(3)) { mode in
@@ -71,19 +71,19 @@ struct TodayView: View {
                         icon: "checkmark.circle.fill",
                         value: "\(appState.todaySummary.sessionsCompleted)",
                         label: "Sessions",
-                        color: ClarityTheme.success
+                        color: UstiaTheme.success
                     )
                     StatCard(
                         icon: "clock.fill",
                         value: "\(appState.todaySummary.focusMinutes)m",
                         label: "Focus Time",
-                        color: ClarityTheme.accentPrimary
+                        color: UstiaTheme.accentPrimary
                     )
                     StatCard(
                         icon: "timer",
                         value: formatDuration(appState.todaySummary.longestSession),
                         label: "Longest",
-                        color: ClarityTheme.accentSecondary
+                        color: UstiaTheme.accentSecondary
                     )
                 }
                 
@@ -91,7 +91,7 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Top Apps Today")
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textSecondary)
+                        .foregroundColor(UstiaTheme.textSecondary)
                     
                     if appState.todaySummary.topApps.isEmpty {
                         HStack {
@@ -99,13 +99,13 @@ struct TodayView: View {
                             VStack(spacing: 8) {
                                 Image(systemName: "chart.bar.dotted")
                                     .font(.system(size: 32))
-                                    .foregroundColor(ClarityTheme.textTertiary)
+                                    .foregroundColor(UstiaTheme.textTertiary)
                                 Text("No data yet")
                                     .font(.clarityCaption)
-                                    .foregroundColor(ClarityTheme.textTertiary)
+                                    .foregroundColor(UstiaTheme.textTertiary)
                                 Text("Screen time tracking unlocks\nwith iOS Screen Time permission")
                                     .font(.clarityCaption)
-                                    .foregroundColor(ClarityTheme.textTertiary)
+                                    .foregroundColor(UstiaTheme.textTertiary)
                                     .multilineTextAlignment(.center)
                             }
                             .padding(.vertical, 24)
@@ -121,11 +121,11 @@ struct TodayView: View {
                     HStack {
                         Text("Achievements")
                             .font(.claritySubheadline)
-                            .foregroundColor(ClarityTheme.textSecondary)
+                            .foregroundColor(UstiaTheme.textSecondary)
                         Spacer()
                         Text("\(unlockedCount)/\(appState.achievements.count)")
                             .font(.clarityCaption)
-                            .foregroundColor(ClarityTheme.textTertiary)
+                            .foregroundColor(UstiaTheme.textTertiary)
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -173,12 +173,12 @@ struct ScreenTimeRing: View {
             ZStack {
                 // Outer ring - Screen Time
                 Circle()
-                    .stroke(ClarityTheme.surface, lineWidth: 16)
+                    .stroke(UstiaTheme.surface, lineWidth: 16)
                 
                 Circle()
                     .trim(from: 0, to: screenProgress)
                     .stroke(
-                        ClarityTheme.accentPrimary.opacity(0.3),
+                        UstiaTheme.accentPrimary.opacity(0.3),
                         style: StrokeStyle(lineWidth: 16, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
@@ -186,13 +186,13 @@ struct ScreenTimeRing: View {
                 
                 // Inner ring - Focus
                 Circle()
-                    .stroke(ClarityTheme.surface, lineWidth: 10)
+                    .stroke(UstiaTheme.surface, lineWidth: 10)
                     .padding(16)
                 
                 Circle()
                     .trim(from: 0, to: focusProgress)
                     .stroke(
-                        ClarityTheme.accentSecondary,
+                        UstiaTheme.accentSecondary,
                         style: StrokeStyle(lineWidth: 10, lineCap: .round)
                     )
                     .padding(16)
@@ -203,16 +203,16 @@ struct ScreenTimeRing: View {
                 VStack(spacing: 4) {
                     Text("\(screenMinutes)")
                         .font(.clarityMono)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     Text("of \(goalMinutes) min")
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                     Divider()
                         .frame(width: 60)
                         .padding(.vertical, 4)
                     Text("\(focusMinutes)m focused")
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.accentSecondary)
+                        .foregroundColor(UstiaTheme.accentSecondary)
                 }
             }
             .frame(width: 200, height: 200)
@@ -220,10 +220,10 @@ struct ScreenTimeRing: View {
             HStack(spacing: 24) {
                 Label("Screen Time", systemImage: "rectangle.portrait")
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.textSecondary)
+                    .foregroundColor(UstiaTheme.textSecondary)
                 Label("Focus Time", systemImage: "brain.head.profile")
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.accentSecondary)
+                    .foregroundColor(UstiaTheme.accentSecondary)
             }
         }
         .padding(.vertical, 8)
@@ -247,15 +247,15 @@ struct FocusModeCard: View {
                 
                 Text(mode.name)
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.textPrimary)
+                    .foregroundColor(UstiaTheme.textPrimary)
                 
                 Text("\(mode.workDuration/60)m")
                     .font(.clarityMonoSmall)
-                    .foregroundColor(ClarityTheme.textTertiary)
+                    .foregroundColor(UstiaTheme.textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(ClarityTheme.bgSecondary)
+            .background(UstiaTheme.bgSecondary)
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -281,11 +281,11 @@ struct StatCard: View {
             
             Text(value)
                 .font(.clarityHeadline)
-                .foregroundColor(ClarityTheme.textPrimary)
+                .foregroundColor(UstiaTheme.textPrimary)
             
             Text(label)
                 .font(.clarityCaption)
-                .foregroundColor(ClarityTheme.textTertiary)
+                .foregroundColor(UstiaTheme.textTertiary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
@@ -302,17 +302,17 @@ struct AchievementBadge: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .fill(achievement.isUnlocked ? ClarityTheme.accentPrimary.opacity(0.2) : ClarityTheme.surface)
+                    .fill(achievement.isUnlocked ? UstiaTheme.accentPrimary.opacity(0.2) : UstiaTheme.surface)
                     .frame(width: 50, height: 50)
                 
                 Image(systemName: achievement.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(achievement.isUnlocked ? ClarityTheme.accentPrimary : ClarityTheme.textTertiary)
+                    .foregroundColor(achievement.isUnlocked ? UstiaTheme.accentPrimary : UstiaTheme.textTertiary)
             }
             
             Text(achievement.name)
                 .font(.system(size: 10, weight: .medium))
-                .foregroundColor(achievement.isUnlocked ? ClarityTheme.textPrimary : ClarityTheme.textTertiary)
+                .foregroundColor(achievement.isUnlocked ? UstiaTheme.textPrimary : UstiaTheme.textTertiary)
                 .lineLimit(1)
         }
         .frame(width: 70)

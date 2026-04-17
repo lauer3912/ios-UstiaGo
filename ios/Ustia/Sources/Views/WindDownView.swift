@@ -29,15 +29,15 @@ struct WindDownView: View {
                 VStack(spacing: 8) {
                     Image(systemName: "moon.stars.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(ClarityTheme.accentPrimary)
+                        .foregroundColor(UstiaTheme.accentPrimary)
                     
                     Text("Wind Down")
                         .font(.clarityTitle)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     
                     Text("Prepare for restful sleep")
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
                 .padding(.top, 8)
                 
@@ -47,32 +47,32 @@ struct WindDownView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Starts at")
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                             Text("\(windDownStart):00")
                                 .font(.clarityHeadline)
-                                .foregroundColor(ClarityTheme.textPrimary)
+                                .foregroundColor(UstiaTheme.textPrimary)
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
                             Text(timeUntilWindDown)
                                 .font(.clarityHeadline)
-                                .foregroundColor(isWindDownTime ? ClarityTheme.accentSecondary : ClarityTheme.textSecondary)
+                                .foregroundColor(isWindDownTime ? UstiaTheme.accentSecondary : UstiaTheme.textSecondary)
                             Text(isWindDownTime ? "Right now!" : "from now")
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                         }
                     }
                     
                     // Progress arc
                     ZStack {
                         Circle()
-                            .stroke(ClarityTheme.surface, lineWidth: 8)
+                            .stroke(UstiaTheme.surface, lineWidth: 8)
                             .frame(width: 120, height: 120)
                         
                         Circle()
                             .trim(from: 0, to: windDownProgress)
                             .stroke(
-                                ClarityTheme.accentPrimary,
+                                UstiaTheme.accentPrimary,
                                 style: StrokeStyle(lineWidth: 8, lineCap: .round)
                             )
                             .frame(width: 120, height: 120)
@@ -81,10 +81,10 @@ struct WindDownView: View {
                         VStack(spacing: 2) {
                             Image(systemName: isWindDownTime ? "moon.fill" : "sunset.fill")
                                 .font(.system(size: 24))
-                                .foregroundColor(isWindDownTime ? ClarityTheme.accentPrimary : ClarityTheme.accentWarm)
+                                .foregroundColor(isWindDownTime ? UstiaTheme.accentPrimary : UstiaTheme.accentWarm)
                             Text(isWindDownTime ? "ON" : "SOON")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                         }
                     }
                 }
@@ -95,7 +95,7 @@ struct WindDownView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Tonight's Activities")
                         .font(.clarityHeadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     
                     ForEach(windDownSession.activities) { activity in
                         WindDownActivityRow(activity: activity) { completed in
@@ -110,45 +110,45 @@ struct WindDownView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "lightbulb.fill")
-                            .foregroundColor(ClarityTheme.accentWarm)
+                            .foregroundColor(UstiaTheme.accentWarm)
                         Text("Sleep Tip")
                             .font(.claritySubheadline)
-                            .foregroundColor(ClarityTheme.textSecondary)
+                            .foregroundColor(UstiaTheme.textSecondary)
                     }
                     
                     Text(sleepTip)
                         .font(.clarityBody)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(ClarityTheme.accentWarm.opacity(0.1))
+                .background(UstiaTheme.accentWarm.opacity(0.1))
                 .cornerRadius(20)
                 
                 // Tomorrow's Preview
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Tomorrow's Focus")
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textSecondary)
+                        .foregroundColor(UstiaTheme.textSecondary)
                     
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Goal")
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                             Text("\(appState.settings.dailyFocusGoal) minutes")
                                 .font(.clarityHeadline)
-                                .foregroundColor(ClarityTheme.accentPrimary)
+                                .foregroundColor(UstiaTheme.accentPrimary)
                         }
                         Spacer()
                         Image(systemName: "target")
                             .font(.system(size: 28))
-                            .foregroundColor(ClarityTheme.accentPrimary.opacity(0.5))
+                            .foregroundColor(UstiaTheme.accentPrimary.opacity(0.5))
                     }
                 }
                 .padding(20)
-                .background(ClarityTheme.bgSecondary)
+                .background(UstiaTheme.bgSecondary)
                 .cornerRadius(20)
                 
                 Spacer(minLength: 80)
@@ -187,22 +187,22 @@ struct WindDownActivityRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(activity.completed ? ClarityTheme.success.opacity(0.2) : ClarityTheme.surface)
+                    .fill(activity.completed ? UstiaTheme.success.opacity(0.2) : UstiaTheme.surface)
                     .frame(width: 48, height: 48)
                 
                 Image(systemName: activity.type.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(activity.completed ? ClarityTheme.success : ClarityTheme.textSecondary)
+                    .foregroundColor(activity.completed ? UstiaTheme.success : UstiaTheme.textSecondary)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(activity.type.rawValue)
                     .font(.claritySubheadline)
-                    .foregroundColor(ClarityTheme.textPrimary)
+                    .foregroundColor(UstiaTheme.textPrimary)
                 
                 Text(activity.type.description)
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.textTertiary)
+                    .foregroundColor(UstiaTheme.textTertiary)
             }
             
             Spacer()
@@ -212,11 +212,11 @@ struct WindDownActivityRow: View {
             } label: {
                 Image(systemName: activity.completed ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 24))
-                    .foregroundColor(activity.completed ? ClarityTheme.success : ClarityTheme.textTertiary)
+                    .foregroundColor(activity.completed ? UstiaTheme.success : UstiaTheme.textTertiary)
             }
         }
         .padding(16)
-        .background(ClarityTheme.bgSecondary)
+        .background(UstiaTheme.bgSecondary)
         .cornerRadius(16)
     }
 }

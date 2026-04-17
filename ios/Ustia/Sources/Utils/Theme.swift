@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Theme
 
-enum ClarityTheme {
+enum UstiaTheme {
     // Backgrounds - Apple Design inspired
     static let bgPrimary = Color(hex: "#1D1D1F")
     static let bgSecondary = Color(hex: "#2C2C2E")
@@ -138,7 +138,7 @@ struct ClarityCard: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(padding)
-            .background(ClarityTheme.bgSecondary)
+            .background(UstiaTheme.bgSecondary)
             .cornerRadius(ClarityRadius.xlarge)
     }
 }
@@ -149,16 +149,16 @@ struct ClarityButton: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.claritySubheadline)
-            .foregroundColor(isPrimary ? .white : ClarityTheme.accentPrimary)
+            .foregroundColor(isPrimary ? .white : UstiaTheme.accentPrimary)
             .padding(.horizontal, ClaritySpacing.xl)
             .padding(.vertical, ClaritySpacing.sm)
-            .background(isPrimary ? ClarityTheme.accentPrimary : ClarityTheme.surface)
+            .background(isPrimary ? UstiaTheme.accentPrimary : UstiaTheme.surface)
             .cornerRadius(ClarityRadius.medium)
     }
 }
 
 struct ClarityPill: ViewModifier {
-    var color: Color = ClarityTheme.accentPrimary
+    var color: Color = UstiaTheme.accentPrimary
     
     func body(content: Content) -> some View {
         content
@@ -180,7 +180,7 @@ extension View {
         modifier(ClarityButton(isPrimary: isPrimary))
     }
     
-    func clarityPill(color: Color = ClarityTheme.accentPrimary) -> some View {
+    func clarityPill(color: Color = UstiaTheme.accentPrimary) -> some View {
         modifier(ClarityPill(color: color))
     }
 }

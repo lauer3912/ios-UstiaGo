@@ -5,7 +5,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            ClarityTheme.bgPrimary.ignoresSafeArea()
+            UstiaTheme.bgPrimary.ignoresSafeArea()
             TabView(selection: $appState.selectedTab) {
                 TodayView()
                     .tabItem {
@@ -37,7 +37,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.settings)
             }
-            .tint(ClarityTheme.accentPrimary)
+            .tint(UstiaTheme.accentPrimary)
         }
     }
 }

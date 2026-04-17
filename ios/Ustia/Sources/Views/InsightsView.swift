@@ -27,7 +27,7 @@ struct InsightsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("This Week")
                         .font(.clarityHeadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     
                     WeeklyBarChart(data: weeklyData)
                 }
@@ -38,21 +38,21 @@ struct InsightsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Best Day")
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                             Text("\(best.focusMinutes) min")
                                 .font(.clarityTitle)
-                                .foregroundColor(ClarityTheme.accentSecondary)
+                                .foregroundColor(UstiaTheme.accentSecondary)
                             Text(best.date.formatted(.dateTime.weekday(.wide)))
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textSecondary)
+                                .foregroundColor(UstiaTheme.textSecondary)
                         }
                         Spacer()
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 32))
-                            .foregroundColor(ClarityTheme.accentWarm)
+                            .foregroundColor(UstiaTheme.accentWarm)
                     }
                     .padding(20)
-                    .background(LinearGradient(colors: [ClarityTheme.accentSecondary.opacity(0.15), ClarityTheme.bgSecondary], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .background(LinearGradient(colors: [UstiaTheme.accentSecondary.opacity(0.15), UstiaTheme.bgSecondary], startPoint: .topLeading, endPoint: .bottomTrailing))
                     .cornerRadius(20)
                 }
                 
@@ -60,10 +60,10 @@ struct InsightsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "lightbulb.fill")
-                            .foregroundColor(ClarityTheme.accentWarm)
+                            .foregroundColor(UstiaTheme.accentWarm)
                         Text("Insight")
                             .font(.claritySubheadline)
-                            .foregroundColor(ClarityTheme.textSecondary)
+                            .foregroundColor(UstiaTheme.textSecondary)
                     }
                     
                     let totalMinutes = weeklyData.reduce(0) { $0 + $1.focusMinutes }
@@ -72,12 +72,12 @@ struct InsightsView: View {
                     
                     Text(insightMessage(avgMinutes: avgMinutes, totalSessions: totalSessions))
                         .font(.clarityBody)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(ClarityTheme.accentWarm.opacity(0.1))
+                .background(UstiaTheme.accentWarm.opacity(0.1))
                 .cornerRadius(20)
                 
                 // Focus Score
@@ -85,12 +85,12 @@ struct InsightsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Focus Score")
                         .font(.clarityHeadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     
                     HStack {
                         ZStack {
                             Circle()
-                                .stroke(ClarityTheme.surface, lineWidth: 8)
+                                .stroke(UstiaTheme.surface, lineWidth: 8)
                                 .frame(width: 80, height: 80)
                             
                             Circle()
@@ -104,7 +104,7 @@ struct InsightsView: View {
                             
                             Text("\(score)")
                                 .font(.clarityTitle)
-                                .foregroundColor(ClarityTheme.textPrimary)
+                                .foregroundColor(UstiaTheme.textPrimary)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -113,7 +113,7 @@ struct InsightsView: View {
                                 .foregroundColor(scoreColor(score))
                             Text(scoreDescription(score))
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                         }
                         .padding(.leading, 8)
                         
@@ -121,7 +121,7 @@ struct InsightsView: View {
                     }
                 }
                 .padding(20)
-                .background(ClarityTheme.bgSecondary)
+                .background(UstiaTheme.bgSecondary)
                 .cornerRadius(20)
                 
                 // All Achievements
@@ -129,12 +129,12 @@ struct InsightsView: View {
                     HStack {
                         Text("Achievements")
                             .font(.clarityHeadline)
-                            .foregroundColor(ClarityTheme.textPrimary)
+                            .foregroundColor(UstiaTheme.textPrimary)
                         Spacer()
                         let unlocked = appState.achievements.filter { $0.isUnlocked }.count
                         Text("\(unlocked)/\(appState.achievements.count)")
                             .font(.clarityCaption)
-                            .foregroundColor(ClarityTheme.textTertiary)
+                            .foregroundColor(UstiaTheme.textTertiary)
                     }
                     
                     LazyVGrid(columns: [
@@ -181,9 +181,9 @@ struct InsightsView: View {
     
     private func scoreColor(_ score: Int) -> Color {
         switch score {
-        case 0..<40: return ClarityTheme.destructive
-        case 40..<70: return ClarityTheme.accentWarm
-        default: return ClarityTheme.success
+        case 0..<40: return UstiaTheme.destructive
+        case 40..<70: return UstiaTheme.accentWarm
+        default: return UstiaTheme.success
         }
     }
     
@@ -232,19 +232,19 @@ struct WeeklyBarChart: View {
             ForEach(data) { day in
                 VStack(spacing: 6) {
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(day.focusMinutes > 0 ? ClarityTheme.accentPrimary : ClarityTheme.surface)
+                        .fill(day.focusMinutes > 0 ? UstiaTheme.accentPrimary : UstiaTheme.surface)
                         .frame(width: 36, height: CGFloat(day.focusMinutes) / CGFloat(maxMinutes) * 100 + 4)
                     
                     Text(day.dayInitial)
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
                 .frame(maxWidth: .infinity)
             }
         }
         .frame(height: 140)
         .padding(20)
-        .background(ClarityTheme.bgSecondary)
+        .background(UstiaTheme.bgSecondary)
         .cornerRadius(20)
     }
 }
@@ -258,24 +258,24 @@ struct AchievementCell: View {
         VStack(spacing: 8) {
             ZStack {
                 Circle()
-                    .fill(achievement.isUnlocked ? ClarityTheme.accentPrimary.opacity(0.2) : ClarityTheme.surface)
+                    .fill(achievement.isUnlocked ? UstiaTheme.accentPrimary.opacity(0.2) : UstiaTheme.surface)
                     .frame(width: 56, height: 56)
                 
                 if achievement.isUnlocked {
                     Image(systemName: achievement.icon)
                         .font(.system(size: 22))
-                        .foregroundColor(ClarityTheme.accentPrimary)
+                        .foregroundColor(UstiaTheme.accentPrimary)
                 } else {
                     Image(systemName: achievement.icon)
                         .font(.system(size: 22))
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                         .opacity(0.4)
                 }
             }
             
             Text(achievement.name)
                 .font(.system(size: 11, weight: .medium))
-                .foregroundColor(achievement.isUnlocked ? ClarityTheme.textPrimary : ClarityTheme.textTertiary)
+                .foregroundColor(achievement.isUnlocked ? UstiaTheme.textPrimary : UstiaTheme.textTertiary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
         }

@@ -10,7 +10,7 @@ struct SettingsView: View {
                 VStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(ClarityTheme.gradientPrimary)
+                            .fill(UstiaTheme.gradientPrimary)
                             .frame(width: 80, height: 80)
                         Image(systemName: "brain.head.profile")
                             .font(.system(size: 36))
@@ -19,7 +19,7 @@ struct SettingsView: View {
                     
                     Text("Clarity")
                         .font(.clarityTitle)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     
                     if !appState.isPremium {
                         Button {
@@ -34,15 +34,15 @@ struct SettingsView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(ClarityTheme.gradientPrimary)
+                            .background(UstiaTheme.gradientPrimary)
                             .cornerRadius(20)
                         }
                     } else {
                         HStack(spacing: 6) {
                             Image(systemName: "crown.fill")
-                                .foregroundColor(ClarityTheme.accentWarm)
+                                .foregroundColor(UstiaTheme.accentWarm)
                             Text("Premium Active")
-                                .foregroundColor(ClarityTheme.accentWarm)
+                                .foregroundColor(UstiaTheme.accentWarm)
                         }
                         .font(.clarityCaption)
                     }
@@ -53,7 +53,7 @@ struct SettingsView: View {
                 SettingsSection(title: "Goals") {
                     SettingsSliderRow(
                         icon: "rectangle.portrait",
-                        iconColor: ClarityTheme.accentPrimary,
+                        iconColor: UstiaTheme.accentPrimary,
                         title: "Daily Screen Goal",
                         subtitle: "Target screen time per day",
                         value: Binding(
@@ -67,7 +67,7 @@ struct SettingsView: View {
                     
                     SettingsSliderRow(
                         icon: "brain.head.profile",
-                        iconColor: ClarityTheme.accentSecondary,
+                        iconColor: UstiaTheme.accentSecondary,
                         title: "Daily Focus Goal",
                         subtitle: "Target focus time per day",
                         value: Binding(
@@ -84,7 +84,7 @@ struct SettingsView: View {
                 SettingsSection(title: "Wind Down") {
                     SettingsSliderRow(
                         icon: "moon.fill",
-                        iconColor: ClarityTheme.accentPrimary,
+                        iconColor: UstiaTheme.accentPrimary,
                         title: "Start Time",
                         subtitle: "When wind down begins",
                         value: Binding(
@@ -101,7 +101,7 @@ struct SettingsView: View {
                 SettingsSection(title: "Notifications") {
                     SettingsToggleRow(
                         icon: "bell.fill",
-                        iconColor: ClarityTheme.accentWarm,
+                        iconColor: UstiaTheme.accentWarm,
                         title: "Session Reminders",
                         subtitle: "Remind to start focus sessions",
                         value: $appState.settings.notificationsEnabled
@@ -112,7 +112,7 @@ struct SettingsView: View {
                 SettingsSection(title: "Data") {
                     SettingsActionRow(
                         icon: "square.and.arrow.up",
-                        iconColor: ClarityTheme.accentSecondary,
+                        iconColor: UstiaTheme.accentSecondary,
                         title: "Export Data",
                         subtitle: "Download your focus history as CSV"
                     ) {
@@ -121,7 +121,7 @@ struct SettingsView: View {
                     
                     SettingsActionRow(
                         icon: "arrow.clockwise",
-                        iconColor: ClarityTheme.textSecondary,
+                        iconColor: UstiaTheme.textSecondary,
                         title: "Reset All Data",
                         subtitle: "Clear all sessions and achievements"
                     ) {
@@ -133,14 +133,14 @@ struct SettingsView: View {
                 SettingsSection(title: "About") {
                     SettingsInfoRow(
                         icon: "info.circle",
-                        iconColor: ClarityTheme.textSecondary,
+                        iconColor: UstiaTheme.textSecondary,
                         title: "Version",
                         value: "1.0.0"
                     )
                     
                     SettingsActionRow(
                         icon: "doc.text",
-                        iconColor: ClarityTheme.textSecondary,
+                        iconColor: UstiaTheme.textSecondary,
                         title: "Privacy Policy",
                         subtitle: "Your data stays on your device"
                     ) {
@@ -149,7 +149,7 @@ struct SettingsView: View {
                     
                     SettingsActionRow(
                         icon: "envelope",
-                        iconColor: ClarityTheme.textSecondary,
+                        iconColor: UstiaTheme.textSecondary,
                         title: "Contact Support",
                         subtitle: "help@clarity.app"
                     ) {
@@ -162,15 +162,15 @@ struct SettingsView: View {
                     HStack(spacing: 16) {
                         Image(systemName: "laptopcomputer")
                             .font(.system(size: 24))
-                            .foregroundColor(ClarityTheme.accentPrimary)
+                            .foregroundColor(UstiaTheme.accentPrimary)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Connect Mac")
                                 .font(.claritySubheadline)
-                                .foregroundColor(ClarityTheme.textPrimary)
+                                .foregroundColor(UstiaTheme.textPrimary)
                             Text("Control focus blocking from your iPhone")
                                 .font(.clarityCaption)
-                                .foregroundColor(ClarityTheme.textTertiary)
+                                .foregroundColor(UstiaTheme.textTertiary)
                         }
                         
                         Spacer()
@@ -183,12 +183,12 @@ struct SettingsView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
-                                .background(ClarityTheme.accentPrimary)
+                                .background(UstiaTheme.accentPrimary)
                                 .cornerRadius(12)
                         }
                     }
                     .padding(16)
-                    .background(ClarityTheme.bgSecondary)
+                    .background(UstiaTheme.bgSecondary)
                     .cornerRadius(16)
                 }
                 
@@ -224,12 +224,12 @@ struct SettingsSection<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.claritySubheadline)
-                .foregroundColor(ClarityTheme.textSecondary)
+                .foregroundColor(UstiaTheme.textSecondary)
             
             VStack(spacing: 0) {
                 content
             }
-            .background(ClarityTheme.bgSecondary)
+            .background(UstiaTheme.bgSecondary)
             .cornerRadius(16)
         }
     }
@@ -254,16 +254,16 @@ struct SettingsToggleRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.claritySubheadline)
-                    .foregroundColor(ClarityTheme.textPrimary)
+                    .foregroundColor(UstiaTheme.textPrimary)
                 Text(subtitle)
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.textTertiary)
+                    .foregroundColor(UstiaTheme.textTertiary)
             }
             
             Spacer()
             
             Toggle("", isOn: $value)
-                .tint(ClarityTheme.accentPrimary)
+                .tint(UstiaTheme.accentPrimary)
                 .labelsHidden()
         }
         .padding(16)
@@ -291,17 +291,17 @@ struct SettingsSliderRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     Text(subtitle)
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
                 
                 Spacer()
                 
                 Text("\(Int(value))\(unit)")
                     .font(.clarityMonoSmall)
-                    .foregroundColor(ClarityTheme.accentPrimary)
+                    .foregroundColor(UstiaTheme.accentPrimary)
             }
             
             Slider(value: $value, in: range, step: step)
@@ -329,17 +329,17 @@ struct SettingsActionRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     Text(subtitle)
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(ClarityTheme.textTertiary)
+                    .foregroundColor(UstiaTheme.textTertiary)
             }
             .padding(16)
         }
@@ -361,13 +361,13 @@ struct SettingsInfoRow: View {
             
             Text(title)
                 .font(.claritySubheadline)
-                .foregroundColor(ClarityTheme.textPrimary)
+                .foregroundColor(UstiaTheme.textPrimary)
             
             Spacer()
             
             Text(value)
                 .font(.clarityCaption)
-                .foregroundColor(ClarityTheme.textTertiary)
+                .foregroundColor(UstiaTheme.textTertiary)
         }
         .padding(16)
     }
