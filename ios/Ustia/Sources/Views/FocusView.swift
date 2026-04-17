@@ -18,7 +18,7 @@ struct FocusView: View {
                     VStack(spacing: 16) {
                         Text("Choose Your Mode")
                             .font(.clarityHeadline)
-                            .foregroundColor(ClarityTheme.textPrimary)
+                            .foregroundColor(UstiaTheme.textPrimary)
                         
                         ForEach(appState.focusModes) { mode in
                             FocusModeRow(mode: mode, selected: selectedMode?.id == mode.id) {
@@ -58,7 +58,7 @@ struct FocusView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Ambient Sound")
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textSecondary)
+                        .foregroundColor(UstiaTheme.textSecondary)
                     
                     AmbientSoundGrid()
                 }
@@ -67,7 +67,7 @@ struct FocusView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Recent Sessions")
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textSecondary)
+                        .foregroundColor(UstiaTheme.textSecondary)
                     
                     let recentSessions = appState.sessions
                         .sorted { $0.startTime > $1.startTime }
@@ -76,7 +76,7 @@ struct FocusView: View {
                     if recentSessions.isEmpty {
                         Text("No sessions yet. Start your first one!")
                             .font(.clarityCaption)
-                            .foregroundColor(ClarityTheme.textTertiary)
+                            .foregroundColor(UstiaTheme.textTertiary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
                     } else {
@@ -168,10 +168,10 @@ struct FocusModeRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(mode.name)
                         .font(.claritySubheadline)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                     Text("\(mode.workDuration/60) min work • \(mode.breakDuration/60) min break")
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
                 
                 Spacer()
@@ -182,7 +182,7 @@ struct FocusModeRow: View {
                 }
             }
             .padding(16)
-            .background(selected ? Color(hex: mode.colorHex).opacity(0.1) : ClarityTheme.bgSecondary)
+            .background(selected ? Color(hex: mode.colorHex).opacity(0.1) : UstiaTheme.bgSecondary)
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -215,16 +215,16 @@ struct TimerActiveView: View {
         VStack(spacing: 24) {
             Text(isBreak ? "Break Time" : modeName)
                 .font(.clarityHeadline)
-                .foregroundColor(isBreak ? ClarityTheme.accentSecondary : Color(hex: modeColorHex))
+                .foregroundColor(isBreak ? UstiaTheme.accentSecondary : Color(hex: modeColorHex))
             
             ZStack {
                 Circle()
-                    .stroke(ClarityTheme.surface, lineWidth: 12)
+                    .stroke(UstiaTheme.surface, lineWidth: 12)
                 
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
-                        isBreak ? ClarityTheme.accentSecondary : Color(hex: modeColorHex),
+                        isBreak ? UstiaTheme.accentSecondary : Color(hex: modeColorHex),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
@@ -233,12 +233,12 @@ struct TimerActiveView: View {
                 VStack(spacing: 4) {
                     Text(String(format: "%02d:%02d", minutes, seconds))
                         .font(.clarityMono)
-                        .foregroundColor(ClarityTheme.textPrimary)
+                        .foregroundColor(UstiaTheme.textPrimary)
                         .contentTransition(.numericText())
                     
                     Text(isBreak ? "Relax" : "Stay focused")
                         .font(.clarityCaption)
-                        .foregroundColor(ClarityTheme.textTertiary)
+                        .foregroundColor(UstiaTheme.textTertiary)
                 }
             }
             .frame(width: 220, height: 220)
@@ -247,9 +247,9 @@ struct TimerActiveView: View {
                 Button(action: onStop) {
                     Image(systemName: "stop.fill")
                         .font(.system(size: 24))
-                        .foregroundColor(ClarityTheme.destructive)
+                        .foregroundColor(UstiaTheme.destructive)
                         .frame(width: 56, height: 56)
-                        .background(ClarityTheme.destructive.opacity(0.15))
+                        .background(UstiaTheme.destructive.opacity(0.15))
                         .clipShape(Circle())
                 }
                 
@@ -258,7 +258,7 @@ struct TimerActiveView: View {
                         .font(.system(size: 24))
                         .foregroundColor(.white)
                         .frame(width: 72, height: 72)
-                        .background(ClarityTheme.accentPrimary)
+                        .background(UstiaTheme.accentPrimary)
                         .clipShape(Circle())
                 }
             }
@@ -294,20 +294,20 @@ struct SessionRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(session.modeName)
                     .font(.claritySubheadline)
-                    .foregroundColor(ClarityTheme.textPrimary)
+                    .foregroundColor(UstiaTheme.textPrimary)
                 Text(dateFormatter.string(from: session.startTime))
                     .font(.clarityCaption)
-                    .foregroundColor(ClarityTheme.textTertiary)
+                    .foregroundColor(UstiaTheme.textTertiary)
             }
             
             Spacer()
             
             Text("\(session.duration / 60)m")
                 .font(.clarityMonoSmall)
-                .foregroundColor(ClarityTheme.textSecondary)
+                .foregroundColor(UstiaTheme.textSecondary)
         }
         .padding(12)
-        .background(ClarityTheme.bgSecondary)
+        .background(UstiaTheme.bgSecondary)
         .cornerRadius(12)
     }
 }
@@ -315,7 +315,7 @@ struct SessionRow: View {
 // MARK: - Ambient Sound Grid
 
 struct AmbientSoundGrid: View {
-    @StateObject private var soundManager = ClaritySoundManager.shared
+    @StateObject private var soundManager = UstiaSoundManager.shared
     
     var body: some View {
         LazyVGrid(columns: [
@@ -324,7 +324,7 @@ struct AmbientSoundGrid: View {
             GridItem(.flexible()),
             GridItem(.flexible())
         ], spacing: 12) {
-            ForEach(ClaritySoundType.allCases, id: \.rawValue) { sound in
+            ForEach(UstiaSoundType.allCases, id: \.rawValue) { sound in
                 Button {
                     if sound == .none {
                         soundManager.stop()
@@ -338,10 +338,10 @@ struct AmbientSoundGrid: View {
                         Text(sound.displayName)
                             .font(.system(size: 10, weight: .medium))
                     }
-                    .foregroundColor(soundManager.currentSound == sound ? ClarityTheme.accentPrimary : ClarityTheme.textSecondary)
+                    .foregroundColor(soundManager.currentSound == sound ? UstiaTheme.accentPrimary : UstiaTheme.textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(soundManager.currentSound == sound ? ClarityTheme.accentPrimary.opacity(0.15) : ClarityTheme.bgSecondary)
+                    .background(soundManager.currentSound == sound ? UstiaTheme.accentPrimary.opacity(0.15) : UstiaTheme.bgSecondary)
                     .cornerRadius(12)
                 }
             }

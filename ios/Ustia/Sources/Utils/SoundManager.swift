@@ -10,7 +10,7 @@ import AVFoundation
 
 // MARK: - Sound Type
 
-enum ClaritySoundType: String, CaseIterable {
+enum UstiaSoundType: String, CaseIterable {
     case none = "none"
     case rain = "rain"
     case forest = "forest"
@@ -52,7 +52,7 @@ enum ClaritySoundType: String, CaseIterable {
 class UstiaSoundManager: ObservableObject {
     static let shared = UstiaSoundManager()
     
-    @Published var currentSound: ClaritySoundType = .none
+    @Published var currentSound: UstiaSoundType = .none
     @Published var isPlaying: Bool = false
     @Published var volume: Float = 0.5
     
@@ -80,7 +80,7 @@ class UstiaSoundManager: ObservableObject {
         }
     }
     
-    func play(sound: ClaritySoundType) {
+    func play(sound: UstiaSoundType) {
         stop()
         
         guard sound != .none else { return }
@@ -118,7 +118,7 @@ class UstiaSoundManager: ObservableObject {
         playerNode?.volume = volume
     }
     
-    private func generateNoiseBuffer(for sound: ClaritySoundType) {
+    private func generateNoiseBuffer(for sound: UstiaSoundType) {
         let sampleRate: Double = 44100
         let duration: Double = 2.0 // 2 second loop
         let frameCount = AVAudioFrameCount(sampleRate * duration)
