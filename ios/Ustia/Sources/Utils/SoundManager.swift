@@ -49,8 +49,8 @@ enum ClaritySoundType: String, CaseIterable {
 
 // MARK: - Sound Manager
 
-class ClaritySoundManager: ObservableObject {
-    static let shared = ClaritySoundManager()
+class UstiaSoundManager: ObservableObject {
+    static let shared = UstiaSoundManager()
     
     @Published var currentSound: ClaritySoundType = .none
     @Published var isPlaying: Bool = false
@@ -76,7 +76,7 @@ class ClaritySoundManager: ObservableObject {
         do {
             try engine.start()
         } catch {
-            print("ClaritySoundManager: Failed to start audio engine - \(error)")
+            print("UstiaSoundManager: Failed to start audio engine - \(error)")
         }
     }
     

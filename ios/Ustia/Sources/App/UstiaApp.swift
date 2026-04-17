@@ -1,9 +1,9 @@
 import SwiftUI
 
 @main
-struct ClarityApp: App {
+struct UstiaApp: App {
     @StateObject private var appState = AppState()
-    @StateObject private var soundManager = ClaritySoundManager.shared
+    @StateObject private var soundManager = UstiaSoundManager.shared
     
     var body: some Scene {
         WindowGroup {
