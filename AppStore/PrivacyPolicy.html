@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UstiaGo — Privacy Policy</title>
+    <title>Ustia — Privacy Policy</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #1a1a2e;
             background: #f8f9fa;
             padding: 40px 20px;
@@ -19,55 +19,103 @@
             background: white;
             padding: 48px;
             border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
         }
-        h1 { font-size: 28px; margin-bottom: 24px; color: #1a1a2e; }
-        h2 { font-size: 20px; margin: 32px 0 16px; color: #1a1a2e; }
-        p { margin-bottom: 16px; color: #444; }
-        ul { margin: 16px 0; padding-left: 24px; }
-        li { margin-bottom: 8px; color: #444; }
-        .footer {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid #eee;
-            color: #888;
-            font-size: 14px;
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+        h2 { font-size: 18px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; color: #2d2d44; }
+        h2:first-of-type { margin-top: 24px; }
+        p { margin-bottom: 12px; color: #444; font-size: 15px; }
+        ul { margin: 12px 0 12px 20px; color: #444; font-size: 15px; }
+        li { margin-bottom: 6px; }
+        .divider { border: none; border-top: 1px solid #eee; margin: 32px 0; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #888; font-size: 13px; }
+        strong { color: #2d2d44; }
+        a { color: #7c6aff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .highlight-box {
+            background: #f3f0ff;
+            border-left: 4px solid #7c6aff;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
         }
-        .update { color: #888; font-size: 13px; margin-bottom: 32px; }
+        .highlight-box p { margin-bottom: 0; color: #3d3d5c; }
+        @media (max-width: 600px) {
+            .container { padding: 28px 20px; }
+            h1 { font-size: 22px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>UstiaGo Privacy Policy</h1>
-        <p class="update">Last updated: April 18, 2026</p>
+        <h1>Ustia</h1>
+        <p class="subtitle">Privacy Policy · Last Updated: April 18, 2026</p>
 
-        <p>UstiaGo is committed to protecting your privacy. This policy explains what data we collect, how we use it, and your rights.</p>
+        <div class="highlight-box">
+            <p><strong>In short:</strong> Your data stays on your device. We don't collect, track, or sell any personal information.</p>
+        </div>
 
-        <h2>Data We Collect</h2>
+        <h2>1. What We Collect</h2>
+        <p>Ustia is designed around privacy. All your data is processed and stored locally on your device. Here's what we collect:</p>
         <ul>
-            <li><strong>Focus session data:</strong> Duration, start/end times, and session labels you create — stored locally on your device.</li>
-            <li><strong>Screen time data:</strong> Aggregated app usage statistics — stored locally.</li>
-            <li><strong>Health data:</strong> If you opt in to Apple Health integration, we read/write focus and mindfulness data. This data never leaves your device.</li>
-            <li><strong>App preferences:</strong> Settings and customization choices stored locally.</li>
+            <li><strong>Focus session data</strong> — Duration, start/end times, and session labels you create — stored locally on your device only</li>
+            <li><strong>Screen time data</strong> — Aggregated app usage statistics — stored locally and never transmitted anywhere</li>
+            <li><strong>App preferences</strong> — Settings and customization choices you make within Ustia, stored securely on your device</li>
+            <li><strong>Health data (optional)</strong> — If you choose to integrate with Apple Health, we read and write focus and mindfulness data to your Health app. This data never leaves your device</li>
+            <li><strong>Crash logs</strong> — Anonymous technical information when the app crashes unexpectedly (used to improve app quality)</li>
         </ul>
 
-        <h2>How We Use Data</h2>
-        <p>All data collected is used solely to provide and improve the UstiaGo experience. We do not sell, share, or transmit your personal data to third parties.</p>
+        <h2>2. What We Don't Collect</h2>
+        <p>We explicitly commit to <strong>never</strong> collecting or accessing:</p>
+        <ul>
+            <li>Your personal identity information (name, email, phone number, etc.)</li>
+            <li>Your precise location data</li>
+            <li>Your contacts, calendar, or messages</li>
+            <li>Your activity in other apps</li>
+            <li>Your browsing history or web access records</li>
+            <li>Any data that can personally identify you</li>
+        </ul>
 
-        <h2>Data Storage</h2>
-        <p>Your data is stored locally on your device using iOS secure storage (Keychain/UserDefaults/SQLite). We do not maintain external servers with your data.</p>
+        <h2>3. Data Storage</h2>
+        <p>Your data is stored securely on your device using iOS's built-in storage (UserDefaults and local database). We do not maintain any external servers that hold your personal data.</p>
+        <p>If you enable iCloud sync through your Apple ID, your data is synced through your personal iCloud account, protected by Apple's end-to-end encryption and governed by Apple's privacy policy.</p>
 
-        <h2>Apple Health</h2>
-        <p>If you connect Apple Health, focus and mindfulness minutes are read from and written to your Health app. You can revoke this permission at any time in iOS Settings → Privacy → Health.</p>
+        <h2>4. Third-Party Services</h2>
+        <p>Ustia uses the following third-party services:</p>
+        <ul>
+            <li><strong>Apple Store Connect</strong> — For in-app purchases and subscription management (governed by Apple's privacy policy)</li>
+            <li><strong>Apple Health</strong> — Optional health data integration (you control this entirely in iOS Settings → Privacy → Health)</li>
+        </ul>
+        <p>We do not share any data with advertising networks, analytics companies, or data brokers.</p>
 
-        <h2>Changes to This Policy</h2>
-        <p>We may update this policy from time to time. Any changes will be posted on this page with an updated revision date.</p>
+        <h2>5. Children's Privacy</h2>
+        <p>Ustia is not directed at children under 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us.</p>
 
-        <h2>Contact</h2>
-        <p>If you have questions about this privacy policy, please contact us at <strong>support@techidaily.com</strong>.</p>
+        <h2>6. Data Security</h2>
+        <p>We use industry-standard security measures to protect your data, including on-device encryption and secure server infrastructure for cloud-synced features.</p>
+
+        <h2>7. Your Rights</h2>
+        <p>Depending on applicable laws in your region, you may have the right to:</p>
+        <ul>
+            <li>Access personal information we hold about you</li>
+            <li>Request deletion of your personal information</li>
+            <li>Withdraw consent at any time</li>
+            <li>Data portability</li>
+        </ul>
+        <p>To exercise any of these rights, contact: <a href="mailto:privacy@techidaily.com">privacy@techidaily.com</a></p>
+
+        <h2>8. Policy Changes</h2>
+        <p>If we update this privacy policy, we will post the updated version on this page and update the "Last Updated" date. Significant changes will be communicated clearly within the app.</p>
+
+        <h2>9. Contact</h2>
+        <p>If you have any questions or concerns about this privacy policy, please contact us:</p>
+        <p><strong>Email:</strong> <a href="mailto:privacy@techidaily.com">privacy@techidaily.com</a></p>
+
+        <hr class="divider">
 
         <div class="footer">
-            UstiaGo — Helping you focus and thrive in the digital age.
+            <p>Ustia is crafted with care by an independent developer. We believe your attention is precious — and so is your privacy.</p>
         </div>
     </div>
 </body>
