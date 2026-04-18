@@ -25,7 +25,7 @@ Ustia is a calm, beautiful screen time companion that helps you understand your 
 ### 🎯 Core Features
 
 **• Focus Modes**
-Choose from multiple focus session types — Deep Work, Light Focus, or Custom. Each mode is designed for different productivity needs.
+Choose from multiple focus session types — Deep Work, Classic, or Flow. Each mode is designed for different productivity needs.
 
 **• Wind Down Ritual**
 Create a calming pre-sleep routine. Wind Down helps you disconnect gradually with soft transitions and ambient sounds.
@@ -53,25 +53,6 @@ Focus-enhancing soundscapes to help you concentrate. Choose from various environ
 
 ---
 
-### 📱 What You Get
-
-**Today Tab**
-Quick daily summary showing your progress, current streak, and today's focus time at a glance.
-
-**Focus Tab**
-Start and manage focus sessions. Track active time and see real-time progress.
-
-**Insights Tab**
-Dive deep into your focus patterns. Weekly and monthly reports help you understand and improve.
-
-**Wind Down Tab**
-Establish healthy pre-sleep routines. Gentle reminders and calming content help you disconnect.
-
-**Settings Tab**
-Customize your experience. Choose focus durations, sound preferences, notification settings, and more.
-
----
-
 **Start your mindful focus journey today.**
 
 ---
@@ -90,19 +71,27 @@ Productivity
 
 ---
 
-## Screenshots Required
+## Screenshots
 
-| Size | Required | File Naming | Description |
-|------|----------|-------------|-------------|
-| iPhone 6.7" (1290x2796) | 5 screenshots | Screen1-Today.png | Today tab - Daily summary |
-| iPhone 6.7" (1290x2796) | 2 screenshots | Screen2-Focus.png | Focus tab - Active session |
-| iPhone 6.7" (1290x2796) | 2 screenshots | Screen3-Insights.png | Insights tab - Data visualization |
-| iPhone 6.7" (1290x2796) | 2 screenshots | Screen4-WindDown.png | Wind Down tab - Pre-sleep routine |
-| iPhone 6.7" (1290x2796) | 2 screenshots | Screen5-Settings.png | Settings tab - Preferences |
+> ⚠️ **Screenshot Status (UITests captured):**
+> - iPhone 16 Pro (6.7"): 5 screenshots ✅
+> - iPad 12.9" (2048×2732): **Missing** — capture via VNC on MacinCloud using iPad Pro 13" simulator
+> - iPhone 6.5" (1284×2778): Not available — no iPhone XS Max/11 Pro Max simulator on MacinCloud
+>   - App Store Connect may accept 6.7" screenshots in place of 6.5"
+
+| Device | Size | Status | Files |
+|--------|------|--------|-------|
+| iPhone 6.7" | 1206×2622 pt (@3x = 3618×7866 px) | ✅ 5 screenshots | Screen1_Today.png – Screen5_Settings.png |
+| iPad 12.9" | 2048×2732 | ❌ Missing | — |
 
 **Screenshots Location:** `AppStore/Screenshots/`
-**Already Captured:** 5 unique screenshots (UITests verified)
-**Note:** All screenshots use iPhone 16 Pro Simulator (6.7" display)
+
+**To capture missing iPad screenshots:**
+```bash
+# On MacinCloud via VNC — open iPad Pro 13" simulator, run app, take screenshots
+# iPad simulator: iPad Pro 13-inch (M4)
+# Required resolution: 2048×2732 pixels
+```
 
 ---
 
@@ -116,7 +105,7 @@ Productivity
 | Age Rating | 4+ |
 | Description | (See above Description section) |
 | Keywords | (See above Keywords section) |
-| Privacy Policy URL | Required - Use `AppStore/PrivacyPolicy.html` hosted on your server |
+| Privacy Policy URL | Required — host `AppStore/PrivacyPolicy.html` and enter URL |
 | Support URL | Your support website URL |
 | Marketing URL | (Optional) Your app website URL |
 
@@ -124,16 +113,10 @@ Productivity
 
 ## Privacy Policy
 
-A privacy policy HTML template is available at:
+A professional English privacy policy is available at:
 `AppStore/PrivacyPolicy.html`
 
-This template covers:
-- Data collection practices
-- Local storage usage
-- No third-party tracking
-- User rights (data deletion)
-
-**Action Required:** Host `PrivacyPolicy.html` on a publicly accessible URL and enter that URL in App Store Connect.
+**Action Required:** Host this file on a publicly accessible URL (e.g., GitHub Pages or your own server) and enter that URL in App Store Connect.
 
 ---
 
