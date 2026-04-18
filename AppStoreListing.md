@@ -3,7 +3,7 @@
 ## 📱 App 基本信息
 
 - **App 名称:** UstiaGo
-- **Bundle ID:** com.clarity.app
+- **Bundle ID:** com.ggsheng.UstiaGo
 - **版本:** 1.0.0
 - **价格:** 免费（可内购）
 
