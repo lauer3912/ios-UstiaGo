@@ -8,14 +8,12 @@ final class UstiaGoUITests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Allow test to continue even if one step fails
         continueAfterFailure = true
         
         app = XCUIApplication()
         try? FileManager.default.createDirectory(atPath: screenshotDir, withIntermediateDirectories: true)
         
         app.launch()
-        // Wait for app to fully settle
         Thread.sleep(forTimeInterval: 3)
     }
     
@@ -24,20 +22,18 @@ final class UstiaGoUITests: XCTestCase {
     }
     
     func testScreenshotAllTabs() {
-        // Screenshot initial screen (Today) -- screen 0
+        // Screenshot initial screen (Today)
         takeScreenshot(named: "Screen1_Today")
         
-        // Tap each tab by label
+        // Tap each tab by label (works on both iPhone and iPad)
         for index in 1..<tabNames.count {
             let tabName = tabNames[index]
-            // Try to find the tab button by label (more reliable than index on iPad)
-            let tabButton = app.tabBars.buttons[tabName]
+            let tabButton = app.buttons[tabName]
             
             if tabButton.exists {
                 tabButton.tap()
-                Thread.sleep(forTimeInterval: 2)  // Wait for screen to settle
-                let screenName = tabNames.indices.contains(index) ? tabNames[index] : "Tab\(index)"
-                takeScreenshot(named: "Screen\(index + 1)_\(screenName)")
+                Thread.sleep(forTimeInterval: 2)
+                takeScreenshot(named: "Screen\(index + 1)_\(tabName.replacingOccurrences(of: " ", with: "_"))")
             } else {
                 print("Tab '\(tabName)' not found, skipping")
             }
@@ -45,7 +41,6 @@ final class UstiaGoUITests: XCTestCase {
     }
     
     private func takeScreenshot(named name: String) {
-        // Ensure window is settled
         Thread.sleep(forTimeInterval: 1)
         
         let screenshot = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
@@ -53,10 +48,9 @@ final class UstiaGoUITests: XCTestCase {
         screenshot.lifetime = .keepAlways
         add(screenshot)
         
-        // Save to file
         let screenshotData = app.windows.firstMatch.screenshot().pngRepresentation
         let filePath = "\(screenshotDir)/\(name).png"
         try? screenshotData.write(to: URL(fileURLWithPath: filePath))
-        print("Saved screenshot: \(name) (\(screenshotData.count) bytes)")
+        print("Saved: \(name) (\(screenshotData.count) bytes)")
     }
 }
