@@ -4,13 +4,6 @@ final class UstiaGoUITests: XCTestCase {
     
     private var app: XCUIApplication!
     private let screenshotDir = "/tmp/UstiaGoScreenshots"
-    private let tabNames = ["Today", "Focus", "Insights", "Wind_Down", "Settings"]
-    // Tab centers as fraction of screen width (x) and height (y)
-    // iPhone: 430x932 pts -> tab bar ~83pts at bottom, center ~889pts
-    // iPad: 1032x1376 pts -> tab bar ~83pts at bottom, center ~1335pts
-    // Using normalized coordinates (0-1) from top-left corner
-    private let tabXPositions: [CGFloat] = [0.1, 0.3, 0.5, 0.7, 0.9]
-    private let tabYPosition: CGFloat = 0.96  // Near bottom of screen
     
     override func setUp() {
         super.setUp()
@@ -28,25 +21,33 @@ final class UstiaGoUITests: XCTestCase {
     }
     
     func testScreenshotAllTabs() {
+        let win = app.windows.firstMatch
+        let frame = win.frame
+        print("Window frame: \(frame.width)x\(frame.height)")
+        
         // Screenshot initial screen (Today)
         takeScreenshot(named: "Screen1_Today")
         
-        // Tap each tab by coordinate
-        for index in 1..<tabNames.count {
-            let x = tabXPositions[index]
-            let window = app.windows.firstMatch
-            let frame = window.frame
+        // Tab bar is at bottom of screen
+        // For iPad (1032x1376): tab bar height ~83pts, centered at y=1335
+        // For iPhone (430x932): tab bar height ~83pts, centered at y=889
+        // 5 tabs evenly distributed
+        let tabBarHeight: CGFloat = 83
+        let tabBarY = frame.height - tabBarHeight
+        let tabBarCenterY = tabBarY + tabBarHeight / 2
+        let tabWidth = frame.width / 5
+        
+        print("Tab bar: y=\(tabBarY), centerY=\(tabBarCenterY), tabWidth=\(tabWidth)")
+        
+        for index in 1..<5 {
+            let tabCenterX = tabWidth * (CGFloat(index) + 0.5)
+            let coord = win.coordinate(withNormalizedOffset: .zero)
+                .withOffset(CGVector(dx: tabCenterX, dy: tabBarCenterY))
             
-            // Calculate tap point as fraction of window size
-            let xOffset = frame.width * x
-            let yOffset = frame.height * tabYPosition
-            
-            let coord = window.coordinate(withNormalizedOffset: .zero)
-                .withOffset(CGVector(dx: xOffset, dy: yOffset))
-            
+            print("Tapping tab[\(index)] at (\(tabCenterX), \(tabBarCenterY))")
             coord.tap()
             Thread.sleep(forTimeInterval: 2)
-            takeScreenshot(named: "Screen\(index + 1)_\(tabNames[index])")
+            takeScreenshot(named: "Screen\(index + 1)_Tab\(index)")
         }
     }
     
