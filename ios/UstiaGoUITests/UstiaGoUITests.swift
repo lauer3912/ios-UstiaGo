@@ -25,17 +25,20 @@ final class UstiaGoUITests: XCTestCase {
         // Screenshot initial screen (Today)
         takeScreenshot(named: "Screen1_Today")
         
-        // Tap each tab by label (works on both iPhone and iPad)
+        // Tap each tab by label (use firstMatch to avoid duplicate matches)
         for index in 1..<tabNames.count {
             let tabName = tabNames[index]
-            let tabButton = app.buttons[tabName]
+            // Use .firstMatch to avoid "multiple matching elements" error
+            // when a button label appears both in tab bar and inside a view
+            let tabButton = app.buttons[tabName].firstMatch
             
-            if tabButton.exists {
+            if tabButton.exists && tabButton.isHittable {
                 tabButton.tap()
                 Thread.sleep(forTimeInterval: 2)
-                takeScreenshot(named: "Screen\(index + 1)_\(tabName.replacingOccurrences(of: " ", with: "_"))")
+                let safeName = tabName.replacingOccurrences(of: " ", with: "_")
+                takeScreenshot(named: "Screen\(index + 1)_\(safeName)")
             } else {
-                print("Tab '\(tabName)' not found, skipping")
+                print("Tab '\(tabName)' not found or not hittable, skipping")
             }
         }
     }
