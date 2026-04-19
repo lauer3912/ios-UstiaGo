@@ -18,12 +18,10 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: UstiaGo/Sources
-        type: group
-      - path: UstiaGo/Assets.xcassets
-        type: group
+      - path: UstiaGo
         excludes:
-          - "**/Contents.json"
+          - "**/.DS_Store"
+          - "**/Info.plist"
     settings:
       base:
         INFOPLIST_FILE: UstiaGo/Info.plist
