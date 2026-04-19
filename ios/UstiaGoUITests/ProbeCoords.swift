@@ -1,6 +1,6 @@
 import XCTest
 
-final class ProbeCoords: XCTestCase {
+final class ProbeTabs2: XCTestCase {
     
     private var app: XCUIApplication!
     
@@ -12,42 +12,31 @@ final class ProbeCoords: XCTestCase {
         Thread.sleep(forTimeInterval: 3)
     }
     
-    func testProbeCoordinates() {
+    func testProbeTabPositions() {
         let win = app.windows.firstMatch
         let frame = win.frame
-        print("Window frame: \(frame)")
+        print("Window: \(frame.width)x\(frame.height)")
         
-        // Try to find any buttons anywhere
-        let allBtns = app.descendants(matching: .button)
-        print("Total buttons found: \(allBtns.count)")
+        // Take screenshot first
+        let ss = XCTAttachment(screenshot: win.screenshot())
+        ss.name = "ProbeTabs2"; ss.lifetime = .keepAlways; add(ss)
+        try? win.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "/tmp/ProbeTabs2.png"))
         
-        // Try tabBars.buttons by string label
+        // Try to find and tap each tab by accessibility
         let tabNames = ["Today", "Focus", "Insights", "Wind Down", "Settings"]
-        for name in tabNames {
-            let found = app.buttons[name].exists
-            print("Button['\(name)'] exists: \(found)")
+        for (i, name) in tabNames.enumerated() {
+            let btn = app.buttons[name].firstMatch
+            print("Tab[\(i)]='\(name)': exists=\(btn.exists), hittable=\(btn.isHittable)")
+            if btn.exists {
+                // Try tap and see what happens
+                let coord = btn.coordinate(withNormalizedOffset: .zero)
+                print("  coordinate: \(coord)")
+            }
         }
         
-        // Try collection views
-        let colz = app.descendants(matching: .collectionView)
-        print("Collection views: \(colz.count)")
-        
-        // Try other elements
-        let imgs = app.descendants(matching: .image)
-        print("Images: \(imgs.count)")
-        
-        // Try to find tab-like elements
-        let tabs = app.descendants(matching: .tabGroup)
-        print("Tab groups: \(tabs.count)")
-        
-        // Take screenshot
-        let ss = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
-        ss.name = "ProbeCoords"
-        ss.lifetime = .keepAlways
-        add(ss)
-        
-        let data = app.windows.firstMatch.screenshot().pngRepresentation
-        try? data.write(to: URL(fileURLWithPath: "/tmp/ProbeCoords.png"))
-        print("Screenshot saved")
+        // Also try via tab bars
+        let tabBar = app.tabBars.firstMatch
+        print("TabBar exists: \(tabBar.exists)")
+        print("TabBar buttons: \(tabBar.buttons.count)")
     }
 }
