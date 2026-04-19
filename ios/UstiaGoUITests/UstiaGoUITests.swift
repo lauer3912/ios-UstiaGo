@@ -4,6 +4,8 @@ final class UstiaGoUITests: XCTestCase {
     
     private var app: XCUIApplication!
     private let screenshotDir = "/tmp/UstiaGoScreenshots"
+    // Tab bar button labels match the tabItem Label text
+    private let tabLabels = ["Today", "Focus", "Insights", "Wind Down", "Settings"]
     
     override func setUp() {
         super.setUp()
@@ -21,33 +23,31 @@ final class UstiaGoUITests: XCTestCase {
     }
     
     func testScreenshotAllTabs() {
-        let win = app.windows.firstMatch
-        let frame = win.frame
-        print("Window frame: \(frame.width)x\(frame.height)")
-        
         // Screenshot initial screen (Today)
         takeScreenshot(named: "Screen1_Today")
         
-        // Tab bar is at bottom of screen
-        // For iPad (1032x1376): tab bar height ~83pts, centered at y=1335
-        // For iPhone (430x932): tab bar height ~83pts, centered at y=889
-        // 5 tabs evenly distributed
-        let tabBarHeight: CGFloat = 83
-        let tabBarY = frame.height - tabBarHeight
-        let tabBarCenterY = tabBarY + tabBarHeight / 2
-        let tabWidth = frame.width / 5
-        
-        print("Tab bar: y=\(tabBarY), centerY=\(tabBarCenterY), tabWidth=\(tabWidth)")
-        
-        for index in 1..<5 {
-            let tabCenterX = tabWidth * (CGFloat(index) + 0.5)
-            let coord = win.coordinate(withNormalizedOffset: .zero)
-                .withOffset(CGVector(dx: tabCenterX, dy: tabBarCenterY))
-            
-            print("Tapping tab[\(index)] at (\(tabCenterX), \(tabBarCenterY))")
-            coord.tap()
-            Thread.sleep(forTimeInterval: 2)
-            takeScreenshot(named: "Screen\(index + 1)_Tab\(index)")
+        // Tap each tab by button label
+        for index in 1..<tabLabels.count {
+            let btn = app.buttons[tabLabels[index]].firstMatch
+            if btn.exists && btn.isHittable {
+                btn.tap()
+                Thread.sleep(forTimeInterval: 2)
+                takeScreenshot(named: "Screen\(index + 1)_\(tabLabels[index])")
+            } else {
+                print("Button '\(tabLabels[index])' not hittable, trying coordinate fallback")
+                // Coordinate fallback
+                let win = app.windows.firstMatch
+                let frame = win.frame
+                let tabBarH: CGFloat = 83
+                let yCenter = frame.height - tabBarH / 2
+                let tabW = frame.width / 5
+                let xCenter = tabW * (CGFloat(index) + 0.5)
+                let coord = win.coordinate(withNormalizedOffset: .zero)
+                    .withOffset(CGVector(dx: xCenter, dy: yCenter))
+                coord.tap()
+                Thread.sleep(forTimeInterval: 2)
+                takeScreenshot(named: "Screen\(index + 1)_\(tabLabels[index])")
+            }
         }
     }
     
