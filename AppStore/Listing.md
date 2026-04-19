@@ -1,13 +1,13 @@
-# Ustia — App Store Listing
+# UstiaGo — App Store Listing
 
-> **App Version:** 1.0.0 (from `ios/project.yml MARKETING_VERSION`)
-> **Last Updated:** 2026-04-18
+> **App Version:** 1.0.0
+> **Last Updated:** 2026-04-19
 > **Status:** Ready for App Store Connect submission
 
 ---
 
 ## Name
-Ustia
+UstiaGo
 
 ## Subtitle
 Mindful Screen Time Companion
@@ -16,107 +16,75 @@ Mindful Screen Time Companion
 
 ## Description
 
-**Reclaim your attention.**
+Reclaim your attention.
 
-Ustia is a calm, beautiful screen time companion that helps you understand your phone habits without the surveillance feel. Where other apps scream "YOU'RE DOING BADLY," Ustia whispers "Here's what's happening, and here's how to take control — on your terms."
+UstiaGo is a calm, beautiful screen time companion that helps you understand your phone habits without the surveillance feel. Where other apps scream "YOU'RE DOING BADLY," UstiaGo whispers "Here's what's happening, and here's how to take control -- on your terms."
 
----
+Core Features
 
-### 🎯 Core Features
+- Focus Modes -- Choose from multiple focus session types -- Deep Work, Classic, or Flow. Each mode is designed for different productivity needs.
 
-**• Focus Modes**
-Choose from multiple focus session types — Deep Work, Classic, or Flow. Each mode is designed for different productivity needs.
+- Wind Down Ritual -- Create a calming pre-sleep routine. Wind Down helps you disconnect gradually with soft transitions and ambient sounds.
 
-**• Wind Down Ritual**
-Create a calming pre-sleep routine. Wind Down helps you disconnect gradually with soft transitions and ambient sounds.
+- Daily Insights -- Visualize your focus patterns with daily summaries. See your progress, understand your habits, and discover your best focus times.
 
-**• Daily Insights**
-Visualize your focus patterns with daily summaries. See your progress, understand your habits, and discover your best focus times.
+- Streak Tracking -- Build lasting habits with streak tracking. Daily focus sessions keep your streak alive and motivate you to stay consistent.
 
-**• Streak Tracking**
-Build lasting habits with streak tracking. Daily focus sessions keep your streak alive and motivate you to stay consistent.
+- Achievement System -- Earn achievements as you build your focus habit. From first session to 100-day streaks, celebrate every milestone.
 
-**• Achievement System**
-Earn achievements as you build your focus habit. From first session to 100-day streaks, celebrate every milestone.
+- Ambient Sounds -- Focus-enhancing soundscapes to help you concentrate. Choose from various environments to match your mood.
 
-**• Ambient Sounds**
-Focus-enhancing soundscapes to help you concentrate. Choose from various environments to match your mood.
+Why UstiaGo?
 
----
+- Calm Design -- Not another anxiety-inducing productivity app. A peaceful experience you actually want to open.
+- Privacy First -- All data stays on your device. No tracking, no accounts needed.
+- No Ads -- Clean, focused experience. No distractions or interruptions.
+- Dark Mode Native -- Designed from the ground up for dark mode. Easy on your eyes.
 
-### 🌙 Why Ustia?
+$9.99 one-time purchase -- lifetime access, no subscription
 
-• **Calm Design** — Not another anxiety-inducing productivity app. A peaceful experience you actually want to open.
-• **Privacy First** — All data stays on your device. No tracking, no accounts needed.
-• **No Ads** — Clean, focused experience. No distractions or interruptions.
-• **Dark Mode Native** — Designed from the ground up for dark mode. Easy on your eyes.
-
----
-
-**Start your mindful focus journey today.**
+Start your mindful focus journey today.
 
 ---
 
 ## Keywords
 
-screen time, focus, productivity, mindfulness, concentration, habit tracker, time management, study, work, timer, concentration app, wind down, sleep routine, focus companion, attention
+screen time, focus, productivity, mindfulness, concentration, habit tracker, time management, study, work, timer, concentration app, wind down, sleep routine, focus companion, attention, deep work, focus timer, achievement
 
 ---
 
 ## Category
+
 Productivity
 
 ## Age Rating
+
 4+
 
 ---
 
-## Screenshots
+## Price
 
-> ⚠️ **Screenshot Status (UITests captured):**
-> - iPhone 16 Pro (6.7"): 5 screenshots ✅
-> - iPad 12.9" (2048×2732): **Missing** — capture via VNC on MacinCloud using iPad Pro 13" simulator
-> - iPhone 6.5" (1284×2778): Not available — no iPhone XS Max/11 Pro Max simulator on MacinCloud
->   - App Store Connect may accept 6.7" screenshots in place of 6.5"
-
-| Device | Size | Status | Files |
-|--------|------|--------|-------|
-| iPhone 6.7" | 1206×2622 pt (@3x = 3618×7866 px) | ✅ 5 screenshots | Screen1_Today.png – Screen5_Settings.png |
-| iPad 12.9" | 2048×2732 | ❌ Missing | — |
-
-**Screenshots Location:** `AppStore/Screenshots/`
-
-**To capture missing iPad screenshots:**
-```bash
-# On MacinCloud via VNC — open iPad Pro 13" simulator, run app, take screenshots
-# iPad simulator: iPad Pro 13-inch (M4)
-# Required resolution: 2048×2732 pixels
-```
+$9.99
 
 ---
 
-## App Store Connect Field Reference
+## Copyright
 
-| Field | Value |
-|-------|-------|
-| Name | Ustia |
-| Subtitle | Mindful Screen Time Companion |
-| Category | Productivity |
-| Age Rating | 4+ |
-| Description | (See above Description section) |
-| Keywords | (See above Keywords section) |
-| Privacy Policy URL | Required — host `AppStore/PrivacyPolicy.html` and enter URL |
-| Support URL | Your support website URL |
-| Marketing URL | (Optional) Your app website URL |
+Copyright (C) 2026 ZhiFeng Sun
 
 ---
 
-## Privacy Policy
+## Privacy Policy URL
 
-A professional English privacy policy is available at:
-`AppStore/PrivacyPolicy.html`
+https://lauer3912.github.io/ios-UstiaGo/docs/PrivacyPolicy.html
 
-**Action Required:** Host this file on a publicly accessible URL (e.g., GitHub Pages or your own server) and enter that URL in App Store Connect.
+---
+
+## Prohibited Terms (DO NOT USE)
+
+- Emoji icons in descriptions
+- Chinese characters in any public-facing text
 
 ---
 
@@ -124,4 +92,4 @@ A professional English privacy policy is available at:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0.0 | 2026-04-18 | Initial App Store submission |
+| 1.0.0 | 2026-04-19 | Initial App Store submission |
