@@ -15,6 +15,7 @@
 		52ACA4A5E569432CDEFD11DE /* Icon-60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 718C7B2DD53926BAC78AAF0A /* Icon-60@3x.png */; };
 		5418A3EC458F9D4939D5DB13 /* Icon-40@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 40B99771289BB5DA2BC4F2C0 /* Icon-40@1x.png */; };
 		589282A25E68A125AC453383 /* Icon-29@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 52AD9EF12C55F26EFB0679DF /* Icon-29@3x.png */; };
+		59839B7985F6E5AF866AA1B3 /* ProbeYCoord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D926AAB451B21A9D999575D /* ProbeYCoord.swift */; };
 		77F027230F7D6873B7C78D9C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864ACDD79C2A21B2C5EBD84E /* SettingsView.swift */; };
 		7B96BBF1025108C63A3C9B83 /* Icon-20@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 711E41DD37730239C08F6E73 /* Icon-20@1x.png */; };
 		862AE4528C278CBBB430302A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D819C5546E59786F31B88B /* ContentView.swift */; };
@@ -23,10 +24,13 @@
 		A6F10D249DD767110DDCFA92 /* Icon-60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DBA459EB9C747A83E8046C9 /* Icon-60@2x.png */; };
 		A986DC85588484D46D61DC4D /* Icon-29@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = A07132657951F2CC1DF8257A /* Icon-29@1x.png */; };
 		AC72E3FFE6A93E3F4D0A6811 /* Icon-40@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C2FE9BFE6ADBBC490838A5AB /* Icon-40@3x.png */; };
+		BFA676B69C41D9B378F29C58 /* UstiaGoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D675F2244561DB22EAF9ADFE /* UstiaGoUITests.swift */; };
 		C7904200BD6F068F6F67B87E /* Icon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C001783311DBDEAC695B7CE /* Icon-76@2x.png */; };
 		CF04AA5D0A9E3DE5F5ED48C8 /* Icon-29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 050F3C26223FDE3C125FCC65 /* Icon-29@2x.png */; };
 		D40F43F242EC1449509C1264 /* Icon-1024@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 21C15D921622A0006835C9B9 /* Icon-1024@1x.png */; };
+		D997797671BB3D06E4CC1765 /* ProbeTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8677A4F5FA83AA568E3944D7 /* ProbeTabs.swift */; };
 		E021BCBDF7ACF3FF69B12F1D /* FocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B167AA04D4495740E44BD824 /* FocusView.swift */; };
+		EEDD08086E8B85326E4595BE /* ProbeCoords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F59EDEB14A556B90D78C922 /* ProbeCoords.swift */; };
 		F36B36ACF37FF2E0ED2D44EE /* Icon-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4177ACB062FF629F96DA26DD /* Icon-40@2x.png */; };
 		F53F62B537E3C3219953F3EB /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20AE5B6B0FC45F2A2E932226 /* SoundManager.swift */; };
 		F7F5CB942453AEF510363280 /* WindDownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287D8E92BE2902775C69EDBF /* WindDownView.swift */; };
@@ -34,6 +38,16 @@
 		FB7571679164CD49F001C528 /* Icon-20@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 617337DEDC3B435D104500A2 /* Icon-20@3x.png */; };
 		FE3131EFEA81F5EAC414CC55 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897F5F77629258FF2FB422B2 /* Models.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AD9CBB9EF74B9BEF54CFAFFB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E926D69ADE27315FA32BD2A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F928A817DE2D115D01181BA4;
+			remoteInfo = UstiaGo;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		050F3C26223FDE3C125FCC65 /* Icon-29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-29@2x.png"; sourceTree = "<group>"; };
@@ -47,8 +61,11 @@
 		40B99771289BB5DA2BC4F2C0 /* Icon-40@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40@1x.png"; sourceTree = "<group>"; };
 		4177ACB062FF629F96DA26DD /* Icon-40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40@2x.png"; sourceTree = "<group>"; };
 		41C8C0D6F3D7D0796CC6CBDA /* Icon-83.5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-83.5@2x.png"; sourceTree = "<group>"; };
+		4D926AAB451B21A9D999575D /* ProbeYCoord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeYCoord.swift; sourceTree = "<group>"; };
+		4F59EDEB14A556B90D78C922 /* ProbeCoords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeCoords.swift; sourceTree = "<group>"; };
 		52AD9EF12C55F26EFB0679DF /* Icon-29@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-29@3x.png"; sourceTree = "<group>"; };
 		54D819C5546E59786F31B88B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		54E81450696DDB711500CC12 /* UstiaGoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = UstiaGoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617337DEDC3B435D104500A2 /* Icon-20@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-20@3x.png"; sourceTree = "<group>"; };
 		711E41DD37730239C08F6E73 /* Icon-20@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-20@1x.png"; sourceTree = "<group>"; };
 		718C7B2DD53926BAC78AAF0A /* Icon-60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-60@3x.png"; sourceTree = "<group>"; };
@@ -58,11 +75,13 @@
 		7C9A59CC505269EF44832A0C /* Icon-20@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-20@2x.png"; sourceTree = "<group>"; };
 		7F7DA6E5AFE9EAD6D964FEFB /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		864ACDD79C2A21B2C5EBD84E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8677A4F5FA83AA568E3944D7 /* ProbeTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeTabs.swift; sourceTree = "<group>"; };
 		897F5F77629258FF2FB422B2 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		A07132657951F2CC1DF8257A /* Icon-29@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-29@1x.png"; sourceTree = "<group>"; };
 		B167AA04D4495740E44BD824 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		C2FE9BFE6ADBBC490838A5AB /* Icon-40@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40@3x.png"; sourceTree = "<group>"; };
 		C6061DFB570BE1679104A6DC /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		D675F2244561DB22EAF9ADFE /* UstiaGoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstiaGoUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -92,6 +111,17 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		77C623498D3ED9D2487F6661 /* UstiaGoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				4F59EDEB14A556B90D78C922 /* ProbeCoords.swift */,
+				8677A4F5FA83AA568E3944D7 /* ProbeTabs.swift */,
+				4D926AAB451B21A9D999575D /* ProbeYCoord.swift */,
+				D675F2244561DB22EAF9ADFE /* UstiaGoUITests.swift */,
+			);
+			path = UstiaGoUITests;
+			sourceTree = "<group>";
+		};
 		A9BD8E8BB01ED70C14FEE0A3 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				30A932D564EE8E46DB407BD8 /* UstiaGo.app */,
+				54E81450696DDB711500CC12 /* UstiaGoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -148,6 +179,7 @@
 			children = (
 				360284F8632481B3931BB789 /* Assets.xcassets */,
 				A9BD8E8BB01ED70C14FEE0A3 /* Sources */,
+				77C623498D3ED9D2487F6661 /* UstiaGoUITests */,
 				BCFDCAAEF11A2AD506CB595E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -176,6 +208,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CF70CE8E6AD6868FB5A8D189 /* UstiaGoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBCB9873A904FFD48CE34AAC /* Build configuration list for PBXNativeTarget "UstiaGoUITests" */;
+			buildPhases = (
+				26294E1205DB5D42542954E1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				478B6FD1445F17F78752688F /* PBXTargetDependency */,
+			);
+			name = UstiaGoUITests;
+			packageProductDependencies = (
+			);
+			productName = UstiaGoUITests;
+			productReference = 54E81450696DDB711500CC12 /* UstiaGoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		F928A817DE2D115D01181BA4 /* UstiaGo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00BC0F18A72082A8AE76FD9E /* Build configuration list for PBXNativeTarget "UstiaGo" */;
@@ -203,8 +253,13 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					CF70CE8E6AD6868FB5A8D189 = {
+						DevelopmentTeam = 9L6N2ZF26B;
+						ProvisioningStyle = Automatic;
+						TestTargetID = F928A817DE2D115D01181BA4;
+					};
 					F928A817DE2D115D01181BA4 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 9L6N2ZF26B;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -224,6 +279,7 @@
 			projectRoot = "";
 			targets = (
 				F928A817DE2D115D01181BA4 /* UstiaGo */,
+				CF70CE8E6AD6868FB5A8D189 /* UstiaGoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -254,6 +310,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		26294E1205DB5D42542954E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EEDD08086E8B85326E4595BE /* ProbeCoords.swift in Sources */,
+				D997797671BB3D06E4CC1765 /* ProbeTabs.swift in Sources */,
+				59839B7985F6E5AF866AA1B3 /* ProbeYCoord.swift in Sources */,
+				BFA676B69C41D9B378F29C58 /* UstiaGoUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		59F254BE75CAF574436E1D43 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -274,7 +341,40 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		478B6FD1445F17F78752688F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F928A817DE2D115D01181BA4 /* UstiaGo */;
+			targetProxy = AD9CBB9EF74B9BEF54CFAFFB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		31BB2B741D91C5BDD4C0FD61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9L6N2ZF26B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ggsheng.UstiaGo.UITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = UstiaGo;
+			};
+			name = Release;
+		};
 		51A26B3AE452AFCF2D71A2E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -308,13 +408,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_ENTITLEMENTS = UstiaGo/UstiaGo.entitlements;
-				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -377,13 +473,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_ENTITLEMENTS = UstiaGo/UstiaGo.entitlements;
-				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -411,8 +503,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_ENTITLEMENTS = UstiaGo/UstiaGo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9L6N2ZF26B;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = UstiaGo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -431,8 +526,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_ENTITLEMENTS = UstiaGo/UstiaGo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9L6N2ZF26B;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = UstiaGo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -443,6 +541,31 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FC6B1CDC4397B9EB376DB445 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9L6N2ZF26B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ggsheng.UstiaGo.UITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = UstiaGo;
 			};
 			name = Debug;
 		};
@@ -463,6 +586,15 @@
 			buildConfigurations = (
 				51A26B3AE452AFCF2D71A2E8 /* Debug */,
 				724A198A6979733E30A0AE67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BBCB9873A904FFD48CE34AAC /* Build configuration list for PBXNativeTarget "UstiaGoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC6B1CDC4397B9EB376DB445 /* Debug */,
+				31BB2B741D91C5BDD4C0FD61 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
