@@ -1,28 +1,71 @@
 #!/usr/bin/env python3
 from PIL import Image, ImageDraw
 import os
+import sys
 
-os.makedirs('ios/Clarity/Assets.xcassets/AppIcon.appiconset', exist_ok=True)
+# Target directory - support both old and new paths
+target_dir = sys.argv[1] if len(sys.argv) > 1 else 'ios/UstiaGo/Assets.xcassets/AppIcon.appiconset'
+os.makedirs(target_dir, exist_ok=True)
 
 def create_icon(size, filename):
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     
-    # Calm purple gradient
-    for y in range(size):
-        ratio = y / size
-        r = int(124 + (26 - 124) * ratio)
-        g = int(106 + (109 - 106) * ratio)
-        b = 255
-        draw.line([(0, y), (size, y)], fill=(r, g, b, 255))
+    w, h = size, size
     
-    center = size // 2
-    radius = int(size * 0.35)
-    draw.ellipse([center-radius, center-radius, center+radius, center+radius], 
-                 fill=None, outline=(255,255,255,255), width=max(2,size//25))
-    inner_r = int(radius * 0.3)
-    draw.ellipse([center-inner_r, center-inner_r, center+inner_r, center+inner_r], 
-                 fill=(255,255,255,255))
+    # Deep blue/purple gradient background
+    for y in range(h):
+        ratio = y / h
+        r = int(25 + (55 - 25) * ratio)
+        g = int(25 + (35 - 25) * ratio)
+        b = int(90 + (160 - 90) * ratio)
+        draw.line([(0, y), (w, y)], fill=(r, g, b, 255))
+    
+    cx, cy = w // 2, h // 2
+    
+    # Clock face - outer ring (white)
+    outer_r = int(min(w, h) * 0.38)
+    draw.ellipse([cx - outer_r, cy - outer_r, cx + outer_r, cy + outer_r],
+                 fill=None, outline=(255, 255, 255, 255), width=max(2, size // 18))
+    
+    # Clock face - inner fill (semi-transparent white)
+    inner_r = int(outer_r * 0.85)
+    draw.ellipse([cx - inner_r, cy - inner_r, cx + inner_r, cy + inner_r],
+                 fill=(255, 255, 255, 220))
+    
+    # Hour markers - small dots at 12, 3, 6, 9 positions
+    marker_r = max(1, size // 40)
+    for angle in [0, 90, 180, 270]:
+        import math
+        rad = math.radians(angle - 90)
+        mx = int(cx + (outer_r - marker_r * 2) * math.cos(rad))
+        my = int(cy + (outer_r - marker_r * 2) * math.sin(rad))
+        draw.ellipse([mx - marker_r, my - marker_r, mx + marker_r, my + marker_r],
+                     fill=(255, 255, 255, 255))
+    
+    # Clock hands
+    hand_color = (66, 133, 244, 255)  # Blue
+    w_px = max(2, size // 16)
+    
+    # Hour hand (pointing ~10 o'clock)
+    import math
+    hour_angle = math.radians(300)  # 10 o'clock
+    hour_len = int(outer_r * 0.5)
+    hx = int(cx + hour_len * math.cos(hour_angle))
+    hy = int(cy + hour_len * math.sin(hour_angle))
+    draw.line([cx, cy, hx, hy], fill=(255, 255, 255, 255), width=w_px)
+    
+    # Minute hand (pointing ~2 o'clock)
+    min_angle = math.radians(60)  # 2 o'clock
+    min_len = int(outer_r * 0.7)
+    mx2 = int(cx + min_len * math.cos(min_angle))
+    my2 = int(cy + min_len * math.sin(min_angle))
+    draw.line([cx, cy, mx2, my2], fill=(hand_color[0], hand_color[1], hand_color[2], 255), width=max(2, size // 20))
+    
+    # Center dot
+    dot_r = max(2, size // 18)
+    draw.ellipse([cx - dot_r, cy - dot_r, cx + dot_r, cy + dot_r],
+                 fill=(255, 255, 255, 255))
     
     img.save(filename, 'PNG')
 
@@ -43,7 +86,7 @@ sizes = [
 ]
 
 for size, name in sizes:
-    create_icon(size, f'ios/Clarity/Assets.xcassets/AppIcon.appiconset/{name}')
-    print(f'Created {name}')
+    create_icon(size, f'{target_dir}/{name}')
+    print(f'Created {name} ({size}x{size})')
 
-print('Done!')
+print(f'\nAll {len(sizes)} icons generated in {target_dir}/')
