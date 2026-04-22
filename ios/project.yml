@@ -25,7 +25,6 @@ targets:
       - path: UstiaGo
         excludes:
           - "**/.DS_Store"
-          - "**/Info.plist"
     settings:
       base:
         INFOPLIST_FILE: UstiaGo/Info.plist
