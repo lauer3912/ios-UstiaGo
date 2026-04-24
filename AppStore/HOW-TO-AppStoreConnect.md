@@ -44,7 +44,7 @@ Navigate to: https://appstoreconnect.apple.com → Apps → UstiaGo
 
 | Field | Value |
 |-------|-------|
-| Price Schedule | Free |
+| Price Schedule | $9.99 (USD) |
 | Availability | All territories |
 
 ### 2.3 App Privacy
