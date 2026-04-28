@@ -21,25 +21,8 @@ struct SettingsView: View {
                         .font(.clarityTitle)
                         .foregroundColor(UstiaTheme.textPrimary)
                     
-                    if !appState.isPremium {
-                        // TODO: Implement StoreKit subscription here
-                        Button {
-                            // For now, show alert that this is a premium feature
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "crown.fill")
-                                    .font(.system(size: 14))
-                                Text("Upgrade to Premium")
-                            }
-                            .font(.claritySubheadline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(UstiaTheme.gradientPrimary)
-                            .cornerRadius(20)
-                        }
-                        .accessibilityIdentifier("settings_upgrade_premium_button")
-                    } else {
+                    // Premium badge shown only when active
+                    if appState.isPremium {
                         HStack(spacing: 6) {
                             Image(systemName: "crown.fill")
                                 .foregroundColor(UstiaTheme.accentWarm)
