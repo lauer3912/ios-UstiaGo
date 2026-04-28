@@ -166,44 +166,7 @@ struct SettingsView: View {
                     .padding(16)
                 }
                 
-                // Mac Companion
-                SettingsSection(title: "Mac Companion") {
-                    HStack(spacing: 16) {
-                        Image(systemName: "laptopcomputer")
-                            .font(.system(size: 24))
-                            .foregroundColor(UstiaTheme.accentPrimary)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Connect Mac")
-                                .font(.claritySubheadline)
-                                .foregroundColor(UstiaTheme.textPrimary)
-                            Text("Control focus blocking from your iPhone")
-                                .font(.clarityCaption)
-                                .foregroundColor(UstiaTheme.textTertiary)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            // Mac Companion feature - show placeholder alert
-                        } label: {
-                            Text("Connect")
-                                .font(.clarityCaption)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(UstiaTheme.accentPrimary)
-                                .cornerRadius(12)
-                        }
-                        .disabled(true)
-                        .opacity(0.5)
-                    }
-                    .padding(16)
-                    .background(UstiaTheme.bgSecondary)
-                    .cornerRadius(16)
-                }
-                
-                Spacer(minLength: 100)
+
             }
             .padding(.horizontal, 20)
         }
