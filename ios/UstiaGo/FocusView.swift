@@ -50,6 +50,7 @@ struct FocusView: View {
                         remainingSeconds: remainingSeconds,
                         totalSeconds: totalSeconds,
                         isBreak: isBreakTime,
+                        isPaused: isPaused,
                         onPause: pauseTimer,
                         onStop: stopTimer
                     )
@@ -213,6 +214,7 @@ struct TimerActiveView: View {
     let remainingSeconds: Int
     let totalSeconds: Int
     let isBreak: Bool
+    let isPaused: Bool
     let onPause: () -> Void
     let onStop: () -> Void
     
