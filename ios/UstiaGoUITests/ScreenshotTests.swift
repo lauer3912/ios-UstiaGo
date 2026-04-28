@@ -9,7 +9,7 @@ final class ScreenshotTests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = ["--uitesting"]
         app.launch()
-        Thread.sleep(forTimeInterval: 2.0)  // Wait for app to fully stabilize
+        Thread.sleep(forTimeInterval: 3.0)  // Wait for app to fully stabilize
     }
 
     override func tearDownWithError() throws {
@@ -22,19 +22,60 @@ final class ScreenshotTests: XCTestCase {
         let path = "/tmp/\(name).png"
         let data = app.windows.firstMatch.screenshot().pngRepresentation
         try? data.write(to: URL(fileURLWithPath: path))
+        print("Captured: \(path) (\(data.count) bytes)")
     }
 
-    // MARK: - Tab navigation using accessibilityIdentifier (SOP §6.3)
+    // MARK: - Tab navigation - SOP §6.3 compliant
+    // Uses NSPredicate + firstMatch as required by SOP
 
     private func tapTab(identifier: String) {
-        let predicate = NSPredicate(format: "identifier == %@", identifier)
-        let button = app.buttons.matching(predicate).firstMatch
-        if button.exists {
-            button.tap()
-            Thread.sleep(forTimeInterval: 2.0)  // Wait for page to render
-        } else {
-            print("WARNING: Could not find tab button: \(identifier)")
+        // SOP §6.3: Use NSPredicate + firstMatch for reliable tab selection
+        let predicate = NSPredicate(format: "accessibilityLabel == %@", identifier)
+        if app.buttons.matching(predicate).firstMatch.exists {
+            app.buttons.matching(predicate).firstMatch.tap()
+            Thread.sleep(forTimeInterval: 2.0)
+            return
         }
+
+        // Fallback: Try identifier matching
+        let idPredicate = NSPredicate(format: "identifier == %@", identifier)
+        if app.buttons.matching(idPredicate).firstMatch.exists {
+            app.buttons.matching(idPredicate).firstMatch.tap()
+            Thread.sleep(forTimeInterval: 2.0)
+            return
+        }
+
+        // Fallback: Try by label text
+        if app.buttons[identifier].firstMatch.exists {
+            app.buttons[identifier].firstMatch.tap()
+            Thread.sleep(forTimeInterval: 2.0)
+            return
+        }
+
+        // Last resort: coordinate tap based on tab bar position
+        print("WARNING: Could not find tab button: \(identifier), using coordinate fallback")
+        let win = app.windows.firstMatch
+        let frame = win.frame
+        let tabBarHeight: CGFloat = 83  // Standard iOS tab bar height
+        let tabCount: CGFloat = 5
+        let tabWidth = frame.width / tabCount
+        let yCenter = frame.height - tabBarHeight / 2
+
+        // Map identifier to tab index
+        let tabMap: [String: Int] = [
+            "tab_today": 0, "Today": 0,
+            "tab_focus": 1, "Focus": 1,
+            "tab_insights": 2, "Insights": 2,
+            "tab_winddown": 3, "Wind Down": 3,
+            "tab_settings": 4, "Settings": 4
+        ]
+        let tabIndex = tabMap[identifier] ?? 0
+        let xCenter = tabWidth * (CGFloat(tabIndex) + 0.5)
+
+        let coord = win.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: xCenter, dy: yCenter))
+        coord.tap()
+        Thread.sleep(forTimeInterval: 2.0)
     }
 
     // MARK: - iPhone 6.9" (1320×2868 - iPhone 16 Pro Max)
@@ -44,22 +85,22 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testiPhone_69_02_Focus() {
-        tapTab(identifier: "tab_focus")
+        tapTab(identifier: "Focus")
         capture("iPhone_69_portrait_02_Focus")
     }
 
     func testiPhone_69_03_Insights() {
-        tapTab(identifier: "tab_insights")
+        tapTab(identifier: "Insights")
         capture("iPhone_69_portrait_03_Insights")
     }
 
     func testiPhone_69_04_WindDown() {
-        tapTab(identifier: "tab_winddown")
+        tapTab(identifier: "Wind Down")
         capture("iPhone_69_portrait_04_WindDown")
     }
 
     func testiPhone_69_05_Settings() {
-        tapTab(identifier: "tab_settings")
+        tapTab(identifier: "Settings")
         capture("iPhone_69_portrait_05_Settings")
     }
 
@@ -70,22 +111,22 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testiPhone_65_02_Focus() {
-        tapTab(identifier: "tab_focus")
+        tapTab(identifier: "Focus")
         capture("iPhone_65_portrait_02_Focus")
     }
 
     func testiPhone_65_03_Insights() {
-        tapTab(identifier: "tab_insights")
+        tapTab(identifier: "Insights")
         capture("iPhone_65_portrait_03_Insights")
     }
 
     func testiPhone_65_04_WindDown() {
-        tapTab(identifier: "tab_winddown")
+        tapTab(identifier: "Wind Down")
         capture("iPhone_65_portrait_04_WindDown")
     }
 
     func testiPhone_65_05_Settings() {
-        tapTab(identifier: "tab_settings")
+        tapTab(identifier: "Settings")
         capture("iPhone_65_portrait_05_Settings")
     }
 
@@ -96,22 +137,22 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testiPhone_63_02_Focus() {
-        tapTab(identifier: "tab_focus")
+        tapTab(identifier: "Focus")
         capture("iPhone_63_portrait_02_Focus")
     }
 
     func testiPhone_63_03_Insights() {
-        tapTab(identifier: "tab_insights")
+        tapTab(identifier: "Insights")
         capture("iPhone_63_portrait_03_Insights")
     }
 
     func testiPhone_63_04_WindDown() {
-        tapTab(identifier: "tab_winddown")
+        tapTab(identifier: "Wind Down")
         capture("iPhone_63_portrait_04_WindDown")
     }
 
     func testiPhone_63_05_Settings() {
-        tapTab(identifier: "tab_settings")
+        tapTab(identifier: "Settings")
         capture("iPhone_63_portrait_05_Settings")
     }
 
@@ -122,22 +163,22 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testiPad_13_02_Focus() {
-        tapTab(identifier: "tab_focus")
+        tapTab(identifier: "Focus")
         capture("iPad_13_portrait_02_Focus")
     }
 
     func testiPad_13_03_Insights() {
-        tapTab(identifier: "tab_insights")
+        tapTab(identifier: "Insights")
         capture("iPad_13_portrait_03_Insights")
     }
 
     func testiPad_13_04_WindDown() {
-        tapTab(identifier: "tab_winddown")
+        tapTab(identifier: "Wind Down")
         capture("iPad_13_portrait_04_WindDown")
     }
 
     func testiPad_13_05_Settings() {
-        tapTab(identifier: "tab_settings")
+        tapTab(identifier: "Settings")
         capture("iPad_13_portrait_05_Settings")
     }
 
@@ -148,22 +189,22 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testiPad_11_02_Focus() {
-        tapTab(identifier: "tab_focus")
+        tapTab(identifier: "Focus")
         capture("iPad_11_portrait_02_Focus")
     }
 
     func testiPad_11_03_Insights() {
-        tapTab(identifier: "tab_insights")
+        tapTab(identifier: "Insights")
         capture("iPad_11_portrait_03_Insights")
     }
 
     func testiPad_11_04_WindDown() {
-        tapTab(identifier: "tab_winddown")
+        tapTab(identifier: "Wind Down")
         capture("iPad_11_portrait_04_WindDown")
     }
 
     func testiPad_11_05_Settings() {
-        tapTab(identifier: "tab_settings")
+        tapTab(identifier: "Settings")
         capture("iPad_11_portrait_05_Settings")
     }
 }

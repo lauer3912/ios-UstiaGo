@@ -13,6 +13,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.today)
                     .accessibilityIdentifier("tab_today")
+                    .accessibilityLabel(AppState.Tab.today.rawValue)
                 
                 FocusView()
                     .tabItem {
@@ -20,6 +21,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.focus)
                     .accessibilityIdentifier("tab_focus")
+                    .accessibilityLabel(AppState.Tab.focus.rawValue)
                 
                 InsightsView()
                     .tabItem {
@@ -27,6 +29,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.insights)
                     .accessibilityIdentifier("tab_insights")
+                    .accessibilityLabel(AppState.Tab.insights.rawValue)
                 
                 WindDownView()
                     .tabItem {
@@ -34,6 +37,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.windDown)
                     .accessibilityIdentifier("tab_winddown")
+                    .accessibilityLabel(AppState.Tab.windDown.rawValue)
                 
                 SettingsView()
                     .tabItem {
@@ -41,6 +45,7 @@ struct ContentView: View {
                     }
                     .tag(AppState.Tab.settings)
                     .accessibilityIdentifier("tab_settings")
+                    .accessibilityLabel(AppState.Tab.settings.rawValue)
             }
             .tint(UstiaTheme.accentPrimary)
         }
