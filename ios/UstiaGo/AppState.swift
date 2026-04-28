@@ -32,6 +32,14 @@ class AppState: ObservableObject {
         }
     }
     
+    // MARK: - Session Deletion
+    func deleteSession(id: UUID) {
+        sessions.removeAll { $0.id == id }
+        rebuildTodaySummary()
+        updateAchievements()
+        save()
+    }
+    
     // MARK: - Init
     init() {
         self.todaySummary = DailySummary(date: Date())

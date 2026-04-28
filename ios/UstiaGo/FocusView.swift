@@ -81,7 +81,9 @@ struct FocusView: View {
                             .padding(.vertical, 20)
                     } else {
                         ForEach(Array(recentSessions)) { session in
-                            SessionRow(session: session)
+                            SessionRow(session: session) {
+                                appState.deleteSession(id: session.id)
+                            }
                         }
                     }
                 }
@@ -273,6 +275,8 @@ struct TimerActiveView: View {
 
 struct SessionRow: View {
     let session: FocusSession
+    let onDelete: () -> Void
+    @State private var showDeleteAlert = false
     
     private var dateFormatter: DateFormatter {
         let f = DateFormatter()
@@ -305,10 +309,33 @@ struct SessionRow: View {
             Text("\(session.duration / 60)m")
                 .font(.clarityMonoSmall)
                 .foregroundColor(UstiaTheme.textSecondary)
+            
+            Button {
+                showDeleteAlert = true
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(UstiaTheme.textTertiary)
+                    .frame(width: 28, height: 28)
+                    .background(UstiaTheme.surface)
+                    .clipShape(Circle())
+            }
+            .alert("Delete Session?", isPresented: $showDeleteAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    deleteSession()
+                }
+            } message: {
+                Text("This will permanently remove this focus session record.")
+            }
         }
         .padding(12)
         .background(UstiaTheme.bgSecondary)
         .cornerRadius(12)
+    }
+    
+    private func deleteSession() {
+        onDelete()
     }
 }
 
