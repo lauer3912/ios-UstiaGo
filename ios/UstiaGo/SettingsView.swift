@@ -47,7 +47,10 @@ struct SettingsView: View {
                         subtitle: "Target screen time per day",
                         value: Binding(
                             get: { Double(appState.settings.dailyScreenGoal) },
-                            set: { appState.settings.dailyScreenGoal = Int($0) }
+                            set: { newValue in
+                                appState.settings.dailyScreenGoal = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 30...480,
                         step: 30,
@@ -61,7 +64,10 @@ struct SettingsView: View {
                         subtitle: "Target focus time per day",
                         value: Binding(
                             get: { Double(appState.settings.dailyFocusGoal) },
-                            set: { appState.settings.dailyFocusGoal = Int($0) }
+                            set: { newValue in
+                                appState.settings.dailyFocusGoal = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 15...180,
                         step: 15,
@@ -78,7 +84,10 @@ struct SettingsView: View {
                         subtitle: "When wind down begins",
                         value: Binding(
                             get: { Double(appState.settings.windDownStartHour) },
-                            set: { appState.settings.windDownStartHour = Int($0) }
+                            set: { newValue in
+                                appState.settings.windDownStartHour = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 18...23,
                         step: 1,

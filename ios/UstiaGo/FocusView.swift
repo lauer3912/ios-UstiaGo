@@ -9,6 +9,7 @@ struct FocusView: View {
     @State private var totalSeconds = 0
     @State private var timer: Timer?
     @State private var showingModeSelector = false
+    @State private var isPaused = false
     
     var body: some View {
         ScrollView {
@@ -130,7 +131,15 @@ struct FocusView: View {
     }
     
     private func pauseTimer() {
-        timer?.invalidate()
+        if isPaused {
+            // Resume
+            isPaused = false
+            runTimer()
+        } else {
+            // Pause
+            timer?.invalidate()
+            isPaused = true
+        }
     }
     
     private func stopTimer() {
@@ -138,6 +147,7 @@ struct FocusView: View {
         appState.endSession(completed: false)
         isTimerActive = false
         isBreakTime = false
+        isPaused = false
         appState.currentSession = nil
     }
     
@@ -146,6 +156,7 @@ struct FocusView: View {
         appState.endSession(completed: true)
         isTimerActive = false
         isBreakTime = false
+        isPaused = false
     }
 }
 
@@ -256,7 +267,7 @@ struct TimerActiveView: View {
                 }
                 
                 Button(action: onPause) {
-                    Image(systemName: "pause.fill")
+                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
                         .font(.system(size: 24))
                         .foregroundColor(.white)
                         .frame(width: 72, height: 72)
