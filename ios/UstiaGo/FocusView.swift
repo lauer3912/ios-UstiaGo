@@ -63,7 +63,28 @@ struct FocusView: View {
                     AmbientSoundGrid()
                 }
                 
-
+                // Recent Sessions
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Recent Sessions")
+                        .font(.claritySubheadline)
+                        .foregroundColor(UstiaTheme.textSecondary)
+                    
+                    let recentSessions = appState.sessions
+                        .sorted { $0.startTime > $1.startTime }
+                        .prefix(5)
+                    
+                    if recentSessions.isEmpty {
+                        Text("No sessions yet. Start your first one!")
+                            .font(.clarityCaption)
+                            .foregroundColor(UstiaTheme.textTertiary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                    } else {
+                        ForEach(Array(recentSessions)) { session in
+                            SessionRow(session: session)
+                        }
+                    }
+                }
                 
                 Spacer(minLength: 80)
             }
