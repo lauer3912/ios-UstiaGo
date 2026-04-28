@@ -9,153 +9,161 @@ final class ScreenshotTests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = ["--uitesting"]
         app.launch()
-        usleep(2000000)
+        Thread.sleep(forTimeInterval: 2.0)  // Wait for app to fully stabilize
     }
 
     override func tearDownWithError() throws {
         app.terminate()
     }
 
-    private func ss(_ name: String) {
+    // MARK: - Screenshot helper
+
+    private func capture(_ name: String) {
         let path = "/tmp/\(name).png"
         let data = app.windows.firstMatch.screenshot().pngRepresentation
         try? data.write(to: URL(fileURLWithPath: path))
     }
 
-    private func openTab(_ label: String) {
-        if app.buttons[label].firstMatch.waitForExistence(timeout: 5) {
-            app.buttons[label].firstMatch.tap()
+    // MARK: - Tab navigation using accessibilityIdentifier (SOP §6.3)
+
+    private func tapTab(identifier: String) {
+        let predicate = NSPredicate(format: "identifier == %@", identifier)
+        let button = app.buttons.matching(predicate).firstMatch
+        if button.exists {
+            button.tap()
+            Thread.sleep(forTimeInterval: 2.0)  // Wait for page to render
+        } else {
+            print("WARNING: Could not find tab button: \(identifier)")
         }
-        usleep(1500000)
     }
 
-    // MARK: - iPhone 6.1" (1170×2532 - iPhone 16)
+    // MARK: - iPhone 6.9" (1320×2868 - iPhone 16 Pro Max)
 
-    func testiPhone_61_01_Today() {
-        ss("iPhone_61_portrait_01_Today")
+    func testiPhone_69_01_Today() {
+        capture("iPhone_69_portrait_01_Today")
     }
 
-    func testiPhone_61_02_Focus() {
-        openTab("Focus")
-        ss("iPhone_61_portrait_02_Focus")
+    func testiPhone_69_02_Focus() {
+        tapTab(identifier: "tab_focus")
+        capture("iPhone_69_portrait_02_Focus")
     }
 
-    func testiPhone_61_03_Insights() {
-        openTab("Insights")
-        ss("iPhone_61_portrait_03_Insights")
+    func testiPhone_69_03_Insights() {
+        tapTab(identifier: "tab_insights")
+        capture("iPhone_69_portrait_03_Insights")
     }
 
-    func testiPhone_61_04_WindDown() {
-        openTab("Wind Down")
-        ss("iPhone_61_portrait_04_WindDown")
+    func testiPhone_69_04_WindDown() {
+        tapTab(identifier: "tab_winddown")
+        capture("iPhone_69_portrait_04_WindDown")
     }
 
-    func testiPhone_61_05_Settings() {
-        openTab("Settings")
-        ss("iPhone_61_portrait_05_Settings")
+    func testiPhone_69_05_Settings() {
+        tapTab(identifier: "tab_settings")
+        capture("iPhone_69_portrait_05_Settings")
     }
 
     // MARK: - iPhone 6.5" (1284×2778 - iPhone 14 Plus)
 
     func testiPhone_65_01_Today() {
-        ss("iPhone_65_portrait_01_Today")
+        capture("iPhone_65_portrait_01_Today")
     }
 
     func testiPhone_65_02_Focus() {
-        openTab("Focus")
-        ss("iPhone_65_portrait_02_Focus")
+        tapTab(identifier: "tab_focus")
+        capture("iPhone_65_portrait_02_Focus")
     }
 
     func testiPhone_65_03_Insights() {
-        openTab("Insights")
-        ss("iPhone_65_portrait_03_Insights")
+        tapTab(identifier: "tab_insights")
+        capture("iPhone_65_portrait_03_Insights")
     }
 
     func testiPhone_65_04_WindDown() {
-        openTab("Wind Down")
-        ss("iPhone_65_portrait_04_WindDown")
+        tapTab(identifier: "tab_winddown")
+        capture("iPhone_65_portrait_04_WindDown")
     }
 
     func testiPhone_65_05_Settings() {
-        openTab("Settings")
-        ss("iPhone_65_portrait_05_Settings")
+        tapTab(identifier: "tab_settings")
+        capture("iPhone_65_portrait_05_Settings")
     }
 
     // MARK: - iPhone 6.3" (1206×2622 - iPhone 16 Pro)
 
     func testiPhone_63_01_Today() {
-        ss("iPhone_63_portrait_01_Today")
+        capture("iPhone_63_portrait_01_Today")
     }
 
     func testiPhone_63_02_Focus() {
-        openTab("Focus")
-        ss("iPhone_63_portrait_02_Focus")
+        tapTab(identifier: "tab_focus")
+        capture("iPhone_63_portrait_02_Focus")
     }
 
     func testiPhone_63_03_Insights() {
-        openTab("Insights")
-        ss("iPhone_63_portrait_03_Insights")
+        tapTab(identifier: "tab_insights")
+        capture("iPhone_63_portrait_03_Insights")
     }
 
     func testiPhone_63_04_WindDown() {
-        openTab("Wind Down")
-        ss("iPhone_63_portrait_04_WindDown")
+        tapTab(identifier: "tab_winddown")
+        capture("iPhone_63_portrait_04_WindDown")
     }
 
     func testiPhone_63_05_Settings() {
-        openTab("Settings")
-        ss("iPhone_63_portrait_05_Settings")
+        tapTab(identifier: "tab_settings")
+        capture("iPhone_63_portrait_05_Settings")
     }
 
     // MARK: - iPad 13" (2048×2732 - iPad Pro 13" M4)
 
     func testiPad_13_01_Today() {
-        ss("iPad_13_portrait_01_Today")
+        capture("iPad_13_portrait_01_Today")
     }
 
     func testiPad_13_02_Focus() {
-        openTab("Focus")
-        ss("iPad_13_portrait_02_Focus")
+        tapTab(identifier: "tab_focus")
+        capture("iPad_13_portrait_02_Focus")
     }
 
     func testiPad_13_03_Insights() {
-        openTab("Insights")
-        ss("iPad_13_portrait_03_Insights")
+        tapTab(identifier: "tab_insights")
+        capture("iPad_13_portrait_03_Insights")
     }
 
     func testiPad_13_04_WindDown() {
-        openTab("Wind Down")
-        ss("iPad_13_portrait_04_WindDown")
+        tapTab(identifier: "tab_winddown")
+        capture("iPad_13_portrait_04_WindDown")
     }
 
     func testiPad_13_05_Settings() {
-        openTab("Settings")
-        ss("iPad_13_portrait_05_Settings")
+        tapTab(identifier: "tab_settings")
+        capture("iPad_13_portrait_05_Settings")
     }
 
     // MARK: - iPad 11" (1668×2388 - iPad Pro 11" M4)
 
     func testiPad_11_01_Today() {
-        ss("iPad_11_portrait_01_Today")
+        capture("iPad_11_portrait_01_Today")
     }
 
     func testiPad_11_02_Focus() {
-        openTab("Focus")
-        ss("iPad_11_portrait_02_Focus")
+        tapTab(identifier: "tab_focus")
+        capture("iPad_11_portrait_02_Focus")
     }
 
     func testiPad_11_03_Insights() {
-        openTab("Insights")
-        ss("iPad_11_portrait_03_Insights")
+        tapTab(identifier: "tab_insights")
+        capture("iPad_11_portrait_03_Insights")
     }
 
     func testiPad_11_04_WindDown() {
-        openTab("Wind Down")
-        ss("iPad_11_portrait_04_WindDown")
+        tapTab(identifier: "tab_winddown")
+        capture("iPad_11_portrait_04_WindDown")
     }
 
     func testiPad_11_05_Settings() {
-        openTab("Settings")
-        ss("iPad_11_portrait_05_Settings")
+        tapTab(identifier: "tab_settings")
+        capture("iPad_11_portrait_05_Settings")
     }
 }
