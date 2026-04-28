@@ -65,17 +65,7 @@
     <string>Allow Siri to start the focus timer.</string>
 
     <!-- Background Modes -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>audio</string>
-        <string>processing</string>
-    </array>
 
     <!-- Background Task Scheduler -->
-    <key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-        <string>com.ggsheng.UstiaGo.refresh</string>
-        <string>com.ggsheng.UstiaGo.processing</string>
-    </array>
 </dict>
 </plist>
