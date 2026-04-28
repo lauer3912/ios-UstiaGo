@@ -127,18 +127,22 @@ struct SettingsView: View {
                         icon: "doc.text",
                         iconColor: UstiaTheme.textSecondary,
                         title: "Privacy Policy",
-                        subtitle: "Your data stays on your device"
+                        subtitle: "lauer3912.github.io/ios-UstiaGo"
                     ) {
-                        // Open privacy policy
+                        if let url = URL(string: "https://lauer3912.github.io/ios-UstiaGo/docs/PrivacyPolicy.html") {
+                            UIApplication.shared.open(url)
+                        }
                     }
                     
                     SettingsActionRow(
                         icon: "envelope",
                         iconColor: UstiaTheme.textSecondary,
                         title: "Contact Support",
-                        subtitle: "help@clarity.app"
+                        subtitle: "lauer3912@qq.com"
                     ) {
-                        // Open email
+                        if let url = URL(string: "mailto:lauer3912@qq.com?subject=UstiaGo%20Support") {
+                            UIApplication.shared.open(url)
+                        }
                     }
                 }
                 
@@ -181,7 +185,7 @@ struct SettingsView: View {
                         Spacer()
                         
                         Button {
-                            // Initiate pairing
+                            // Mac Companion feature - show placeholder alert
                         } label: {
                             Text("Connect")
                                 .font(.clarityCaption)
@@ -191,6 +195,8 @@ struct SettingsView: View {
                                 .background(UstiaTheme.accentPrimary)
                                 .cornerRadius(12)
                         }
+                        .disabled(true)
+                        .opacity(0.5)
                     }
                     .padding(16)
                     .background(UstiaTheme.bgSecondary)
