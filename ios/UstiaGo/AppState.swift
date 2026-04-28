@@ -40,6 +40,16 @@ class AppState: ObservableObject {
         save()
     }
     
+    // MARK: - Reset All Data
+    func resetAllData() {
+        sessions = []
+        achievements = AchievementLibrary.all
+        currentStreak = 0
+        settings = AppSettings()
+        todaySummary = DailySummary(date: Date())
+        save()
+    }
+    
     // MARK: - Init
     init() {
         self.todaySummary = DailySummary(date: Date())
