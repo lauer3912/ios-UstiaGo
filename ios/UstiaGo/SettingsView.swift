@@ -164,26 +164,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Health Data Section
-                SettingsSection(title: "Health Data") {
-                    HStack(spacing: 16) {
-                        Image(systemName: "heart.text.square.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(UstiaTheme.accentPrimary)
-                            .frame(width: 32)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("HealthKit Integration")
-                                .font(.claritySubheadline)
-                                .foregroundColor(UstiaTheme.textPrimary)
-                            Text("UstiaGo reads and writes focus activity data to Apple Health to help track your overall wellness.")
-                                .font(.clarityCaption)
-                                .foregroundColor(UstiaTheme.textTertiary)
-                        }
-                    }
-                    .padding(16)
-                }
-                
+
 
             }
             .padding(.horizontal, 20)

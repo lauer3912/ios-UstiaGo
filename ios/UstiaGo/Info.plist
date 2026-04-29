@@ -55,10 +55,7 @@
     </array>
 
     <!-- ========== 权限描述（必须英文，禁止中文）============ -->
-    <key>NSHealthShareUsageDescription</key>
-    <string>UstiaGo needs to read health data to track your activity level and heart rate changes during focus sessions.</string>
-    <key>NSHealthUpdateUsageDescription</key>
-    <string>UstiaGo needs to log focus activities to the Health app to help you understand your overall health picture.</string>
+    <!-- HealthKit permissions removed - App does not use HealthKit APIs -->
     <key>NSUserNotificationsUsageDescription</key>
     <string>UstiaGo needs to send notifications to remind you when focus sessions start and end, and when you earn achievements.</string>
     <key>NSSiriUsageDescription</key>
