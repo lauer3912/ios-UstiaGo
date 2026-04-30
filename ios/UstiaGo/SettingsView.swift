@@ -1,7 +1,11 @@
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
+    @State private var showResetAlert = false
+    @State private var showExportSheet = false
+    @State private var exportedCSV: String = ""
     
     var body: some View {
         ScrollView {
@@ -21,23 +25,8 @@ struct SettingsView: View {
                         .font(.clarityTitle)
                         .foregroundColor(UstiaTheme.textPrimary)
                     
-                    if !appState.isPremium {
-                        Button {
-                            appState.isPremium = true
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "crown.fill")
-                                    .font(.system(size: 14))
-                                Text("Upgrade to Premium")
-                            }
-                            .font(.claritySubheadline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(UstiaTheme.gradientPrimary)
-                            .cornerRadius(20)
-                        }
-                    } else {
+                    // Premium badge shown only when active
+                    if appState.isPremium {
                         HStack(spacing: 6) {
                             Image(systemName: "crown.fill")
                                 .foregroundColor(UstiaTheme.accentWarm)
@@ -58,7 +47,10 @@ struct SettingsView: View {
                         subtitle: "Target screen time per day",
                         value: Binding(
                             get: { Double(appState.settings.dailyScreenGoal) },
-                            set: { appState.settings.dailyScreenGoal = Int($0) }
+                            set: { newValue in
+                                appState.settings.dailyScreenGoal = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 30...480,
                         step: 30,
@@ -72,7 +64,10 @@ struct SettingsView: View {
                         subtitle: "Target focus time per day",
                         value: Binding(
                             get: { Double(appState.settings.dailyFocusGoal) },
-                            set: { appState.settings.dailyFocusGoal = Int($0) }
+                            set: { newValue in
+                                appState.settings.dailyFocusGoal = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 15...180,
                         step: 15,
@@ -89,7 +84,10 @@ struct SettingsView: View {
                         subtitle: "When wind down begins",
                         value: Binding(
                             get: { Double(appState.settings.windDownStartHour) },
-                            set: { appState.settings.windDownStartHour = Int($0) }
+                            set: { newValue in
+                                appState.settings.windDownStartHour = Int(newValue)
+                                appState.save()
+                            }
                         ),
                         range: 18...23,
                         step: 1,
@@ -106,6 +104,11 @@ struct SettingsView: View {
                         subtitle: "Remind to start focus sessions",
                         value: $appState.settings.notificationsEnabled
                     )
+                    .onChange(of: appState.settings.notificationsEnabled) { _, newValue in
+                        if newValue {
+                            requestNotificationPermission()
+                        }
+                    }
                 }
                 
                 // Data Section
@@ -125,7 +128,7 @@ struct SettingsView: View {
                         title: "Reset All Data",
                         subtitle: "Clear all sessions and achievements"
                     ) {
-                        // Would show confirmation dialog
+                        showResetAlert = true
                     }
                 }
                 
@@ -142,64 +145,44 @@ struct SettingsView: View {
                         icon: "doc.text",
                         iconColor: UstiaTheme.textSecondary,
                         title: "Privacy Policy",
-                        subtitle: "Your data stays on your device"
+                        subtitle: "lauer3912.github.io/ios-UstiaGo"
                     ) {
-                        // Open privacy policy
+                        if let url = URL(string: "https://lauer3912.github.io/ios-UstiaGo/docs/PrivacyPolicy.html") {
+                            UIApplication.shared.open(url)
+                        }
                     }
                     
                     SettingsActionRow(
                         icon: "envelope",
                         iconColor: UstiaTheme.textSecondary,
                         title: "Contact Support",
-                        subtitle: "help@clarity.app"
+                        subtitle: "lauer3912@qq.com"
                     ) {
-                        // Open email
+                        if let url = URL(string: "mailto:lauer3912@qq.com?subject=UstiaGo%20Support") {
+                            UIApplication.shared.open(url)
+                        }
                     }
                 }
                 
-                // Mac Companion
-                SettingsSection(title: "Mac Companion") {
-                    HStack(spacing: 16) {
-                        Image(systemName: "laptopcomputer")
-                            .font(.system(size: 24))
-                            .foregroundColor(UstiaTheme.accentPrimary)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Connect Mac")
-                                .font(.claritySubheadline)
-                                .foregroundColor(UstiaTheme.textPrimary)
-                            Text("Control focus blocking from your iPhone")
-                                .font(.clarityCaption)
-                                .foregroundColor(UstiaTheme.textTertiary)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            // Initiate pairing
-                        } label: {
-                            Text("Connect")
-                                .font(.clarityCaption)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(UstiaTheme.accentPrimary)
-                                .cornerRadius(12)
-                        }
-                    }
-                    .padding(16)
-                    .background(UstiaTheme.bgSecondary)
-                    .cornerRadius(16)
-                }
-                
-                Spacer(minLength: 100)
+
+
             }
             .padding(.horizontal, 20)
+        }
+        .alert("Reset All Data?", isPresented: $showResetAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                appState.resetAllData()
+            }
+        } message: {
+            Text("This will permanently delete all your sessions, achievements, and settings. This action cannot be undone.")
+        }
+        .sheet(isPresented: $showExportSheet) {
+            ExportDataSheet(csv: exportedCSV)
         }
     }
     
     private func exportData() {
-        // Generate CSV
         var csv = "Date,Mode,Duration (min),Completed\n"
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -209,8 +192,18 @@ struct SettingsView: View {
             csv += "\(formatter.string(from: session.startTime)),\(session.modeName),\(session.duration/60),\(session.completed)\n"
         }
         
-        // Would save to Files app
-        print("CSV Export:\n\(csv)")
+        exportedCSV = csv.isEmpty ? "No sessions to export." : csv
+        showExportSheet = true
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
+            if !granted {
+                DispatchQueue.main.async {
+                    appState.settings.notificationsEnabled = false
+                }
+            }
+        }
     }
 }
 
@@ -370,6 +363,53 @@ struct SettingsInfoRow: View {
                 .foregroundColor(UstiaTheme.textTertiary)
         }
         .padding(16)
+    }
+}
+
+struct ExportDataSheet: View {
+    let csv: String
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Text("Focus History Export")
+                    .font(.clarityHeadline)
+                    .foregroundColor(UstiaTheme.textPrimary)
+                
+                ScrollView {
+                    Text(csv)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(UstiaTheme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
+                .background(UstiaTheme.bgSecondary)
+                .cornerRadius(12)
+                
+                ShareLink(item: csv) {
+                    HStack {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Share CSV")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .clarityButton(isPrimary: true)
+                }
+                
+                Button("Close") {
+                    dismiss()
+                }
+                .foregroundColor(UstiaTheme.textSecondary)
+            }
+            .padding(20)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }
 

@@ -58,6 +58,7 @@ struct TodayView: View {
                     HStack(spacing: 12) {
                         ForEach(appState.focusModes.prefix(3)) { mode in
                             FocusModeCard(mode: mode) {
+                                // Start session and navigate to Focus tab
                                 appState.startSession(mode: mode)
                                 appState.selectedTab = .focus
                             }

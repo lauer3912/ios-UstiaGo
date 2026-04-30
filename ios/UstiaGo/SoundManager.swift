@@ -62,6 +62,17 @@ class UstiaSoundManager: ObservableObject {
     
     private init() {
         setupAudioEngine()
+        configureAudioSession()
+    }
+    
+    private func configureAudioSession() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try session.setActive(true)
+        } catch {
+            print("UstiaSoundManager: Failed to configure audio session - \(error)")
+        }
     }
     
     private func setupAudioEngine() {

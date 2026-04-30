@@ -1,113 +1,80 @@
 # UstiaGo 功能清单
 
-## App 基本信息
-- **App Store 名称**: UstiaGo
-- **Bundle ID**: com.ggsheng.UstiaGo
-- **功能总数**: 65个
-- **版本**: 1.0.0
-
----
-
-## 核心功能（≥60）
+## 核心功能（P0）
 
 | # | 功能名称 | 描述 | 优先级 |
 |---|---------|------|--------|
-| 1 | Screen Time Dashboard | 今日屏幕使用时间仪表盘 | P0 |
-| 2 | Screen Time Ring | 环形进度显示使用时间 | P0 |
-| 3 | App Usage List | 各App使用时间列表 | P0 |
-| 4 | App Usage Bar Chart | App使用时间条形图 | P0 |
-| 5 | Daily Goal | 每日屏幕时间目标 | P0 |
-| 6 | Goal Progress | 目标完成进度 | P0 |
-| 7 | Streak Counter | 连续达标天数 | P0 |
-| 8 | Weekly Summary | 周屏幕时间总结 | P0 |
-| 9 | Monthly Report | 月度屏幕时间报告 | P1 |
-| 10 | Focus Timer | 专注计时器 | P0 |
-| 11 | Custom Focus Duration | 自定义专注时长 | P0 |
-| 12 | Focus Modes | 专注模式选择（工作/学习/运动/创作）| P0 |
-| 13 | Focus Statistics | 专注统计数据 | P0 |
-| 14 | Focus History | 专注历史记录 | P0 |
-| 15 | Ambient Sounds | 环境音（海浪/雨声/森林/白噪音）| P0 |
-| 16 | Sound Mixer | 环境音混合 | P1 |
-| 17 | Wind Down Mode | 睡前放松模式 | P0 |
-| 18 | Sleep Reminder | 睡眠提醒 | P0 |
-| 19 | Bedtime Schedule | 就寝时间安排 | P0 |
-| 20 | Relaxation Exercises | 放松练习（呼吸/冥想）| P1 |
-| 21 | App Limits | App使用限制 | P1 |
-| 22 | Block App | 临时屏蔽App | P1 |
-| 23 | Unlock Schedule | 解锁时间安排 | P1 |
-| 24 | Insights Dashboard | 数据洞察仪表盘 | P0 |
-| 25 | Weekly Chart | 周使用时间图表 | P0 |
-| 26 | Most Used Apps | 最常用App排行 | P0 |
-| 27 | Usage Trends | 使用趋势分析 | P0 |
-| 28 | Peak Usage Hours | 高峰使用时段 | P1 |
-| 29 | Category Breakdown | 按类别分析（社交/娱乐/游戏）| P1 |
-| 30 | Compare Weeks | 周对比数据 | P1 |
-| 31 | Best Day Highlight | 最佳使用日高亮 | P1 |
-| 32 | Daily Notifications | 每日使用报告通知 | P0 |
-| 33 | Goal Achieved Alert | 目标达成提醒 | P0 |
-| 34 | Screen Time Warning | 使用时间过长警告 | P0 |
-| 35 | Focus Reminder | 专注提醒 | P1 |
-| 36 | Wind Down Reminder | 放松提醒 | P1 |
-| 37 | Dark Mode | 深色模式 | P0 |
-| 38 | Light Mode | 浅色模式 | P0 |
-| 39 | System Theme | 跟随系统主题 | P0 |
-| 40 | Haptic Feedback | 触觉反馈 | P0 |
-| 41 | Sound Effects | 音效反馈 | P0 |
-| 42 | Widget Today | 今日数据小部件 | P0 |
-| 43 | Widget Quick Stats | 快速统计部件 | P1 |
-| 44 | Widget Focus Timer | 专注计时部件 | P1 |
-| 45 | Widget Wind Down | 放松部件 | P1 |
-| 46 | Achievements System | 成就系统 | P1 |
-| 47 | First Goal Met | 首次达成目标 | P2 |
-| 48 | 7 Day Streak | 连续7天达标 | P2 |
-| 49 | 30 Day Streak | 连续30天达标 | P2 |
-| 50 | Low Usage Day | 低使用日成就 | P2 |
-| 51 | Focus Master | 专注大师成就 | P2 |
-| 52 | Export Data | 导出使用数据 | P2 |
-| 53 | Privacy Dashboard | 隐私仪表盘 | P1 |
-| 54 | App Categories | App分类管理 | P1 |
-| 55 | Custom Categories | 自定义分类 | P2 |
-| 56 | Usage Forecast | 使用时间预测 | P2 |
-| 57 | Smart Suggestions | 智能建议 | P1 |
-| 58 | Focus Score | 专注评分 | P1 |
-| 59 | Weekly Goals | 周目标设置 | P1 |
-| 60 | Monthly Goals | 月目标设置 | P1 |
-| 61 | Exclusion Apps | 排除的App列表 | P1 |
-| 62 | Child Mode | 儿童模式 | P2 |
-| 63 | Family Sharing | 家庭共享 | P2 |
-| 64 | Screen Time Lock | 屏幕时间锁定 | P2 |
-| 65 | Backup/Restore | 数据备份/恢复 | P2 |
+| 1 | Today Dashboard | 今日屏幕时间仪表板 | P0 |
+| 2 | Screen Time Display | 屏幕时间显示 | P0 |
+| 3 | App Usage Tracking | 应用使用时间追踪 | P0 |
+| 4 | Focus Mode | 专注模式 | P0 |
+| 5 | Focus Timer | 专注计时器 | P0 |
+| 6 | Wind Down Mode | 放松减压模式 | P0 |
+| 7 | Insights Dashboard | 数据洞察仪表板 | P0 |
+| 8 | Daily Stats | 每日统计 | P0 |
+| 9 | Settings | 设置页面 | P0 |
+| 10 | Dark/Light Theme | 深色/浅色主题 | P0 |
+| 11 | Sound Manager | 音效管理 | P0 |
+| 12 | Theme Customization | 主题自定义 | P0 |
 
----
+## 追踪功能（P1）
 
-## 用户交互
+| # | 功能名称 | 描述 | 优先级 |
+|---|---------|------|--------|
+| 13 | Screen Time History | 屏幕时间历史 | P1 |
+| 14 | Weekly Summary | 周总结 | P1 |
+| 15 | Monthly Overview | 月度概览 | P1 |
+| 16 | App Category Stats | 应用分类统计 | P1 |
+| 17 | Most Used Apps | 最常用应用 | P1 |
+| 18 | Usage Trends | 使用趋势 | P1 |
+| 19 | Daily Goals | 每日目标 | P1 |
+| 20 | Goal Progress | 目标进度 | P1 |
+| 21 | Notifications | 通知提醒 | P1 |
+| 22 | Wind Down Schedule | 放松计划 | P1 |
+| 23 | Focus Sounds | 背景音效 | P1 |
+| 24 | Session History | 会话历史 | P1 |
 
-| 交互 | 描述 |
-|------|------|
-| 点击使用时间 | 查看详细App使用 |
-| 长按App | 显示使用选项 |
-| 下拉刷新 | 刷新今日数据 |
-| 左滑App | 查看使用详情 |
-| 点击专注按钮 | 开始专注会话 |
-| 点击部件 | 打开对应功能 |
+## 附加功能（P2）
 
----
+| # | 功能名称 | 描述 | 优先级 |
+|---|---------|------|--------|
+| 25 | App Usage Charts | 应用使用图表 | P2 |
+| 26 | Category Breakdown | 分类明细 | P2 |
+| 27 | Hourly Distribution | 每小时分布 | P2 |
+| 28 | Daily Streak | 连续记录 | P2 |
+| 29 | Weekly Streak | 连续周记录 | P2 |
+| 30 | Usage Comparisons | 使用对比 | P2 |
+| 31 | Average Stats | 平均统计 | P2 |
+| 32 | Peak Usage Time | 峰值使用时间 | P2 |
+| 33 | Focus Session Stats | 专注会话统计 | P2 |
+| 34 | Wind Down Session Stats | 放松会话统计 | P2 |
+| 35 | Sound Preferences | 音效偏好 | P2 |
+| 36 | Notification Sounds | 通知音效 | P2 |
+| 37 | Quiet Hours | 安静时段 | P2 |
+| 38 | Focus Reminders | 专注提醒 | P2 |
+| 39 | Daily Reminder | 每日提醒 | P2 |
+| 40 | Weekly Report | 周报告 | P2 |
+| 41 | Monthly Report | 月报告 | P2 |
+| 42 | Report Sharing | 报告分享 | P2 |
+| 43 | Data Export | 数据导出 | P2 |
+| 44 | iCloud Sync | iCloud 同步（预留） | P2 |
+| 45 | Widget | 主屏幕小组件（预留） | P2 |
+| 46 | Shortcuts Integration | Siri Shortcuts（预留） | P2 |
+| 47 | Haptic Feedback | 触觉反馈 | P2 |
+| 48 | VoiceOver Support | 无障碍支持 | P2 |
+| 49 | Dynamic Type | 字体缩放 | P2 |
+| 50 | Multiple Themes | 多主题 | P2 |
+| 51 | Custom Colors | 自定义颜色 | P2 |
+| 52 | Focus Streak | 专注连续 | P2 |
+| 53 | Achievement Badges | 成就徽章 | P2 |
+| 54 | Usage Alerts | 使用警告 | P2 |
+| 55 | Time Limit Warnings | 时间限制警告 | P2 |
+| 56 | Category Time Limits | 分类时间限制 | P2 |
+| 57 | Wind Down Music | 放松音乐 | P2 |
+| 58 | Ambient Sounds | 环境音 | P2 |
+| 59 | Session Timer | 会话计时器 | P2 |
+| 60 | Break Timer | 休息计时器 | P2 |
 
-## 无障碍功能
+**总计：60 功能**
 
-| 功能 | 状态 |
-|------|------|
-| VoiceOver标签 | 所有可交互元素设置accessibilityLabel |
-| Dynamic Type | 使用相对字号 |
-| 颜色对比度 | ≥7:1 (WCAG AA) |
-| 点击区域 | ≥44×44pt |
-
----
-
-## 离线功能
-
-| 功能 | 状态 |
-|------|------|
-| 本地数据存储 | UserDefaults |
-| 离线状态UI | 正常功能 |
-| 启动无网络依赖 | ✅ 完全支持 |
+> ⚠️ 说明：UstiaGo 当前版本功能约 12 个核心功能。如需正式上架，建议补充：通知强化、Widget 支持、数据导出分享功能、多语言支持等。

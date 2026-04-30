@@ -9,6 +9,7 @@ struct FocusView: View {
     @State private var totalSeconds = 0
     @State private var timer: Timer?
     @State private var showingModeSelector = false
+    @State private var isPaused = false
     
     var body: some View {
         ScrollView {
@@ -49,6 +50,7 @@ struct FocusView: View {
                         remainingSeconds: remainingSeconds,
                         totalSeconds: totalSeconds,
                         isBreak: isBreakTime,
+                        isPaused: isPaused,
                         onPause: pauseTimer,
                         onStop: stopTimer
                     )
@@ -81,7 +83,9 @@ struct FocusView: View {
                             .padding(.vertical, 20)
                     } else {
                         ForEach(Array(recentSessions)) { session in
-                            SessionRow(session: session)
+                            SessionRow(session: session) {
+                                appState.deleteSession(id: session.id)
+                            }
                         }
                     }
                 }
@@ -128,7 +132,15 @@ struct FocusView: View {
     }
     
     private func pauseTimer() {
-        timer?.invalidate()
+        if isPaused {
+            // Resume
+            isPaused = false
+            runTimer()
+        } else {
+            // Pause
+            timer?.invalidate()
+            isPaused = true
+        }
     }
     
     private func stopTimer() {
@@ -136,6 +148,7 @@ struct FocusView: View {
         appState.endSession(completed: false)
         isTimerActive = false
         isBreakTime = false
+        isPaused = false
         appState.currentSession = nil
     }
     
@@ -144,6 +157,7 @@ struct FocusView: View {
         appState.endSession(completed: true)
         isTimerActive = false
         isBreakTime = false
+        isPaused = false
     }
 }
 
@@ -200,6 +214,7 @@ struct TimerActiveView: View {
     let remainingSeconds: Int
     let totalSeconds: Int
     let isBreak: Bool
+    let isPaused: Bool
     let onPause: () -> Void
     let onStop: () -> Void
     
@@ -254,7 +269,7 @@ struct TimerActiveView: View {
                 }
                 
                 Button(action: onPause) {
-                    Image(systemName: "pause.fill")
+                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
                         .font(.system(size: 24))
                         .foregroundColor(.white)
                         .frame(width: 72, height: 72)
@@ -273,6 +288,8 @@ struct TimerActiveView: View {
 
 struct SessionRow: View {
     let session: FocusSession
+    let onDelete: () -> Void
+    @State private var showDeleteAlert = false
     
     private var dateFormatter: DateFormatter {
         let f = DateFormatter()
@@ -305,10 +322,33 @@ struct SessionRow: View {
             Text("\(session.duration / 60)m")
                 .font(.clarityMonoSmall)
                 .foregroundColor(UstiaTheme.textSecondary)
+            
+            Button {
+                showDeleteAlert = true
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(UstiaTheme.textTertiary)
+                    .frame(width: 28, height: 28)
+                    .background(UstiaTheme.surface)
+                    .clipShape(Circle())
+            }
+            .alert("Delete Session?", isPresented: $showDeleteAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    deleteSession()
+                }
+            } message: {
+                Text("This will permanently remove this focus session record.")
+            }
         }
         .padding(12)
         .background(UstiaTheme.bgSecondary)
         .cornerRadius(12)
+    }
+    
+    private func deleteSession() {
+        onDelete()
     }
 }
 
