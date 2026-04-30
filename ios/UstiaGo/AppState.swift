@@ -107,7 +107,23 @@ class AppState: ObservableObject {
         session.completed = completed
         sessions.append(session)
         rebuildTodaySummary()
+        
+        let previousAchievements = achievements.filter { $0.isUnlocked }
         updateAchievements()
+        
+        // Send notification if session completed
+        if completed {
+            UstiaNotificationService.shared.scheduleSessionCompletedNotification(session: session)
+        }
+        
+        // Send achievement notification if any new achievements unlocked
+        for achievement in achievements {
+            if achievement.unlockedAt != nil && !previousAchievements.contains(where: { $0.id == achievement.id }) {
+                UstiaNotificationService.shared.scheduleAchievementNotification(achievement: achievement)
+                break // Only notify for first new achievement
+            }
+        }
+        
         save()
         currentSession = nil
     }
