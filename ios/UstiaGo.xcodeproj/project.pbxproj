@@ -54,6 +54,8 @@
 		900AF3CC51394D1C478C8F98 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		D675F2244561DB22EAF9ADFE /* UstiaGoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstiaGoUITests.swift; sourceTree = "<group>"; };
 		EF703FF48FAC14F8081C8C18 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F7A3C2D1E8B9012345678901 /* UstiaNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstiaNotificationService.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -81,6 +83,7 @@
 				900AF3CC51394D1C478C8F98 /* SoundManager.swift */,
 				4F9FAB1BC80B4141197F2280 /* Theme.swift */,
 				60164B0A6A736D13291B5DF5 /* TodayView.swift */,
+				F7A3C2D1E8B9012345678901 /* UstiaNotificationService.swift */,
 				12B6E7C08D16D8887FD2DAFC /* UstiaApp.swift */,
 				096509B1173FB6FC199DFAFC /* WindDownView.swift */,
 			);
@@ -221,6 +224,7 @@
 				E7839D9C351F5EE9D341EBE8 /* Theme.swift in Sources */,
 				9C635D40309CE1723F055E35 /* TodayView.swift in Sources */,
 				F4E1228E7E0F6CBC5A1E32AC /* UstiaApp.swift in Sources */,
+				A1B2C3D4E5F607182938475 /* UstiaNotificationService.swift in Sources */,
 				45EC049F129FE58164C7BCD7 /* WindDownView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
