@@ -23,6 +23,7 @@
 		EC83CFD9D6372D06690C8506 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52635FE204EE0800A785F72E /* AppState.swift */; };
 		EEDD08086E8B85326E4595BE /* ProbeCoords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F59EDEB14A556B90D78C922 /* ProbeCoords.swift */; };
 		F4E1228E7E0F6CBC5A1E32AC /* UstiaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B6E7C08D16D8887FD2DAFC /* UstiaApp.swift */; };
+		A1B2C3D4E5F607182938475 /* UstiaNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3C2D1E8B9012345678901 /* UstiaNotificationService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
