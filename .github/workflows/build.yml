@@ -32,7 +32,7 @@ jobs:
           cd ios
           xcodebuild test \
             -project UstiaGo.xcodeproj \
-            -scheme UstiaGoTests \
+            -scheme UstiaGo \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 15' \
             CODE_SIGNING_ALLOWED=NO
@@ -42,7 +42,7 @@ jobs:
           cd ios
           xcodebuild test \
             -project UstiaGo.xcodeproj \
-            -scheme UstiaGoUITests \
+            -scheme UstiaGo \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 15' \
             CODE_SIGNING_ALLOWED=NO
