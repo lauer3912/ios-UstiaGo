@@ -25,9 +25,6 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      # ——————————————————————————
-      # 📦 证书和 Profile 设置
-      # ——————————————————————————
       - name: Create Certificate Directory
         run: mkdir -p ios/certs
 
@@ -46,7 +43,7 @@ jobs:
           certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
           p12-file-base64: false
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
-          keychain:temp-keychain
+          keychain: temp-keychain
 
       - name: Setup Provisioning Profile
         uses: Apple-GitHub-Actions/setup-provisioning-profile@v2
@@ -54,9 +51,6 @@ jobs:
           provisioning-profile: ${{ secrets.PROVISIONING_PROFILE }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-      # ——————————————————————————
-      # 🏗️ 构建 Release
-      # ——————————————————————————
       - name: Build for TestFlight
         run: |
           xcodebuild -scheme $SCHEME \
@@ -68,24 +62,13 @@ jobs:
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo_App_Store" \
-            build \
-          | tee build.log
+            build
         env:
           CODE_SIGN_IDENTITY: "iPhone Distribution"
           CODE_SIGNING_REQUIRED: "YES"
           CODE_SIGNING_ALLOWED: "YES"
           PROVISIONING_PROFILE_SPECIFIER: "UstiaGo_App_Store"
 
-      - name: Upload Build Log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-
-      # ——————————————————————————
-      # 📤 上传到 App Store Connect
-      # ——————————————————————————
       - name: Upload to App Store Connect
         env:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
@@ -107,7 +90,7 @@ jobs:
 
       - name: Build Summary
         if: success()
-        run: echo "✅ TestFlight upload completed!"
+        run: echo "TestFlight upload completed successfully!"
 
       - name: Upload Archive
         if: success()
