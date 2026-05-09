@@ -1,0 +1,109 @@
+name: TestFlight Upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Build number override (optional)'
+        required: false
+        type: string
+
+env:
+  TEAM_ID: '9L6N2ZF26B'
+  BUNDLE_ID: 'com.ggsheng.UstiaGo'
+  SCHEME: 'UstiaGo'
+
+jobs:
+  build-and-upload:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: ./.github/actions/select-xcode
+        with:
+          version: '15.0'
+
+      # ——————————————————————————
+      # 📦 证书和 Profile 设置（敏感文件从 GitHub Secrets 读取）
+      # ——————————————————————————
+      - name: Create Certificate Directory
+        run: mkdir -p ios/certs
+
+      - name: Write Certificate to File
+        run: |
+          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > ios/certs/certificate.p12
+
+      - name: Write Provisioning Profile to File
+        run: |
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/certs/profile.mobileprovision
+
+      - name: Import Certificate to Keychain
+        uses: Apple-GitHub-Actions/setup-keychain@v3
+        with:
+          certificate-p12: ${{ secrets.CERTIFICATE_P12 }}
+          certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+          p12-file-base64: false
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+          keychain:temp-keychain
+
+      - name: Setup Provisioning Profile
+        uses: Apple-GitHub-Actions/setup-provisioning-profile@v2
+        with:
+          provisioning-profile: ${{ secrets.PROVISIONING_PROFILE }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      # ——————————————————————————
+      # 🏗️ 构建 (Release, generic for simulator + archive for TestFlight)
+      # ——————————————————————————
+      - name: Build for TestFlight
+        run: |
+          xcodebuild -version
+          xcodebuild -scheme $SCHEME \
+            -workspace ios/UstiaGo.xcodeproj/project.xcworkspace \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/UstiaGo.xcarchive \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build \
+          | tee build.log
+        env:
+          CODE_SIGN_IDENTITY: '-'
+          CODE_SIGNING_REQUIRED: 'NO'
+          CODE_SIGNING_ALLOWED: 'NO'
+
+      # ——————————————————————————
+      # 📤 上传到 App Store Connect
+      # ——————————————————————————
+      - name: Upload to App Store Connect
+        env:
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+        run: |
+          if [ -n "$APP_STORE_CONNECT_API_KEY_CONTENT" ]; then
+            echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > api_key.p8
+            xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
+              --apiKey api_key.p8 \
+              --apiKeyissuer $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
+              --apiKeyId $APP_STORE_CONNECT_API_KEY_KEY_ID
+          else
+            xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
+              --username ${{ secrets.APP_STORE_CONNECT_USERNAME }} \
+              --password ${{ secrets.APP_STORE_CONNECT_PASSWORD }} \
+              --asc-provider ${{ env.TEAM_ID }}
+          fi
+
+      - name: Build Summary
+        if: success()
+        run: echo "✅ TestFlight upload completed successfully!"
+
+      - name: Upload Build Log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log

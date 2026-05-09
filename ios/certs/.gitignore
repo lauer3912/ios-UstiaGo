@@ -1,0 +1,5 @@
+# Certificates and provisioning profiles - DO NOT COMMIT
+certs/
+*.p12
+*.mobileprovision
+*.cer
