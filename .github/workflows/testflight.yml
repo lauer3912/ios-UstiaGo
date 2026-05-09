@@ -2,11 +2,6 @@ name: TestFlight Upload
 
 on:
   workflow_dispatch:
-    inputs:
-      build_number:
-        description: 'Build number override (optional)'
-        required: false
-        type: string
 
 env:
   TEAM_ID: '9L6N2ZF26B'
@@ -27,8 +22,18 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      - name: Create Keychain Directory
-        run: mkdir -p ~/.appstoreconnect/private_keys
+      - name: Create Keychain and Profiles Directory
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning Profiles
+          mkdir -p ~/.appstoreconnect/private_keys
+
+      - name: Write Certificate to File
+        run: |
+          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > ios/certs/certificate.p12
+
+      - name: Write Provisioning Profile to File
+        run: |
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision
 
       - name: Write API Key to File
         run: |
@@ -39,15 +44,6 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
           p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
-
-      - name: Setup Provisioning Profile
-        uses: Apple-Actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: ${{ env.BUNDLE_ID }}
-          profile-type: IOS_APP_STORE
-          issuer-id: ${{ env.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ env.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Build for TestFlight
         run: |
@@ -72,10 +68,6 @@ jobs:
             --apiIssuer ${{ env.APPSTORE_ISSUER_ID }} \
             --apiKeyId ${{ env.APPSTORE_KEY_ID }} \
             --asc-provider ${{ env.TEAM_ID }}
-
-      - name: Build Summary
-        if: success()
-        run: echo "✅ TestFlight upload completed!"
 
       - name: Upload Archive
         if: success()
