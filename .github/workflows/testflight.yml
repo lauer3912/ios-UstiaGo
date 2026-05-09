@@ -25,31 +25,20 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      - name: Create Certificate Directory
-        run: mkdir -p ios/certs
-
-      - name: Write Certificate to File
-        run: |
-          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > ios/certs/certificate.p12
-
-      - name: Write Provisioning Profile to File
-        run: |
-          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/certs/profile.mobileprovision
-
-      - name: Import Certificate to Keychain
-        uses: apple-github-actions/setup-keychain@v3
+      - name: Download Provisioning Profile
+        uses: apple-actions/download-provisioning-profiles@v4
         with:
-          certificate-p12: ${{ secrets.CERTIFICATE_P12 }}
-          certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
-          p12-file-base64: false
-          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
-          keychain: temp-keychain
+          bundle-id: ${{ env.BUNDLE_ID }}
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-      - name: Setup Provisioning Profile
-        uses: apple-github-actions/setup-provisioning-profile@v2
+      - name: Import Certificate into Keychain
+        uses: apple-actions/import-codesign-certs@v1
         with:
-          provisioning-profile: ${{ secrets.PROVISIONING_PROFILE }}
-          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+          p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
 
       - name: Build for TestFlight
         run: |
@@ -61,32 +50,18 @@ jobs:
             CODE_SIGN_IDENTITY="iPhone Distribution" \
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
-            PROVISIONING_PROFILE_SPECIFIER="UstiaGo_App_Store" \
             build
         env:
           CODE_SIGN_IDENTITY: "iPhone Distribution"
           CODE_SIGNING_REQUIRED: "YES"
           CODE_SIGNING_ALLOWED: "YES"
-          PROVISIONING_PROFILE_SPECIFIER: "UstiaGo_App_Store"
 
       - name: Upload to App Store Connect
-        env:
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
         run: |
-          if [ -n "$APP_STORE_CONNECT_API_KEY_CONTENT" ]; then
-            echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > api_key.p8
-            xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
-              --apiKey api_key.p8 \
-              --apiKeyissuer $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
-              --apiKeyId $APP_STORE_CONNECT_API_KEY_KEY_ID
-          else
-            xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
-              --username '${{ secrets.APP_STORE_CONNECT_USERNAME }}' \
-              --password '${{ secrets.APP_STORE_CONNECT_PASSWORD }}' \
-              --asc-provider ${{ env.TEAM_ID }}
-          fi
+          xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
+            --username '${{ secrets.APP_STORE_CONNECT_USERNAME }}' \
+            --password '${{ secrets.APP_STORE_CONNECT_PASSWORD }}' \
+            --asc-provider ${{ env.TEAM_ID }}
 
       - name: Build Summary
         if: success()
