@@ -37,7 +37,7 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/certs/profile.mobileprovision
 
       - name: Import Certificate to Keychain
-        uses: Apple-GitHub-Actions/setup-keychain@v3
+        uses: apple-github-actions/setup-keychain@v3
         with:
           certificate-p12: ${{ secrets.CERTIFICATE_P12 }}
           certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
@@ -46,7 +46,7 @@ jobs:
           keychain: temp-keychain
 
       - name: Setup Provisioning Profile
-        uses: Apple-GitHub-Actions/setup-provisioning-profile@v2
+        uses: apple-github-actions/setup-provisioning-profile@v2
         with:
           provisioning-profile: ${{ secrets.PROVISIONING_PROFILE }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
