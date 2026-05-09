@@ -12,6 +12,8 @@ env:
   TEAM_ID: '9L6N2ZF26B'
   BUNDLE_ID: 'com.ggsheng.UstiaGo'
   SCHEME: 'UstiaGo'
+  APPSTORE_KEY_ID: 'H3973L93M5'
+  APPSTORE_ISSUER_ID: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7'
 
 jobs:
   build-and-upload:
@@ -25,20 +27,27 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      - name: Download Provisioning Profile
-        uses: apple-actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: ${{ env.BUNDLE_ID }}
-          profile-type: IOS_APP_STORE
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      - name: Create Keychain Directory
+        run: mkdir -p ~/.appstoreconnect/private_keys
+
+      - name: Write API Key to File
+        run: |
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > ~/.appstoreconnect/private_keys/ApiKey_${{ env.APPSTORE_KEY_ID }}.p8
 
       - name: Import Certificate into Keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
           p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
           p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+
+      - name: Setup Provisioning Profile
+        uses: Apple-Actions/download-provisioning-profiles@v4
+        with:
+          bundle-id: ${{ env.BUNDLE_ID }}
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ env.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ env.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Build for TestFlight
         run: |
@@ -59,13 +68,14 @@ jobs:
       - name: Upload to App Store Connect
         run: |
           xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
-            --username '${{ secrets.APP_STORE_CONNECT_USERNAME }}' \
-            --password '${{ secrets.APP_STORE_CONNECT_PASSWORD }}' \
+            --apiKey ${{ env.APPSTORE_KEY_ID }} \
+            --apiIssuer ${{ env.APPSTORE_ISSUER_ID }} \
+            --apiKeyId ${{ env.APPSTORE_KEY_ID }} \
             --asc-provider ${{ env.TEAM_ID }}
 
       - name: Build Summary
         if: success()
-        run: echo "TestFlight upload completed successfully!"
+        run: echo "✅ TestFlight upload completed!"
 
       - name: Upload Archive
         if: success()
