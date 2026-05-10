@@ -79,14 +79,28 @@ jobs:
             -exportPath build \
             -exportOptionsPlist build/ExportOptions.plist 2>&1 | tee build/export.log
 
+      - name: List Build Output
+        run: |
+          ls -la build/
+          find build -name "*.ipa" -o -name "*.xcarchive"
+
       - name: Upload to TestFlight via Fastlane Pilot
         run: |
           cd ios
+          # Find the IPA - it should be at ../build/UstiaGo.ipa
+          IPA_PATH="../build/UstiaGo.ipa"
+          if [ ! -f "$IPA_PATH" ]; then
+            IPA_PATH="../build/UstiaGo.app.ipa"
+            if [ ! -f "$IPA_PATH" ]; then
+              IPA_PATH=$(find ../build -name "*.ipa" | head -1)
+            fi
+          fi
+          echo "Using IPA: $IPA_PATH"
           fastlane pilot upload \
             --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
             --app-platform ios \
             --app-identifier "${{ env.BUNDLE_ID }}" \
-            --ipa "../build/UstiaGo.ipa" 2>&1 | tee ../build/fastlane.log
+            --ipa "$IPA_PATH" 2>&1 | tee ../build/fastlane.log
 
       - name: Upload Build Artifacts
         if: always()
