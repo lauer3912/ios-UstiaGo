@@ -6,6 +6,8 @@ on:
 jobs:
   debug:
     runs-on: macos-14
+    env:
+      APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,14 +34,12 @@ key_content = ENV['APPSTORE_API_KEY_CONTENT'] || ''
 puts "Key content length: #{key_content.length}"
 puts "Key content starts with: #{key_content[0..50]}"
 
-# Try to decode the key (should be PEM format)
 if key_content.include?('BEGIN PRIVATE KEY')
   puts "Key appears to be valid PEM format"
 else
   puts "WARNING: Key does not look like PEM format"
 end
 
-# Try to create a JWT
 begin
   payload = {
     iss: issuer_id,
@@ -51,7 +51,6 @@ begin
   puts "JWT created successfully"
   puts "Token (first 100 chars): #{token[0..100]}..."
   
-  # Try to verify the token by calling the API
   require 'net/http'
   uri = URI('https://api.appstoreconnect.apple.com/v1/apps')
   req = Net::HTTP::Get.new(uri)
@@ -69,6 +68,3 @@ rescue => e
   puts e.backtrace[0..5].join("\n")
 end
 RUBY
-
-env:
-  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
