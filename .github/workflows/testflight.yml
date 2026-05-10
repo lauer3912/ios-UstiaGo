@@ -1,4 +1,4 @@
-name: TestFlight Upload
+name: TestFlight Upload (Fastlane)
 
 on:
   workflow_dispatch:
@@ -20,15 +20,25 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer && xcodebuild -version
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install Fastlane
+        run: |
+          gem install fastlane --no-document
+          fastlane --version
+
       - name: Create directories
         run: |
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          mkdir -p fastlane
           mkdir -p build
 
       - name: Write Certificate
         run: |
-          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > "build/certificate.p12"
+          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > "fastlane/certificate.p12"
 
       - name: Write Provisioning Profile
         run: |
@@ -36,7 +46,7 @@ jobs:
 
       - name: Write API Key
         run: |
-          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > "$HOME/.appstoreconnect/private_keys/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8"
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > "fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8"
 
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
@@ -57,30 +67,41 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
             DEVELOPMENT_TEAM=${{ env.TEAM_ID }}
 
-      - name: Upload to App Store Connect
+      - name: Export IPA
         run: |
-          xcrun altool --upload-app -f build/UstiaGo.xcarchive -t ios \
-            --apiKey ${{ env.APPSTORE_KEY_ID }} \
-            --apiIssuer ${{ env.APPSTORE_ISSUER_ID }} \
-            --apiKeyId ${{ env.APPSTORE_KEY_ID }} \
-            --asc-provider ${{ env.TEAM_ID }} \
-            2>&1 | tee upload.log
-          echo "=== ALTOOL EXIT CODE: $? ===" >> upload.log
-          cat upload.log
+          xcodebuild -exportArchive \
+            -archivePath build/UstiaGo.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist ios/ExportOptions.plist
 
-      - name: Upload Build Log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
+      - name: Upload to TestFlight via Fastlane Pilot
+        working-directory: ./ios
+        run: |
+          # Create ExportOptions.plist if not exists
+          cat > ../build/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>signingCertificate</key>
+            <string>iPhone Distribution</string>
+            <key>teamId</key>
+            <string>${{ env.TEAM_ID }}</string>
+          </dict>
+          </plist>
+EOF
 
-      - name: Upload Upload Log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: upload-log
-          path: upload.log
+          # Run fastlane pilot upload
+          APPSTORE_CONNECT_API_KEY_PATH="../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
+          fastlane pilot upload \
+            --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
+            --app-platform ios \
+            --app-id "${{ env.BUNDLE_ID }}" \
+            --ipa-path "../build/UstiaGo.ipa" \
+            --skip-breaking-change-confirmation \
+            --verbose
 
       - name: Upload Archive
         if: success()
