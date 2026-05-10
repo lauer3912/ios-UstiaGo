@@ -1,47 +1,23 @@
-# Fastfile for UstiaGo TestFlight Upload
-# Uses App Store Connect API Key for authentication
+default_platform(:ios)
 
 platform :ios do
-  desc "Upload to TestFlight"
-  lane :upload_testflight do
-    # Use the App Store Connect API Key
-    api_key_path = "../fastlane/AuthKey_H3973L93M5.p8"
-    
-    # Get the archive path
-    archive_path = "../build/UstiaGo.xcarchive"
-    
-    # Upload to TestFlight using pilot
-    pilot(
-      api_key_path: api_key_path,
-      api_key: {
-        key_id: "H3973L93M5",
-        issuer_id: "b2a00f88-3a8d-40d0-b148-1f1db92e10b7",
-        key: "../fastlane/AuthKey_H3973L93M5.p8"
-      },
-      app_identifier: "com.ggsheng.UstiaGo",
-      ipa: lambda {
-        # Find the ipa in the archive
-        Dir.glob("../build/**/*.ipa")[0] || Dir.glob("../build/**/UstiaGo.ipa")[0]
-      },
-      skip_waiting_for_build_processing: true,
-      distribute_external: false,
-      notify_external_testers: false,
-      distribute_only_tested_builds: true
-    )
-  end
-
   desc "Build and upload to TestFlight"
-  lane :build_and_upload do
-    # Build the archive
-    gym(
-      project: "UstiaGo.xcodeproj",
-      scheme: "UstiaGo",
-      configuration: "Release",
-      export_method: "release",
-      archive_path: "../build/UstiaGo.xcarchive"
-    )
+  lane :upload_testflight do |options|
+    api_key = ENV.fetch('APPSTORE_API_KEY_CONTENT', '')
     
-    # Upload
-    upload_testflight
+    # Create JSON key file
+    File.write('../fastlane/api_key.json', {
+      key_id: 'H3973L93M5',
+      issuer_id: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7',
+      key: api_key
+    }.to_json)
+    
+    pilot(
+      api_key_path: '../fastlane/api_key.json',
+      app_platform: 'ios',
+      app_identifier: 'com.ggsheng.UstiaGo',
+      ipa: '../build/UstiaGo.ipa',
+      skip_breaking_change_confirmation: true
+    )
   end
 end

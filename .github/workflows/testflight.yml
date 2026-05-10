@@ -45,11 +45,6 @@ jobs:
         run: |
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
 
-      - name: Write API Key JSON for Fastlane
-        run: |
-          mkdir -p fastlane
-          python3 -c "import json, os; key = os.environ.get('APPSTORE_API_KEY_CONTENT', ''); data = {'key_id': 'H3973L93M5', 'issuer_id': 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7', 'key': key}; f = open('fastlane/api_key.json', 'w'); json.dump(data, f, ensure_ascii=False); f.close(); print('API key JSON created, length:', len(key))"
-
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
         with:
@@ -85,16 +80,10 @@ jobs:
         run: |
           find build -type f \( -name "*.ipa" -o -name "*.xcarchive" \) -exec ls -la {} \;
 
-      - name: Upload to TestFlight via Fastlane Pilot
+      - name: Upload to TestFlight via Fastlane
         run: |
           cd ios
-          IPA_PATH=$(find ../build -name "*.ipa" | head -1)
-          echo "Using IPA: $IPA_PATH"
-          fastlane pilot upload \
-            --api-key-path "../fastlane/api_key.json" \
-            --app-platform ios \
-            --app-identifier "${{ env.BUNDLE_ID }}" \
-            --ipa "$IPA_PATH" 2>&1 | tee ../build/fastlane.log
+          fastlane upload_testflight 2>&1 | tee ../build/fastlane.log
 
       - name: Upload Build Artifacts
         if: always()
