@@ -4,20 +4,25 @@ platform :ios do
   desc "Build and upload to TestFlight"
   lane :upload_testflight do |options|
     api_key = ENV.fetch('APPSTORE_API_KEY_CONTENT', '')
+    puts "API key length: #{api_key.length}"
+    puts "Working dir: #{Dir.pwd}"
     
     # Create JSON key file
-    File.write('../fastlane/api_key.json', {
+    key_path = '../fastlane/api_key.json'
+    File.write(key_path, {
       key_id: 'H3973L93M5',
       issuer_id: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7',
       key: api_key
     }.to_json)
     
+    puts "API key file written to #{key_path}, exists: #{File.exist?(key_path)}"
+    puts "File content preview: #{File.read(key_path)[0..100]}..."
+    
     pilot(
-      api_key_path: '../fastlane/api_key.json',
+      api_key_path: key_path,
       app_platform: 'ios',
       app_identifier: 'com.ggsheng.UstiaGo',
-      ipa: '../build/UstiaGo.ipa',
-      skip_breaking_change_confirmation: true
+      ipa: '../build/UstiaGo.ipa'
     )
   end
 end
