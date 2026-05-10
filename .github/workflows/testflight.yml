@@ -76,7 +76,7 @@ jobs:
           path: build.log
 
       - name: Upload Upload Log
-        always-run: true
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: upload-log
