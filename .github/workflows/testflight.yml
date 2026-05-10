@@ -53,7 +53,9 @@ jobs:
             -archivePath build/UstiaGo.xcarchive \
             CODE_SIGN_IDENTITY="iPhone Distribution" \
             CODE_SIGNING_REQUIRED=YES \
-            CODE_SIGNING_ALLOWED=YES
+            CODE_SIGNING_ALLOWED=YES \
+            PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
+            2>&1 | tee build.log
 
       - name: Upload to App Store Connect
         run: |
@@ -69,3 +71,10 @@ jobs:
         with:
           name: UstiaGo-xcarchive
           path: build/UstiaGo.xcarchive
+
+      - name: Upload Build Log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
