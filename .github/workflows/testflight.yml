@@ -55,6 +55,7 @@ jobs:
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
+            DEVELOPMENT_TEAM=${{ env.TEAM_ID }} \
             2>&1 | tee build.log
 
       - name: Upload to App Store Connect
@@ -64,13 +65,6 @@ jobs:
             --apiIssuer ${{ env.APPSTORE_ISSUER_ID }} \
             --apiKeyId ${{ env.APPSTORE_KEY_ID }} \
             --asc-provider ${{ env.TEAM_ID }}
-
-      - name: Upload Archive
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: UstiaGo-xcarchive
-          path: build/UstiaGo.xcarchive
 
       - name: Upload Build Log
         if: failure()
