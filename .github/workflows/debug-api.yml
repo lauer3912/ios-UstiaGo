@@ -17,40 +17,41 @@ jobs:
         with:
           ruby-version: '3.2'
 
-      - name: Install dependencies
-        run: |
-          gem install jwt --no-document
+      - name: Install JWT
+        run: gem install jwt --no-document
 
-      - name: Debug API Key
+      - name: Debug secret
+        run: |
+          echo "=== Secret Debug ==="
+          echo "Key content length: ${#APPSTORE_API_KEY_CONTENT}"
+          echo "First 100 chars: ${APPSTORE_API_KEY_CONTENT:0:100}"
+          echo "Last 50 chars: ${APPSTORE_API_KEY_CONTENT: -50}"
+          echo "Contains BEGIN: $(echo $APPSTORE_API_KEY_CONTENT | grep -c 'BEGIN PRIVATE KEY')"
+          echo "Contains END: $(echo $APPSTORE_API_KEY_CONTENT | grep -c 'END PRIVATE KEY')"
+          
+      - name: Test JWT creation
         run: |
           ruby << 'RUBY'
 require 'jwt'
-require 'json'
 
 key_id = 'H3973L93M5'
 issuer_id = 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7'
 key_content = ENV['APPSTORE_API_KEY_CONTENT'] || ''
 
-puts "Key content length: #{key_content.length}"
-puts "Key content starts with: #{key_content[0..50]}"
+puts "Key length: #{key_content.length}"
 
-if key_content.include?('BEGIN PRIVATE KEY')
-  puts "Key appears to be valid PEM format"
-else
-  puts "WARNING: Key does not look like PEM format"
-end
+payload = {
+  iss: issuer_id,
+  exp: Time.now.to_i + 600,
+  aud: 'appstoreconnect-v1'
+}
 
 begin
-  payload = {
-    iss: issuer_id,
-    exp: Time.now.to_i + 600,
-    aud: 'appstoreconnect-v1'
-  }
-  
   token = JWT.encode(payload, key_content, 'RS256')
   puts "JWT created successfully"
-  puts "Token (first 100 chars): #{token[0..100]}..."
+  puts "Token: #{token[0..80]}..."
   
+  # Test API call
   require 'net/http'
   uri = URI('https://api.appstoreconnect.apple.com/v1/apps')
   req = Net::HTTP::Get.new(uri)
@@ -61,10 +62,17 @@ begin
   http.use_ssl = true
   response = http.request(req)
   
-  puts "API Response: #{response.code} - #{response.message}"
-  puts response.body[0..500] if response.body
+  puts "API Response: #{response.code}"
+  if response.body
+    begin
+      json = JSON.parse(response.body)
+      puts "Response: #{json.inspect[0..200]}"
+    rescue
+      puts "Raw response: #{response.body[0..200]}"
+    end
+  end
 rescue => e
-  puts "Error: #{e.class} - #{e.message}"
-  puts e.backtrace[0..5].join("\n")
+  puts "Error: #{e.class}: #{e.message}"
+  puts e.backtrace.first(3).join("\n")
 end
 RUBY
