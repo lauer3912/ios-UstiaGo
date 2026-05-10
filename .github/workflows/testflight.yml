@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 env:
-  TEAM_ID: '9L6N2ZF26B'
-  BUNDLE_ID: 'com.ggsheng.UstiaGo'
-  SCHEME: 'UstiaGo'
-  APPSTORE_KEY_ID: 'H3973L93M5'
-  APPSTORE_ISSUER_ID: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7'
+  TEAM_ID: 9L6N2ZF26B
+  BUNDLE_ID: com.ggsheng.UstiaGo
+  SCHEME: UstiaGo
+  APPSTORE_KEY_ID: H3973L93M5
+  APPSTORE_ISSUER_ID: b2a00f88-3a8d-40d0-b148-1f1db92e10b7
 
 jobs:
   build-and-upload:
@@ -18,7 +18,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer && xcodebuild -version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+          xcodebuild -version
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -67,41 +69,28 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
             DEVELOPMENT_TEAM=${{ env.TEAM_ID }}
 
+      - name: Create ExportOptions
+        run: |
+          mkdir -p build
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>%s</string>\n</dict>\n</plist>\n' "$TEAM_ID" > build/ExportOptions.plist
+          cat build/ExportOptions.plist
+
       - name: Export IPA
         run: |
           xcodebuild -exportArchive \
             -archivePath build/UstiaGo.xcarchive \
             -exportPath build \
-            -exportOptionsPlist ios/ExportOptions.plist
+            -exportOptionsPlist build/ExportOptions.plist
 
       - name: Upload to TestFlight via Fastlane Pilot
-        working-directory: ./ios
         run: |
-          # Create ExportOptions.plist if not exists
-          cat > ../build/ExportOptions.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>signingCertificate</key>
-            <string>iPhone Distribution</string>
-            <key>teamId</key>
-            <string>${{ env.TEAM_ID }}</string>
-          </dict>
-          </plist>
-EOF
-
-          # Run fastlane pilot upload
-          APPSTORE_CONNECT_API_KEY_PATH="../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
+          cd ios
           fastlane pilot upload \
             --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
             --app-platform ios \
             --app-id "${{ env.BUNDLE_ID }}" \
             --ipa-path "../build/UstiaGo.ipa" \
-            --skip-breaking-change-confirmation \
-            --verbose
+            --skip-breaking-change-confirmation
 
       - name: Upload Archive
         if: success()
