@@ -70,25 +70,7 @@ jobs:
       - name: Create ExportOptions
         run: |
           mkdir -p build
-          cat > build/ExportOptions.plist << 'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key>
-  <string>app-store</string>
-  <key>signingCertificate</key>
-  <string>iPhone Distribution</string>
-  <key>teamId</key>
-  <string>9L6N2ZF26B</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>com.ggsheng.UstiaGo</key>
-    <string>UstiaGo App Store</string>
-  </dict>
-</dict>
-</plist>
-PLIST
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
 
       - name: Export IPA
         run: |
