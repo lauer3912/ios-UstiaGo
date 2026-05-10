@@ -86,7 +86,7 @@ jobs:
             --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
             --app-platform ios \
             --app-identifier "${{ env.BUNDLE_ID }}" \
-            --ipa-path "../build/UstiaGo.ipa" \
+            --ipa "../build/UstiaGo.ipa" \
             --skip-breaking-change-confirmation 2>&1 | tee ../build/fastlane.log
 
       - name: Upload Build Artifacts
