@@ -5,26 +5,18 @@ platform :ios do
   lane :upload_testflight do |options|
     api_key = ENV.fetch('APPSTORE_API_KEY_CONTENT', '')
     
-    # Paths: we're in ios/fastlane, the workspace root is two levels up
-    # IPA is at /build/UstiaGo.ipa (relative to workspace root)
-    # API key should be at fastlane/api_key.json relative to ios/
-    key_path = File.expand_path('../fastlane/api_key.json', __dir__)
-    ipa_path = File.expand_path('../../build/UstiaGo.ipa', __dir__)
+    puts "API key length: #{api_key.length}"
     
-    File.write(key_path, {
-      key_id: 'H3973L93M5',
-      issuer_id: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7',
-      key: api_key
-    }.to_json)
-    
-    puts "API key file at: #{key_path}, exists: #{File.exist?(key_path)}"
-    puts "IPA file at: #{ipa_path}, exists: #{File.exist?(ipa_path)}"
-    
+    # Pass api_key directly as a hash
     pilot(
-      api_key_path: key_path,
+      api_key: {
+        key_id: 'H3973L93M5',
+        issuer_id: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7',
+        key: api_key
+      },
       app_platform: 'ios',
       app_identifier: 'com.ggsheng.UstiaGo',
-      ipa: ipa_path
+      ipa: File.expand_path('../../build/UstiaGo.ipa', __dir__)
     )
   end
 end
