@@ -36,7 +36,7 @@ jobs:
 
       - name: Write API Key
         run: |
-          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ env.APPSTORE_KEY_ID }}.p8"
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > "$HOME/.appstoreconnect/private_keys/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8"
 
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
