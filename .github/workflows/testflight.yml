@@ -65,6 +65,7 @@ jobs:
             --apiKeyId ${{ env.APPSTORE_KEY_ID }} \
             --asc-provider ${{ env.TEAM_ID }} \
             2>&1 | tee upload.log
+          echo "=== ALTOOL EXIT CODE: $? ===" >> upload.log
           cat upload.log
 
       - name: Upload Build Log
@@ -75,7 +76,7 @@ jobs:
           path: build.log
 
       - name: Upload Upload Log
-        if: failure()
+        always-run: true
         uses: actions/upload-artifact@v4
         with:
           name: upload-log
