@@ -1,0 +1,74 @@
+name: Debug API Key
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install dependencies
+        run: |
+          gem install jwt --no-document
+
+      - name: Debug API Key
+        run: |
+          ruby << 'RUBY'
+require 'jwt'
+require 'json'
+
+key_id = 'H3973L93M5'
+issuer_id = 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7'
+key_content = ENV['APPSTORE_API_KEY_CONTENT'] || ''
+
+puts "Key content length: #{key_content.length}"
+puts "Key content starts with: #{key_content[0..50]}"
+
+# Try to decode the key (should be PEM format)
+if key_content.include?('BEGIN PRIVATE KEY')
+  puts "Key appears to be valid PEM format"
+else
+  puts "WARNING: Key does not look like PEM format"
+end
+
+# Try to create a JWT
+begin
+  payload = {
+    iss: issuer_id,
+    exp: Time.now.to_i + 600,
+    aud: 'appstoreconnect-v1'
+  }
+  
+  token = JWT.encode(payload, key_content, 'RS256')
+  puts "JWT created successfully"
+  puts "Token (first 100 chars): #{token[0..100]}..."
+  
+  # Try to verify the token by calling the API
+  require 'net/http'
+  uri = URI('https://api.appstoreconnect.apple.com/v1/apps')
+  req = Net::HTTP::Get.new(uri)
+  req['Authorization'] = "Bearer #{token}"
+  req['Content-Type'] = 'application/json'
+  
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  response = http.request(req)
+  
+  puts "API Response: #{response.code} - #{response.message}"
+  puts response.body[0..500] if response.body
+rescue => e
+  puts "Error: #{e.class} - #{e.message}"
+  puts e.backtrace[0..5].join("\n")
+end
+RUBY
+
+env:
+  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
