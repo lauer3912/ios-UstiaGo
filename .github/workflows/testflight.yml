@@ -47,11 +47,7 @@ jobs:
       - name: Write API Key JSON for Fastlane
         run: |
           mkdir -p fastlane
-          PEM_CONTENT="${{ secrets.APPSTORE_API_PRIVATE_KEY }}"
-          PEM_ESCAPED=$(echo "$PEM_CONTENT" | python3 -c "import sys; print(sys.stdin.read().replace('\n', '\\n'))")
-          printf '%s' "{\"key_id\":\"${{ env.APPSTORE_KEY_ID }}\",\"issuer_id\":\"${{ env.APPSTORE_ISSUER_ID }}\",\"key\":\"$PEM_ESCAPED\"}" > fastlane/api_key.json
-          echo "API key JSON created"
-          cat fastlane/api_key.json | head -c 200
+          printf '{"key_id":"H3973L93M5","issuer_id":"b2a00f88-3a8d-40d0-b148-1f1db92e10b7","key":"%s"}' "$APPSTORE_API_KEY_CONTENT" > fastlane/api_key.json
 
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
@@ -106,3 +102,6 @@ jobs:
           name: build-artifacts
           path: build/
           retention-days: 1
+
+env:
+  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
