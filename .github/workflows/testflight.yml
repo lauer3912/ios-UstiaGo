@@ -85,7 +85,7 @@ jobs:
           fastlane pilot upload \
             --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
             --app-platform ios \
-            --app-id "${{ env.BUNDLE_ID }}" \
+            --app-identifier "${{ env.BUNDLE_ID }}" \
             --ipa-path "../build/UstiaGo.ipa" \
             --skip-breaking-change-confirmation 2>&1 | tee ../build/fastlane.log
 
