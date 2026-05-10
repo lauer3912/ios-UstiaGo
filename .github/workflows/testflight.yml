@@ -70,7 +70,25 @@ jobs:
       - name: Create ExportOptions
         run: |
           mkdir -p build
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>%s</string>\n</dict>\n</plist>\n' "9L6N2ZF26B" > build/ExportOptions.plist
+          cat > build/ExportOptions.plist << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>app-store</string>
+  <key>signingCertificate</key>
+  <string>iPhone Distribution</string>
+  <key>teamId</key>
+  <string>9L6N2ZF26B</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.ggsheng.UstiaGo</key>
+    <string>UstiaGo App Store</string>
+  </dict>
+</dict>
+</plist>
+PLIST
 
       - name: Export IPA
         run: |
@@ -81,20 +99,12 @@ jobs:
 
       - name: List Build Output
         run: |
-          ls -la build/
-          find build -name "*.ipa" -o -name "*.xcarchive"
+          find build -type f \( -name "*.ipa" -o -name "*.xcarchive" \) -exec ls -la {} \;
 
       - name: Upload to TestFlight via Fastlane Pilot
         run: |
           cd ios
-          # Find the IPA - it should be at ../build/UstiaGo.ipa
-          IPA_PATH="../build/UstiaGo.ipa"
-          if [ ! -f "$IPA_PATH" ]; then
-            IPA_PATH="../build/UstiaGo.app.ipa"
-            if [ ! -f "$IPA_PATH" ]; then
-              IPA_PATH=$(find ../build -name "*.ipa" | head -1)
-            fi
-          fi
+          IPA_PATH=$(find ../build -name "*.ipa" | head -1)
           echo "Using IPA: $IPA_PATH"
           fastlane pilot upload \
             --api-key-path "../fastlane/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8" \
