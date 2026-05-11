@@ -48,41 +48,16 @@ jobs:
           restore-keys: |
             deriveddata-${{ runner.os }}-
 
-      # ── Build ──────────────────────────────────────────────
-      - name: Build
+      # ── Build & Test ─────────────────────────────────────────
+      - name: Build & Test
         run: |
-          xcodebuild build-for-testing \
+          xcodebuild test \
             -project "${{ env.PROJECT_PATH }}" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
-            CODE_SIGNING_ALLOWED=NO
-
-      # ── Unit Tests ─────────────────────────────────────────
-      - name: Run Unit Tests
-        run: |
-          xcodebuild test-without-building \
-            -project "${{ env.PROJECT_PATH }}" \
-            -scheme "${{ env.SCHEME }}" \
-            -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
-            -only-testing:UstiaGoTests \
-            -resultBundlePath build/UnitTests.xcresult \
-            CODE_SIGNING_ALLOWED=NO
-
-      # ── UI Tests ───────────────────────────────────────────
-      - name: Run UI Tests
-        run: |
-          xcodebuild test-without-building \
-            -project "${{ env.PROJECT_PATH }}" \
-            -scheme "${{ env.SCHEME }}" \
-            -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
-            -only-testing:UstiaGoUITests \
-            -resultBundlePath build/UITests.xcresult \
+            -resultBundlePath build/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO
 
       # ── Attach Test Results ────────────────────────────────
@@ -91,5 +66,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: build/*.xcresult
+          path: build/TestResults.xcresult
           retention-days: 7
