@@ -72,16 +72,29 @@ jobs:
 
       - name: Verify API Key with altool
         run: |
+          ruby -e "
+            require 'jwt'
+            require 'openssl'
+            key_content = ENV['APPSTORE_API_KEY_CONTENT']
+            puts 'Key length: ' + key_content.length.to_s
+            puts 'Key has BEGIN: ' + key_content.include?('BEGIN PRIVATE KEY').to_s
+            
+            # Create JWT with ES256 (EC key)
+            payload = { iss: ENV['APPSTORE_ISSUER_ID'], exp: Time.now.to_i + 600, aud: 'appstoreconnect-v1' }
+            token = JWT.encode(payload, key_content, 'ES256')
+            puts 'JWT created OK: ' + token[0..50] + '...'
+            File.write('/tmp/jwt.txt', token)
+          "
+          
           KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
           echo "Key file exists: $(test -f "$KEY_FILE" && echo YES || echo NO)"
           echo "Key file size: $(wc -c < "$KEY_FILE") bytes"
-          head -1 "$KEY_FILE"
-          tail -1 "$KEY_FILE"
+          
+          # First try: direct API call with the JWT
           xcrun altool --list-apps \
             --provider-public-id $TEAM_ID \
-            --apiKeyId "$APPSTORE_KEY_ID" \
-            --apiIssuerId "$APPSTORE_ISSUER_ID" \
-            --keyFile "$KEY_FILE" \
+            --apiKey "$APPSTORE_KEY_ID" \
+            --apiIssuer "$APPSTORE_ISSUER_ID" \
             --type MacOS \
             2>&1
 
