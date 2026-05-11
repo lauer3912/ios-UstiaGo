@@ -26,11 +26,17 @@ jobs:
       - name: Create directories
         run: |
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
           mkdir -p build
 
       - name: Write Provisioning Profile
         run: |
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
+
+      - name: Write API Key
+        run: |
+          echo "$APPSTORE_API_KEY_CONTENT" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
+          chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
 
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
@@ -54,7 +60,7 @@ jobs:
       - name: Create ExportOptions
         run: |
           mkdir -p build
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
 
       - name: Export IPA
         run: |
@@ -65,12 +71,10 @@ jobs:
 
       - name: Verify API Key with altool
         run: |
-          echo "$APPSTORE_API_KEY_CONTENT" > /tmp/AuthKey_H3973L93M5.p8
           xcrun altool --list-apps \
             --provider-public-id $TEAM_ID \
             --apiKey "$APPSTORE_KEY_ID" \
             --apiIssuer "$APPSTORE_ISSUER_ID" \
-            --type MacOS \
             2>&1
 
       - name: List Build Output
