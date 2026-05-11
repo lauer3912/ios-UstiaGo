@@ -1,0 +1,22 @@
+name: Verify API Auth
+
+on:
+  workflow_dispatch:
+
+env:
+  APPSTORE_KEY_ID: H3973L93M5
+  APPSTORE_ISSUER_ID: b2a00f88-3a8d-40d0-b148-1f1db92e10b7
+  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+jobs:
+  verify:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        run: pip3 install pyjwt cryptography requests --quiet
+
+      - name: Run API test
+        run: python3 scripts/test_api.py
