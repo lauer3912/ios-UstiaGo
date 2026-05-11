@@ -75,6 +75,7 @@ jobs:
             --provider-public-id $TEAM_ID \
             --apiKey "$APPSTORE_KEY_ID" \
             --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --type MacOS \
             2>&1
 
       - name: List Build Output
