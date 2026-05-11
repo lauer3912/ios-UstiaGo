@@ -1,3 +1,7 @@
+# ═══════════════════════════════════════════════════════════════
+# Build & Test — push/PR 到 main 时编译并运行单元测试和 UI 测试
+# ═══════════════════════════════════════════════════════════════
+
 name: Build & Test
 
 on:
@@ -11,6 +15,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SCHEME: UstiaGo
+  PROJECT_PATH: ios/UstiaGo.xcodeproj
+  XCODE_APP: /Applications/Xcode_16.2.app
+
 jobs:
   build-and-test:
     runs-on: macos-14
@@ -19,35 +28,68 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+      # ── Xcode ──────────────────────────────────────────────
+      - name: Select Xcode & Show Versions
+        run: |
+          if [ -d "${{ env.XCODE_APP }}" ]; then
+            sudo xcode-select -s "${{ env.XCODE_APP }}/Contents/Developer"
+          else
+            echo "Warning: ${{ env.XCODE_APP }} not found; using system default"
+          fi
+          xcodebuild -version
+          swift --version
 
+      # ── Cache DerivedData ──────────────────────────────────
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/**') }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-
+
+      # ── Build ──────────────────────────────────────────────
       - name: Build
         run: |
-          cd ios
-          xcodebuild build \
-            -project UstiaGo.xcodeproj \
-            -scheme UstiaGo \
+          xcodebuild build-for-testing \
+            -project "${{ env.PROJECT_PATH }}" \
+            -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
             CODE_SIGNING_ALLOWED=NO
 
+      # ── Unit Tests ─────────────────────────────────────────
       - name: Run Unit Tests
         run: |
-          cd ios
-          xcodebuild test \
-            -project UstiaGo.xcodeproj \
-            -scheme UstiaGo \
+          xcodebuild test-without-building \
+            -project "${{ env.PROJECT_PATH }}" \
+            -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            -only-testing:UstiaGoTests \
+            -resultBundlePath build/UnitTests.xcresult \
             CODE_SIGNING_ALLOWED=NO
 
+      # ── UI Tests ───────────────────────────────────────────
       - name: Run UI Tests
         run: |
-          cd ios
-          xcodebuild test \
-            -project UstiaGo.xcodeproj \
-            -scheme UstiaGo \
+          xcodebuild test-without-building \
+            -project "${{ env.PROJECT_PATH }}" \
+            -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            -only-testing:UstiaGoUITests \
+            -resultBundlePath build/UITests.xcresult \
             CODE_SIGNING_ALLOWED=NO
+
+      # ── Attach Test Results ────────────────────────────────
+      - name: Upload Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/*.xcresult
+          retention-days: 7

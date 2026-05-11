@@ -1,3 +1,7 @@
+# ═══════════════════════════════════════════════════════════════
+# TestFlight Upload — 使用 xcrun altool 上传 IPA 到 TestFlight
+# ═══════════════════════════════════════════════════════════════
+
 name: TestFlight Upload (altool)
 
 on:
@@ -10,6 +14,7 @@ env:
   APPSTORE_KEY_ID: H3973L93M5
   APPSTORE_ISSUER_ID: b2a00f88-3a8d-40d0-b148-1f1db92e10b7
   APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+  XCODE_APP: /Applications/Xcode_16.2.app
 
 jobs:
   build-and-upload:
@@ -20,48 +25,72 @@ jobs:
 
       - name: Select Xcode
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+          if [ -d "${{ env.XCODE_APP }}" ]; then
+            sudo xcode-select -s "${{ env.XCODE_APP }}/Contents/Developer"
+          fi
           xcodebuild -version
 
-      - name: Create directories
+      - name: Create Directories
         run: |
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$HOME/.appstoreconnect/private_keys"
           mkdir -p build
 
+      # ── Signing Material ───────────────────────────────────
       - name: Write Provisioning Profile
         run: |
-          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 -d \
+            > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
 
       - name: Write API Key
         run: |
-          printf '%s' "$APPSTORE_API_KEY_CONTENT" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
+          cat > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8" <<'KEYEOF'
+${{ env.APPSTORE_API_KEY_CONTENT }}
+KEYEOF
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
-          echo "Key written, size: $(wc -c < "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8") bytes"
+          echo "Key written: $(wc -c < "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8") bytes"
 
-      - name: Import Certificate
-        uses: apple-actions/import-codesign-certs@v1
+      - name: Import Code-Signing Certificate
+        uses: apple-actions/import-codesign-certs@v3
         with:
           p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
           p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
 
-      - name: Build
+      # ── Build ──────────────────────────────────────────────
+      - name: Build Archive
         run: |
           xcodebuild archive \
             -project ios/UstiaGo.xcodeproj \
-            -scheme $SCHEME \
+            -scheme "${{ env.SCHEME }}" \
             -configuration Release \
             -archivePath build/UstiaGo.xcarchive \
             CODE_SIGN_IDENTITY="iPhone Distribution" \
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
-            DEVELOPMENT_TEAM=${{ env.TEAM_ID }} 2>&1 | tee build/build.log
+            DEVELOPMENT_TEAM="${{ env.TEAM_ID }}" 2>&1 | tee build/build.log
 
-      - name: Create ExportOptions
+      - name: Create ExportOptions.plist
         run: |
-          mkdir -p build
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
+          cat > build/ExportOptions.plist <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>app-store</string>
+  <key>signingCertificate</key>
+  <string>iPhone Distribution</string>
+  <key>teamID</key>
+  <string>9L6N2ZF26B</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.ggsheng.UstiaGo</key>
+    <string>UstiaGo App Store</string>
+  </dict>
+</dict>
+</plist>
+PLIST
 
       - name: Export IPA
         run: |
@@ -70,40 +99,43 @@ jobs:
             -exportPath build \
             -exportOptionsPlist build/ExportOptions.plist 2>&1 | tee build/export.log
 
-      - name: Verify API Key with altool
+      # ── Verify key & list apps ─────────────────────────────
+      - name: Verify API Key (altool)
         run: |
           KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
-          echo "Key file exists: $(test -f "$KEY_FILE" && echo YES || echo NO)"
-          echo "Key file size: $(wc -c < "$KEY_FILE") bytes"
-          echo "First 60 chars:"
-          head -c 60 "$KEY_FILE"
+          echo "Key file:"
+          echo "  Exists:  $(test -f "$KEY_FILE" && echo YES || echo NO)"
+          echo "  Size:    $(wc -c < "$KEY_FILE") bytes"
+          echo "  Begin:   $(head -c 60 "$KEY_FILE")"
+          echo "  End:     $(tail -c 60 "$KEY_FILE")"
+
           echo ""
-          echo "Last 60 chars:"
-          tail -c 60 "$KEY_FILE"
-          echo ""
-          echo "od output:"
-          od -c "$KEY_FILE" | head -4
+          echo "=== altool: list apps ==="
           xcrun altool --list-apps \
-            --provider-public-id $TEAM_ID \
             --apiKey "$APPSTORE_KEY_ID" \
             --apiIssuer "$APPSTORE_ISSUER_ID" \
-            --type MacOS \
+            --type ios \
             2>&1
 
       - name: List Build Output
-        run: |
-          ls -la build/
+        run: ls -la build/
 
-      - name: Upload to TestFlight via altool
+      # ── Upload ─────────────────────────────────────────────
+      - name: Upload to TestFlight
         run: |
+          echo "=== Uploading IPA to App Store Connect ==="
+          echo "File: build/UstiaGo.ipa"
+          ls -lh build/UstiaGo.ipa
+
           xcrun altool --upload-app \
             --file build/UstiaGo.ipa \
             --apiKey "$APPSTORE_KEY_ID" \
             --apiIssuer "$APPSTORE_ISSUER_ID" \
-            --type MacOS \
-            --description "GitHub Actions Build" \
+            --type ios \
+            --description "GitHub Actions Build $(date -u '+%Y-%m-%d %H:%M UTC')" \
             2>&1 | tee build/upload.log
 
+      # ── Artifacts ──────────────────────────────────────────
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
