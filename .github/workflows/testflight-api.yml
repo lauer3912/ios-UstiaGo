@@ -73,7 +73,7 @@ jobs:
 
       - name: Test API Auth & Upload
         run: |
-          python3 << 'PYEOF'
+          python3 - <<'PYEOF'
 import jwt
 import requests
 import time
@@ -114,11 +114,11 @@ if resp.status_code == 200:
     if apps:
         app_id = apps[0]['id']
         print(f"Found app_id: {app_id}")
-        
+
         # Create upload session
         ipa_path = 'build/UstiaGo.ipa'
         file_size = os.path.getsize(ipa_path)
-        
+
         upload_resp = requests.post(
             'https://api.appstoreconnect.apple.com/v1/uploads',
             headers=headers,
