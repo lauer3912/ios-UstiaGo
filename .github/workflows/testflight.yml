@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TEAM_ID: 9L6N2ZF26B
   BUNDLE_ID: com.ggsheng.UstiaGo
   SCHEME: UstiaGo
