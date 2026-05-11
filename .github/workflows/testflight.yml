@@ -87,6 +87,7 @@ jobs:
             --file build/UstiaGo.ipa \
             --apiKey "$APPSTORE_KEY_ID" \
             --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --type MacOS \
             --description "GitHub Actions Build" \
             2>&1 | tee build/upload.log
 
