@@ -71,9 +71,9 @@ jobs:
         run: |
           pip3 install pyjwt cryptography requests --quiet
 
-      - name: Test API Auth & Upload
+      - name: Write Upload Script
         run: |
-          python3 << 'PYEOF'
+          cat > build/upload.py << 'SCRIPT'
 import jwt
 import requests
 import time
@@ -87,7 +87,6 @@ bundle_id = 'com.ggsheng.UstiaGo'
 print(f"Key length: {len(key_content)}")
 print(f"Key first 60 chars: {key_content[:60]}")
 
-# Create JWT with ES256
 payload = {
     'iss': issuer_id,
     'exp': int(time.time()) + 600,
@@ -101,7 +100,6 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-# First test: list apps
 resp = requests.get(
     f'https://api.appstoreconnect.apple.com/v1/apps?filter[bundleId]={bundle_id}',
     headers=headers,
@@ -114,11 +112,8 @@ if resp.status_code == 200:
     if apps:
         app_id = apps[0]['id']
         print(f"Found app_id: {app_id}")
-        
-        # Create upload session
         ipa_path = 'build/UstiaGo.ipa'
         file_size = os.path.getsize(ipa_path)
-        
         upload_resp = requests.post(
             'https://api.appstoreconnect.apple.com/v1/uploads',
             headers=headers,
@@ -137,7 +132,11 @@ if resp.status_code == 200:
 else:
     print(f"Auth failed: {resp.status_code}")
     print(f"Response: {resp.text[:500]}")
-PYEOF
+SCRIPT
+
+      - name: Run Upload Script
+        run: |
+          python3 build/upload.py
 
       - name: Upload Build Artifacts
         if: always()
