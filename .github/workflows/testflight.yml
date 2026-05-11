@@ -62,8 +62,25 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
             DEVELOPMENT_TEAM="${{ env.TEAM_ID }}" 2>&1 | tee build/build.log
 
-      - name: Copy ExportOptions.plist
-        run: cp ios/ExportOptions.plist build/ExportOptions.plist
+      - name: Create ExportOptions.plist
+        run: |
+          printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' > build/ExportOptions.plist
+          printf '%s\n' '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> build/ExportOptions.plist
+          printf '%s\n' '<plist version="1.0">' >> build/ExportOptions.plist
+          printf '%s\n' '<dict>' >> build/ExportOptions.plist
+          printf '%s\n' '  <key>method</key>' >> build/ExportOptions.plist
+          printf '%s\n' '  <string>app-store</string>' >> build/ExportOptions.plist
+          printf '%s\n' '  <key>signingCertificate</key>' >> build/ExportOptions.plist
+          printf '%s\n' '  <string>iPhone Distribution</string>' >> build/ExportOptions.plist
+          printf '%s\n' '  <key>teamID</key>' >> build/ExportOptions.plist
+          printf '%s\n' '  <string>9L6N2ZF26B</string>' >> build/ExportOptions.plist
+          printf '%s\n' '  <key>provisioningProfiles</key>' >> build/ExportOptions.plist
+          printf '%s\n' '  <dict>' >> build/ExportOptions.plist
+          printf '%s\n' '    <key>com.ggsheng.UstiaGo</key>' >> build/ExportOptions.plist
+          printf '%s\n' '    <string>UstiaGo App Store</string>' >> build/ExportOptions.plist
+          printf '%s\n' '  </dict>' >> build/ExportOptions.plist
+          printf '%s\n' '</dict>' >> build/ExportOptions.plist
+          printf '%s\n' '</plist>' >> build/ExportOptions.plist
 
       - name: Export IPA
         run: |
