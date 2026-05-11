@@ -1,4 +1,4 @@
-name: TestFlight Upload (Fastlane)
+name: TestFlight Upload (altool)
 
 on:
   workflow_dispatch:
@@ -23,23 +23,10 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
           xcodebuild -version
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-
-      - name: Install Fastlane
-        run: gem install fastlane --no-document
-
       - name: Create directories
         run: |
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p fastlane
           mkdir -p build
-
-      - name: Write Certificate
-        run: |
-          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > "fastlane/certificate.p12"
 
       - name: Write Provisioning Profile
         run: |
@@ -67,7 +54,7 @@ jobs:
       - name: Create ExportOptions
         run: |
           mkdir -p build
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n  <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>method</key>\n  <string>app-store</string>\n <key>signingCertificate</key>\n  <string>iPhone Distribution</string>\n  <key>teamId</key>\n  <string>9L6N2ZF26B</string>\n  <key>provisioningProfiles</key>\n  <dict>\n    <key>com.ggsheng.UstiaGo</key>\n    <string>UstiaGo App Store</string>\n  </dict>\n</dict>\n</plist>\n' > build/ExportOptions.plist
 
       - name: Export IPA
         run: |
@@ -76,18 +63,28 @@ jobs:
             -exportPath build \
             -exportOptionsPlist build/ExportOptions.plist 2>&1 | tee build/export.log
 
-      - name: Verify API Key
+      - name: Verify API Key with altool
         run: |
-          ruby -e "require 'jwt'; kc = ENV['APPSTORE_API_KEY_CONTENT'] || ''; puts 'Key length: ' + kc.length.to_s; payload = {iss: ENV['APPSTORE_ISSUER_ID'], exp: Time.now.to_i + 600, aud: 'appstoreconnect-v1'}; begin; token = JWT.encode(payload, kc, 'RS256'); puts 'JWT OK'; File.write('/tmp/jwt.txt', token); rescue => e; puts 'JWT Error: ' + e.message; end"
+          echo "$APPSTORE_API_KEY_CONTENT" > /tmp/AuthKey_H3973L93M5.p8
+          xcrun altool --list-apps \
+            --provider-public-id $TEAM_ID \
+            --apiKey "$APPSTORE_KEY_ID" \
+            --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --type MacOS \
+            2>&1
 
       - name: List Build Output
         run: |
           ls -la build/
 
-      - name: Upload to TestFlight via Fastlane
+      - name: Upload to TestFlight via altool
         run: |
-          cd ios
-          fastlane upload_testflight 2>&1 | tee ../build/fastlane.log
+          xcrun altool --upload-app \
+            --file build/UstiaGo.ipa \
+            --apiKey "$APPSTORE_KEY_ID" \
+            --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --description "GitHub Actions Build" \
+            2>&1 | tee build/upload.log
 
       - name: Upload Build Artifacts
         if: always()
@@ -95,4 +92,4 @@ jobs:
         with:
           name: build-artifacts
           path: build/
-          retention-days: 1
+          retention-days: 7
