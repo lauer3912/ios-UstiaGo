@@ -35,8 +35,9 @@ jobs:
 
       - name: Write API Key
         run: |
-          echo "$APPSTORE_API_KEY_CONTENT" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
+          printf '%s' "$APPSTORE_API_KEY_CONTENT" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
+          echo "Key written, size: $(wc -c < "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8") bytes"
 
       - name: Import Certificate
         uses: apple-actions/import-codesign-certs@v1
@@ -71,10 +72,16 @@ jobs:
 
       - name: Verify API Key with altool
         run: |
+          KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
+          echo "Key file exists: $(test -f "$KEY_FILE" && echo YES || echo NO)"
+          echo "Key file size: $(wc -c < "$KEY_FILE") bytes"
+          head -1 "$KEY_FILE"
+          tail -1 "$KEY_FILE"
           xcrun altool --list-apps \
             --provider-public-id $TEAM_ID \
-            --apiKey "$APPSTORE_KEY_ID" \
-            --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --apiKeyId "$APPSTORE_KEY_ID" \
+            --apiIssuerId "$APPSTORE_ISSUER_ID" \
+            --keyFile "$KEY_FILE" \
             --type MacOS \
             2>&1
 
@@ -84,10 +91,12 @@ jobs:
 
       - name: Upload to TestFlight via altool
         run: |
+          KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
           xcrun altool --upload-app \
             --file build/UstiaGo.ipa \
-            --apiKey "$APPSTORE_KEY_ID" \
-            --apiIssuer "$APPSTORE_ISSUER_ID" \
+            --apiKeyId "$APPSTORE_KEY_ID" \
+            --apiIssuerId "$APPSTORE_ISSUER_ID" \
+            --keyFile "$KEY_FILE" \
             --type MacOS \
             --description "GitHub Actions Build" \
             2>&1 | tee build/upload.log
