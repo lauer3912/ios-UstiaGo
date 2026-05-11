@@ -44,9 +44,7 @@ jobs:
 
       - name: Write API Key
         run: |
-          cat > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8" <<'KEYEOF'
-${{ env.APPSTORE_API_KEY_CONTENT }}
-KEYEOF
+          printf '%s\n' "$APPSTORE_API_KEY_CONTENT" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8"
           echo "Key written: $(wc -c < "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8") bytes"
 
@@ -70,27 +68,8 @@ KEYEOF
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
             DEVELOPMENT_TEAM="${{ env.TEAM_ID }}" 2>&1 | tee build/build.log
 
-      - name: Create ExportOptions.plist
-        run: |
-          cat > build/ExportOptions.plist <<'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key>
-  <string>app-store</string>
-  <key>signingCertificate</key>
-  <string>iPhone Distribution</string>
-  <key>teamID</key>
-  <string>9L6N2ZF26B</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>com.ggsheng.UstiaGo</key>
-    <string>UstiaGo App Store</string>
-  </dict>
-</dict>
-</plist>
-PLIST
+      - name: Copy ExportOptions.plist
+        run: cp ios/ExportOptions.plist build/ExportOptions.plist
 
       - name: Export IPA
         run: |
