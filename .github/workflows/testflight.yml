@@ -56,6 +56,7 @@ jobs:
 
       - name: Write Provisioning Profile
         run: |
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 -d \
             > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
           echo "Provisioning profile written"
