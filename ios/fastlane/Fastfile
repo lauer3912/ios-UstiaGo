@@ -14,7 +14,7 @@ platform :ios do
     pilot(
       api_key: api_key,
       app_identifier: "com.ggsheng.UstiaGo",
-      ipa: ".build/UstiaGo.ipa",
+      ipa: "../../.build/UstiaGo.ipa",
       skip_waiting_for_build_processing: false,
       distribute_external: false,
       testers: ["support@techidaily.com"],
