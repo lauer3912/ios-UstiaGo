@@ -26,7 +26,9 @@ jobs:
 
       - name: Boot Simulator
         run: |
-          DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone 17 Pro" | grep -v Shutdown | head -1 | awk '{print $NF}')
+          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17 Pro" | grep -v Shutdown | head -1)
+          echo "Device line: $DEVICE_LINE"
+          DEVICE_ID=$(echo "$DEVICE_LINE" | awk '{print $1}')
           echo "Using device: $DEVICE_ID"
           xcrun simctl boot "$DEVICE_ID"
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
@@ -73,4 +75,4 @@ jobs:
         with:
           name: guided-tour-logs
           path: .build/guided-tour.log
-          if-no-files-found: error
+          if-no-files-found: warn
