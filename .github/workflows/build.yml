@@ -38,7 +38,7 @@ jobs:
           configuration: Debug
           build-number: ${{ github.run_number }}
           action: test
-          destination: "platform=iOS Simulator,name=iPhone 16 Pro"
+          destination: "platform=iOS Simulator,name=iPhone 17 Pro"
           result-bundle-path: .build/Artifacts/UstiaGo.xcresult
           zip-result-bundle: true
 
