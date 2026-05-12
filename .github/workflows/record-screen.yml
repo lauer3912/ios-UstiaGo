@@ -26,12 +26,20 @@ jobs:
 
       - name: Boot Simulator
         run: |
-          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17 Pro" | grep -v Shutdown | head -1)
-          echo "Device line: $DEVICE_LINE"
+          echo "=== Available devices ==="
+          xcrun simctl list devices available
+          echo "=== Looking for iPhone 17 Pro ==="
+          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17" | head -1)
+          echo "Device line: '$DEVICE_LINE'"
           DEVICE_ID=$(echo "$DEVICE_LINE" | awk '{print $1}')
-          echo "Using device: $DEVICE_ID"
-          xcrun simctl boot "$DEVICE_ID"
-          echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+          echo "Using device ID: '$DEVICE_ID'"
+          if [ -n "$DEVICE_ID" ]; then
+            xcrun simctl boot "$DEVICE_ID"
+            echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+          else
+            echo "ERROR: No device found"
+            exit 1
+          fi
 
       - name: Start Recording
         run: |
