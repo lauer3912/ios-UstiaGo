@@ -26,19 +26,24 @@ jobs:
 
       - name: Boot Simulator
         run: |
-          echo "=== Available devices ==="
-          xcrun simctl list devices available | grep -E "iPhone.*17" | head -5
-          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17" | grep -v Shutdown | head -1)
-          echo "Device line: '$DEVICE_LINE'"
-          DEVICE_ID=$(echo "$DEVICE_LINE" | sed 's/.*(\([^)]*\)).*/\1/')
-          echo "Using device ID: '$DEVICE_ID'"
-          if [ -n "$DEVICE_ID" ]; then
-            xcrun simctl boot "$DEVICE_ID"
-            echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
-          else
-            echo "ERROR: No device found"
+          echo "=== Checking booted devices ==="
+          xcrun simctl list devices booted
+          echo ""
+          echo "=== Looking for iPhone 17 Pro ==="
+          # First try to boot an iPhone 17 Pro
+          DEVICE_ID=""
+          for UUID in $(xcrun simctl list devices available | grep "iPhone 17" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1); do
+            echo "Booting device: $UUID"
+            xcrun simctl boot "$UUID" 2>/dev/null && DEVICE_ID="$UUID" && break
+            echo "Failed to boot $UUID, trying next..."
+          done
+
+          if [ -z "$DEVICE_ID" ]; then
+            echo "ERROR: Could not boot any iPhone 17 device"
             exit 1
           fi
+          echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+          echo "Booted device: $DEVICE_ID"
 
       - name: Start Recording
         run: |
