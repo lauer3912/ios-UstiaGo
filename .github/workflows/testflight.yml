@@ -43,7 +43,9 @@ jobs:
           working-directory: ios/fastlane
 
       - name: Install Dependencies
-        run: bundle install
+        run: |
+          bundle config set --local path 'vendor/bundle'
+          bundle install
         working-directory: ios/fastlane
 
       - name: Import Code-Signing Certificates
