@@ -27,11 +27,10 @@ jobs:
       - name: Boot Simulator
         run: |
           echo "=== Available devices ==="
-          xcrun simctl list devices available
-          echo "=== Looking for iPhone 17 Pro ==="
-          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17" | head -1)
+          xcrun simctl list devices available | grep -E "iPhone.*17" | head -5
+          DEVICE_LINE=$(xcrun simctl list devices available | grep "iPhone 17" | grep -v Shutdown | head -1)
           echo "Device line: '$DEVICE_LINE'"
-          DEVICE_ID=$(echo "$DEVICE_LINE" | awk '{print $1}')
+          DEVICE_ID=$(echo "$DEVICE_LINE" | sed 's/.*(\([^)]*\)).*/\1/')
           echo "Using device ID: '$DEVICE_ID'"
           if [ -n "$DEVICE_ID" ]; then
             xcrun simctl boot "$DEVICE_ID"
