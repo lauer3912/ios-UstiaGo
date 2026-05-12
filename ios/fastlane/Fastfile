@@ -1,22 +1,24 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Build and upload to TestFlight"
+  desc "Upload to TestFlight and add internal tester"
   lane :upload_testflight do |options|
-    api_key = ENV.fetch('APPSTORE_API_KEY_CONTENT', '')
-    
-    puts "API key length: #{api_key.length}"
-    
-    # Pass api_key directly as a hash
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPSTORE_KEY_ID"],
+      issuer_id: ENV["APPSTORE_ISSUER_ID"],
+      key_content: ENV["APPSTORE_API_PRIVATE_KEY"],
+      duration: 1200,
+      in_house: false
+    )
+
     pilot(
-      api_key: {
-        key_id: 'H3973L93M5',
-        issuer_id: 'b2a00f88-3a8d-40d0-b148-1f1db92e10b7',
-        key: api_key
-      },
-      app_platform: 'ios',
-      app_identifier: 'com.ggsheng.UstiaGo',
-      ipa: File.expand_path('../../build/UstiaGo.ipa', __dir__)
+      api_key: api_key,
+      app_identifier: "com.ggsheng.UstiaGo",
+      ipa: options[:ipa] || "build/UstiaGo.ipa",
+      skip_waiting_for_build_processing: false,
+      distribute_external: false,
+      testers: ["support@techidaily.com"],
+      notify_testers: true
     )
   end
 end
