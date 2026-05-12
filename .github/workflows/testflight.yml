@@ -2,30 +2,16 @@
 # TestFlight Upload — 构建 IPA 并上传到 App Store Connect
 # 自动添加 support@techidaily.com 为 Internal Tester
 # ═══════════════════════════════════════════════════════════════
-#
-# 需要在 GitHub Repo Settings > Variables 设置:
-#   APPSTORE_ISSUER_ID    - App Store Connect Issuer ID
-#   APPSTORE_API_KEY_ID   - App Store Connect API Key ID
-#
-# 需要在 GitHub Repo Settings > Secrets 设置:
-#   APPSTORE_API_PRIVATE_KEY  - App Store Connect API 私钥
-#   CERTIFICATE_P12           - 签名证书 p12 base64
-#   CERTIFICATE_PASSWORD      - 证书密码
-# ═══════════════════════════════════════════════════════════════
 
 name: TestFlight Upload
 
 on:
-  workflow_run:
-    workflows: ["Build & Test"]
-    types: [completed]
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-upload:
     runs-on: macos-26
     timeout-minutes: 60
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -63,45 +49,23 @@ jobs:
 
       - name: Build
         run: |
-          mkdir -p .build
+          mkdir -p build
           xcrun xcodebuild \
             -project ios/UstiaGo.xcodeproj \
             -scheme UstiaGo \
             -configuration Release \
             -sdk iphoneos \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -archivePath .build/UstiaGo.xcarchive \
-            archive 2>&1 | tee .build/build.log
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM=9L6N2ZF26B \
+            PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
+            -archivePath build/UstiaGo.xcarchive \
+            archive 2>&1 | tee build/build.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
-      - name: Create ExportOptions.plist
-        run: |
-          mkdir -p .build
-          cat > .build/ExportOptions.plist << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>development</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
-          </dict>
-          </plist>
-          EOF
-          echo "ExportOptions.plist created"
-
-      - name: Export IPA
-        run: |
-          xcrun xcodebuild \
-            -exportArchive \
-            -archivePath .build/UstiaGo.xcarchive \
-            -exportPath .build \
-            -exportOptionsPlist .build/ExportOptions.plist \
-            2>&1 | tee -a .build/build.log
-          echo "Export exit code: ${PIPESTATUS[0]}"
-          ls -la .build/*.ipa 2>/dev/null || echo "No IPA found"
+      - name: List Archive
+        run: ls -la build/UstiaGo.xcarchive
 
       - name: Upload to TestFlight
         env:
@@ -109,8 +73,6 @@ jobs:
           APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
-          ls -la ../../.build/*.ipa 2>/dev/null || echo "Looking for IPA..."
-          ls -la .build/*.ipa 2>/dev/null || echo "Not in .build either"
           bundle exec fastlane upload_testflight
         working-directory: ios/fastlane
 
@@ -120,5 +82,5 @@ jobs:
         with:
           name: build-logs
           include-hidden-files: true
-          path: .build/*.log
+          path: build/build.log
           if-no-files-found: warn
