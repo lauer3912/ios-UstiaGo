@@ -5,12 +5,16 @@
 name: Record Screen
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build & Test"]
+    types: [completed]
+    branches: [main]
 
 jobs:
   record:
     runs-on: macos-26
     timeout-minutes: 15
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
