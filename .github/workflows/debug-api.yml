@@ -1,26 +1,28 @@
 # ═══════════════════════════════════════════════════════════════
 # Debug API Key — 验证 App Store Connect API 密钥是否正确
 # ═══════════════════════════════════════════════════════════════
+#
+# 需要在 GitHub Repo Settings > Variables 设置:
+#   APPSTORE_ISSUER_ID    - App Store Connect Issuer ID
+#   APPSTORE_API_KEY_ID   - App Store Connect API Key ID
+# ═══════════════════════════════════════════════════════════════
 
 name: Debug API Key
 
 on:
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-  APPSTORE_KEY_ID: H3973L93M5
-  APPSTORE_ISSUER_ID: b2a00f88-3a8d-40d0-b148-1f1db92e10b7
-  BUNDLE_ID: com.ggsheng.UstiaGo
-  TEAM_ID: 9L6N2ZF26B
-
 jobs:
   debug:
-    runs-on: macos-14
+    runs-on: macos-26
+    timeout-minutes: 10
+    env:
+      APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      APPSTORE_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

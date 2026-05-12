@@ -1,103 +1,80 @@
 # ═══════════════════════════════════════════════════════════════
 # TestFlight Upload — 构建 IPA 并上传到 App Store Connect
 # ═══════════════════════════════════════════════════════════════
+#
+# 需要在 GitHub Repo Settings > Variables 设置:
+#   APPSTORE_ISSUER_ID    - App Store Connect Issuer ID
+#   APPSTORE_API_KEY_ID   - App Store Connect API Key ID
+#   APPSTORE_TEAM_ID      - Apple Developer Team ID
+#
+# 需要在 GitHub Repo Settings > Secrets 设置:
+#   APPSTORE_API_PRIVATE_KEY  - App Store Connect API 私钥
+#   APPSTORE_CERTIFICATES_FILE_BASE64 - 签名证书 p12 base64
+#   APPSTORE_CERTIFICATES_PASSWORD - 证书密码
+# ═══════════════════════════════════════════════════════════════
 
 name: TestFlight Upload
 
 on:
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  TEAM_ID: 9L6N2ZF26B
-  BUNDLE_ID: com.ggsheng.UstiaGo
-  SCHEME: UstiaGo
-  APPSTORE_KEY_ID: H3973L93M5
-  APPSTORE_ISSUER_ID: b2a00f88-3a8d-40d0-b148-1f1db92e10b7
-  APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-  XCODE_APP: /Applications/Xcode_16.2.app
-
 jobs:
   build-and-upload:
-    runs-on: macos-14
+    runs-on: macos-26
+    timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Select Xcode
-        run: |
-          if [ -d "${{ env.XCODE_APP }}" ]; then
-            sudo xcode-select -s "${{ env.XCODE_APP }}/Contents/Developer"
-          fi
-          xcodebuild -version
-
-      - name: Create Directories
-        run: |
-          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p build
-
-      # ── Signing Material ───────────────────────────────────
-      - name: Write Provisioning Profile
-        run: |
-          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 -d \
-            > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
-
-      - name: Import Code-Signing Certificate
-        uses: apple-actions/import-codesign-certs@v3
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
-          p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+          xcode-version: "~26.4.0"
 
-      # ── Build ──────────────────────────────────────────────
-      - name: Build Archive
-        run: |
-          xcodebuild archive \
-            -project ios/UstiaGo.xcodeproj \
-            -scheme "${{ env.SCHEME }}" \
-            -configuration Release \
-            -archivePath build/UstiaGo.xcarchive \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            CODE_SIGNING_REQUIRED=YES \
-            CODE_SIGNING_ALLOWED=YES \
-            PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
-            DEVELOPMENT_TEAM="${{ env.TEAM_ID }}" 2>&1 | tee build/build.log
+      - name: Import Code-Signing Certificates
+        uses: Apple-Actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
+          p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
 
-      - name: Create ExportOptions.plist
-        run: |
-          printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' > build/ExportOptions.plist
-          printf '%s\n' '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> build/ExportOptions.plist
-          printf '%s\n' '<plist version="1.0">' >> build/ExportOptions.plist
-          printf '%s\n' '<dict>' >> build/ExportOptions.plist
-          printf '%s\n' '  <key>method</key>' >> build/ExportOptions.plist
-          printf '%s\n' '  <string>app-store</string>' >> build/ExportOptions.plist
-          printf '%s\n' '  <key>signingCertificate</key>' >> build/ExportOptions.plist
-          printf '%s\n' '  <string>iPhone Distribution</string>' >> build/ExportOptions.plist
-          printf '%s\n' '  <key>teamID</key>' >> build/ExportOptions.plist
-          printf '%s\n' '  <string>9L6N2ZF26B</string>' >> build/ExportOptions.plist
-          printf '%s\n' '  <key>provisioningProfiles</key>' >> build/ExportOptions.plist
-          printf '%s\n' '  <dict>' >> build/ExportOptions.plist
-          printf '%s\n' '    <key>com.ggsheng.UstiaGo</key>' >> build/ExportOptions.plist
-          printf '%s\n' '    <string>UstiaGo App Store</string>' >> build/ExportOptions.plist
-          printf '%s\n' '  </dict>' >> build/ExportOptions.plist
-          printf '%s\n' '</dict>' >> build/ExportOptions.plist
-          printf '%s\n' '</plist>' >> build/ExportOptions.plist
+      - name: Download Provisioning Profiles
+        uses: Apple-Actions/download-provisioning-profiles@v6
+        with:
+          bundle-id: com.ggsheng.UstiaGo
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-      - name: Export IPA
-        run: |
-          xcodebuild -exportArchive \
-            -archivePath build/UstiaGo.xcarchive \
-            -exportPath build \
-            -exportOptionsPlist build/ExportOptions.plist 2>&1 | tee build/export.log
+      - name: Build
+        uses: Apple-Actions/xcodebuild@v1
+        with:
+          project: ios/UstiaGo.xcodeproj
+          scheme: UstiaGo
+          sdk: iphoneos
+          action: archive
+          archive-path: .build/Archives/UstiaGo.xcarchive
+          configuration: Release
+          build-number: ${{ github.run_number }}
+          zip-result-bundle: true
+          zip-archive: true
 
-      - name: List Build Output
-        run: ls -lh build/UstiaGo.ipa
+      - name: Upload Logs
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-logs
+          include-hidden-files: true
+          path: .build/*.log
+          if-no-files-found: error
 
-      # ── Upload ─────────────────────────────────────────────
       - name: Upload to TestFlight
-        uses: apple-actions/upload-testflight-build@v5
+        uses: Apple-Actions/upload-testflight-build@v5
+        env:
+          CURRENT_PROJECT_VERSION: ${{ github.run_number }}
+          PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.UstiaGo
         with:
-          app-path: build/UstiaGo.ipa
-          issuer-id: ${{ env.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ env.APPSTORE_KEY_ID }}
-          api-private-key: ${{ env.APPSTORE_API_KEY_CONTENT }}
+          app-path: ".build/Artifacts/UstiaGo.ipa/UstiaGo.ipa"
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
           wait-for-processing: true
