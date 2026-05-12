@@ -47,7 +47,7 @@ jobs:
 
           xcrun xcodebuild \
             test-without-building \
-            -derivedDataPath .build/DerivedData \
+            -scheme UstiaGo \
             -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
             2>&1 | tee -a .build/build.log
           TEST_RESULT=${PIPESTATUS[0]}
