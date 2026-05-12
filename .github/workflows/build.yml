@@ -39,6 +39,7 @@ jobs:
           build-number: ${{ github.run_number }}
           action: test
           destination: "platform=iOS Simulator,name=iPhone 16 Pro"
+          result-bundle-path: .build/Artifacts/UstiaGo.xcresult
           zip-result-bundle: true
 
       - name: Upload Test Results
@@ -46,5 +47,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: test-results
-          path: .build/TestResults/**/*.xcresult
+          path: .build/Artifacts/UstiaGo.xcresult
           if-no-files-found: error
