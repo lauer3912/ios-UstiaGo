@@ -59,11 +59,37 @@ jobs:
             archive 2>&1 | tee build/build.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
+      - name: Export IPA
+        run: |
+          mkdir -p build
+          cat > build/ExportOptions.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+          xcrun xcodebuild \
+            -exportArchive \
+            -archivePath build/UstiaGo.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist build/ExportOptions.plist \
+            2>&1 | tee build/export.log
+          echo "Export exit code: ${PIPESTATUS[0]}"
+          ls -la build/*.ipa 2>/dev/null || echo "No IPA found"
+
       - name: Upload to TestFlight
         run: |
+          IPA=$(find build -name "*.ipa" | head -1)
+          echo "Uploading: $IPA"
           xcrun altool \
             --upload-app \
-            -f build/UstiaGo.xcarchive \
+            -f "$IPA" \
             -t ios \
             --apiKey "${{ vars.APPSTORE_API_KEY_ID }}" \
             --apiIssuer "${{ vars.APPSTORE_ISSUER_ID }}" \
