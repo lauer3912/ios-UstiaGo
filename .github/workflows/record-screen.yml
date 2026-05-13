@@ -46,13 +46,14 @@ jobs:
           mkdir -p .build
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
           echo "Starting recording to: $RECORDING_PATH"
-          # Start recording in background with nohup
+          # Start recording - note the = syntax for options
           nohup xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
-            --codec h264 \
-            --mask simulator \
+            --codec=h264 \
+            --mask=black \
+            --force \
             "$RECORDING_PATH" > .build/recording.log 2>&1 &
           echo "Recording started in background"
-          sleep 3
+          sleep 5
           # Check if video file has started being created
           for i in {1..5}; do
             if [ -f "$RECORDING_PATH" ]; then
@@ -63,7 +64,8 @@ jobs:
             sleep 2
           done
           if [ ! -f "$RECORDING_PATH" ]; then
-            echo "Warning: Video file not detected yet"
+            echo "Warning: Video file not detected yet, checking log:"
+            cat .build/recording.log | head -20
           fi
 
       - name: Build & Run Guided Tour Test
@@ -89,20 +91,27 @@ jobs:
         run: |
           echo "Stopping screen recording..."
           echo "Current working directory: $PWD"
-          # Kill any recordVideo processes
-          pkill -f "recordVideo" 2>/dev/null || echo "No recordVideo process found"
-          sleep 5
+          # Find and kill the recordVideo process with SIGINT to properly finalize
+          RECORD_PID=$(pgrep -f "recordVideo")
+          if [ -n "$RECORD_PID" ]; then
+            echo "Sending SIGINT to recording process: $RECORD_PID"
+            kill -INT $RECORD_PID 2>/dev/null
+            echo "Waiting for recording to finalize..."
+            sleep 5
+          else
+            echo "No recordVideo process found"
+          fi
           echo "=== Checking for video file ==="
           ls -la .build/ 2>/dev/null || echo ".build directory does not exist"
           echo "=== Looking for mp4 files ==="
           find . -name "*.mp4" -type f 2>/dev/null | head -10
-          echo "=== Checking recording.log ==="
-          cat .build/recording.log 2>/dev/null || echo "No recording.log found"
           echo "=== Final check ==="
           if [ -f ".build/screen-recording.mp4" ]; then
             echo "Video file found: $(ls -lh .build/screen-recording.mp4)"
           else
             echo "Video file not found"
+            echo "Recording log contents:"
+            cat .build/recording.log 2>/dev/null | head -30
           fi
 
       - name: Upload Video
