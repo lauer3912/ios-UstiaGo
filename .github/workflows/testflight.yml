@@ -32,17 +32,14 @@ jobs:
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 -d \
             > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
-          echo "Provisioning profile written"
 
       - name: Write API Key
         run: |
           mkdir -p "$HOME/.appstoreconnect/private_keys"
-          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 -d \
-            > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 -decode > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
-          echo "API key written to ~/.appstoreconnect/private_keys/"
 
-      - name: Build
+      - name: Build Archive
         run: |
           mkdir -p build
           xcrun xcodebuild \
@@ -56,18 +53,12 @@ jobs:
             DEVELOPMENT_TEAM=9L6N2ZF26B \
             PROVISIONING_PROFILE_SPECIFIER="UstiaGo App Store" \
             -archivePath build/UstiaGo.xcarchive \
-            archive 2>&1 | tee build/build.log
+            archive 2>&1 | tee build/archive.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
+          ls -la build/UstiaGo.xcarchive
 
       - name: Export IPA
         run: |
-          mkdir -p build
-          ARCHIVE=$(xcodebuild -showBuildSettings -xml -json 2>/dev/null | jq -r '.[] | if .archivePath then .archivePath else empty end' | head -1)
-          echo "Archive path: $ARCHIVE"
-          # Find the actual archive
-          ARCHIVE=$(find ~/Library/Developer/Xcode/DerivedData -name "UstiaGo.xcarchive" -type d 2>/dev/null | head -1)
-          echo "Found archive: $ARCHIVE"
-          ls -la "$ARCHIVE" 2>/dev/null || echo "Archive not found"
           cat > build/ExportOptions.plist << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -82,17 +73,17 @@ jobs:
           EOF
           xcrun xcodebuild \
             -exportArchive \
-            -archivePath "$ARCHIVE" \
+            -archivePath build/UstiaGo.xcarchive \
             -exportPath build \
             -exportOptionsPlist build/ExportOptions.plist \
             2>&1 | tee build/export.log
           echo "Export exit code: ${PIPESTATUS[0]}"
-          ls -la build/*.ipa 2>/dev/null || echo "No IPA found"
+          ls -la build/*.ipa build/*.xcarchive 2>/dev/null
 
       - name: Upload to TestFlight
         run: |
-          IPA=$(find build -name "*.ipa" | head -1)
-          echo "Uploading: $IPA"
+          IPA=$(ls build/*.ipa 2>/dev/null | head -1)
+          echo "Uploading IPA: $IPA"
           xcrun altool \
             --upload-app \
             -f "$IPA" \
@@ -108,6 +99,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: build-logs
-          include-hidden-files: true
           path: build/*.log
           if-no-files-found: warn
