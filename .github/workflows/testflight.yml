@@ -62,6 +62,12 @@ jobs:
       - name: Export IPA
         run: |
           mkdir -p build
+          ARCHIVE=$(xcodebuild -showBuildSettings -xml -json 2>/dev/null | jq -r '.[] | if .archivePath then .archivePath else empty end' | head -1)
+          echo "Archive path: $ARCHIVE"
+          # Find the actual archive
+          ARCHIVE=$(find ~/Library/Developer/Xcode/DerivedData -name "UstiaGo.xcarchive" -type d 2>/dev/null | head -1)
+          echo "Found archive: $ARCHIVE"
+          ls -la "$ARCHIVE" 2>/dev/null || echo "Archive not found"
           cat > build/ExportOptions.plist << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -76,7 +82,7 @@ jobs:
           EOF
           xcrun xcodebuild \
             -exportArchive \
-            -archivePath build/UstiaGo.xcarchive \
+            -archivePath "$ARCHIVE" \
             -exportPath build \
             -exportOptionsPlist build/ExportOptions.plist \
             2>&1 | tee build/export.log
