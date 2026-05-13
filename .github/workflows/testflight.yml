@@ -52,14 +52,30 @@ jobs:
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
       - name: Upload to TestFlight
-        uses: Apple-Actions/upload-testflight-build@v5
-        with:
-          app-path: build/UstiaGo.xcarchive
-          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-          testers: support@techidaily.com
-          notify-testers: true
+        run: |
+          # Add API key to keychain
+          KEYCHAIN_PATH="$HOME/Library/Keychains/login.keychain-db"
+          mkdir -p "$HOME/Library/Keychains"
+
+          # Write the API key to a temp file
+          echo "$APPSTORE_API_PRIVATE_KEY" | base64 -d > /tmp/authkey.p8
+
+          # Import to keychain with a label matching the key ID
+          security import /tmp/authkey.p8 -k "$KEYCHAIN_PATH" -P "" -A -T /usr/bin/codesign -T /usr/bin/security -T /Applications/Xcode.app -A
+          security set-key-partition-list -S -k "" "$KEYCHAIN_PATH"
+
+          # Upload using altool with API key
+          xcrun altool \
+            --upload-app \
+            -f build/UstiaGo.xcarchive \
+            -t ios \
+            --apiKey "${{ vars.APPSTORE_API_KEY_ID }}" \
+            --apiIssuer "${{ vars.APPSTORE_ISSUER_ID }}" \
+            --verbose \
+            2>&1 | tee build/upload.log
+
+        env:
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Upload Logs
         if: failure() || cancelled()
@@ -67,5 +83,5 @@ jobs:
         with:
           name: build-logs
           include-hidden-files: true
-          path: build/build.log
+          path: build/*.log
           if-no-files-found: warn
