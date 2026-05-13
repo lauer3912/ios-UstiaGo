@@ -65,20 +65,27 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
+            <string>app-store-connect</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>teamId</key>
+            <string>9L6N2ZF26B</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.ggsheng.UstiaGo</key>
+              <string>UstiaGo App Store</string>
+            </dict>
           </dict>
           </plist>
           EOF
           xcrun xcodebuild \
             -exportArchive \
             -archivePath build/UstiaGo.xcarchive \
+            exportOptionsPlist build/ExportOptions.plist \
             -exportPath build \
-            -exportOptionsPlist build/ExportOptions.plist \
             2>&1 | tee build/export.log
           echo "Export exit code: ${PIPESTATUS[0]}"
-          ls -la build/*.ipa build/*.xcarchive 2>/dev/null
+          ls -la build/*.ipa 2>/dev/null || echo "No IPA"
 
       - name: Upload to TestFlight
         run: |
