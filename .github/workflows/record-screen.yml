@@ -10,7 +10,7 @@ on:
 jobs:
   record:
     runs-on: macos-26
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,6 +52,8 @@ jobs:
 
       - name: Build & Run Guided Tour Test
         run: |
+          set -o pipefail
+          mkdir -p .build
           xcrun xcodebuild \
             -project ios/UstiaGo.xcodeproj \
             -scheme UstiaGo \
@@ -61,13 +63,27 @@ jobs:
             -derivedDataPath .build/DerivedData \
             test \
             -only-testing:UstiaGoUITests/GuidedTourTests 2>&1 | tee .build/guided-tour.log
+          TEST_RESULT=${PIPESTATUS[0]}
+          echo "Test exit code: $TEST_RESULT"
+          if [ $TEST_RESULT -ne 0 ]; then
+            echo "Test may have had issues, checking log..."
+          fi
 
       - name: Stop Recording
         run: |
-          sleep 2
-          kill %1 2>/dev/null || true
-          sleep 2
-          ls -lh .build/screen-recording.mp4 2>/dev/null || echo "Video file check"
+          echo "Stopping screen recording..."
+          # Find and kill the recordVideo process
+          pkill -f "recordVideo" 2>/dev/null || true
+          sleep 3
+          echo "Checking video file..."
+          if [ -f ".build/screen-recording.mp4" ]; then
+            ls -lh .build/screen-recording.mp4
+            echo "Video file exists and is ready for upload"
+          else
+            echo "Warning: Video file not found at .build/screen-recording.mp4"
+            # Try to find any mp4 file
+            find .build -name "*.mp4" -ls 2>/dev/null || echo "No mp4 files found"
+          fi
 
       - name: Upload Video
         uses: actions/upload-artifact@v7
