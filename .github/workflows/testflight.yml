@@ -81,7 +81,7 @@ jobs:
           xcrun xcodebuild \
             -exportArchive \
             -archivePath build/UstiaGo.xcarchive \
-            exportOptionsPlist build/ExportOptions.plist \
+            -exportOptionsPlist build/ExportOptions.plist \
             -exportPath build \
             2>&1 | tee build/export.log
           echo "Export exit code: ${PIPESTATUS[0]}"
