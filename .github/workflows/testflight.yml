@@ -70,7 +70,7 @@ jobs:
           APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
-          ruby scripts/upload_testflight.rb
+          ruby ../scripts/upload_testflight.rb
         working-directory: ios
 
       - name: Upload Logs
