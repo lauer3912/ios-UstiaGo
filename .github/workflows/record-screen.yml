@@ -43,12 +43,16 @@ jobs:
 
       - name: Start Recording
         run: |
+          mkdir -p .build
+          RECORDING_PATH="$PWD/.build/screen-recording.mp4"
+          echo "Starting recording to: $RECORDING_PATH"
           xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
             --codec h264 \
             --mask simulator \
-            .build/screen-recording.mp4 &
-          echo "Recording started, waiting for startup..."
+            "$RECORDING_PATH" &
+          echo "Recording started in background with PID $!"
           sleep 3
+          echo "Recording process should be active"
 
       - name: Build & Run Guided Tour Test
         run: |
@@ -72,17 +76,22 @@ jobs:
       - name: Stop Recording
         run: |
           echo "Stopping screen recording..."
-          # Find and kill the recordVideo process
-          pkill -f "recordVideo" 2>/dev/null || true
+          echo "Current working directory: $PWD"
+          echo "Looking for recording file..."
+          # List all files in .build directory
+          echo "=== .build directory contents ==="
+          ls -la .build/ 2>/dev/null || echo ".build directory does not exist"
+          echo "=== Looking for mp4 files ==="
+          find . -name "*.mp4" -type f 2>/dev/null | head -10
+          # Kill any recordVideo processes
+          pkill -f "recordVideo" 2>/dev/null || echo "No recordVideo process found"
           sleep 3
-          echo "Checking video file..."
+          echo "Checking if video file exists..."
           if [ -f ".build/screen-recording.mp4" ]; then
+            echo "Video file found!"
             ls -lh .build/screen-recording.mp4
-            echo "Video file exists and is ready for upload"
           else
-            echo "Warning: Video file not found at .build/screen-recording.mp4"
-            # Try to find any mp4 file
-            find .build -name "*.mp4" -ls 2>/dev/null || echo "No mp4 files found"
+            echo "Video file still not found at .build/screen-recording.mp4"
           fi
 
       - name: Upload Video
