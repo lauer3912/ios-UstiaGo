@@ -51,31 +51,27 @@ jobs:
             archive 2>&1 | tee build/build.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
-      - name: Upload to TestFlight
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ios/fastlane
+
+      - name: Install Dependencies
         run: |
-          # Add API key to keychain
-          KEYCHAIN_PATH="$HOME/Library/Keychains/login.keychain-db"
-          mkdir -p "$HOME/Library/Keychains"
+          bundle config set --local path 'vendor/bundle'
+          bundle install
+        working-directory: ios/fastlane
 
-          # Write the API key to a temp file
-          echo "$APPSTORE_API_PRIVATE_KEY" | base64 -d > /tmp/authkey.p8
-
-          # Import to keychain with a label matching the key ID
-          security import /tmp/authkey.p8 -k "$KEYCHAIN_PATH" -P "" -A -T /usr/bin/codesign -T /usr/bin/security -T /Applications/Xcode.app -A
-          security set-key-partition-list -S -k "" "$KEYCHAIN_PATH"
-
-          # Upload using altool with API key
-          xcrun altool \
-            --upload-app \
-            -f build/UstiaGo.xcarchive \
-            -t ios \
-            --apiKey "${{ vars.APPSTORE_API_KEY_ID }}" \
-            --apiIssuer "${{ vars.APPSTORE_ISSUER_ID }}" \
-            --verbose \
-            2>&1 | tee build/upload.log
-
+      - name: Upload to TestFlight
         env:
+          APPSTORE_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          ruby scripts/upload_testflight.rb
+        working-directory: ios
 
       - name: Upload Logs
         if: failure() || cancelled()
