@@ -36,7 +36,7 @@ jobs:
       - name: Write API Key
         run: |
           mkdir -p "$HOME/.appstoreconnect/private_keys"
-          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 -decode > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 -d > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
 
       - name: Build Archive
