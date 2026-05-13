@@ -46,13 +46,22 @@ jobs:
           mkdir -p .build
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
           echo "Starting recording to: $RECORDING_PATH"
-          xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
+          # Start recording in background and capture PID
+          nohup xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
             --codec h264 \
             --mask simulator \
-            "$RECORDING_PATH" &
-          echo "Recording started in background with PID $!"
+            "$RECORDING_PATH" > .build/recording.log 2>&1 &
+          RECORD_PID=$!
+          echo "Recording PID: $RECORD_PID"
+          echo "Recording PID: $RECORD_PID" >> $GITHUB_ENV
           sleep 3
-          echo "Recording process should be active"
+          # Verify the process is still running
+          if ps -p $RECORD_PID > /dev/null 2>&1; then
+            echo "Recording process is active (PID: $RECORD_PID)"
+          else
+            echo "ERROR: Recording process died immediately"
+            cat .build/recording.log
+          fi
 
       - name: Build & Run Guided Tour Test
         run: |
@@ -78,15 +87,20 @@ jobs:
           echo "Stopping screen recording..."
           echo "Current working directory: $PWD"
           echo "Looking for recording file..."
-          # List all files in .build directory
           echo "=== .build directory contents ==="
           ls -la .build/ 2>/dev/null || echo ".build directory does not exist"
           echo "=== Looking for mp4 files ==="
           find . -name "*.mp4" -type f 2>/dev/null | head -10
-          # Kill any recordVideo processes
+          echo "=== Checking recording.log ==="
+          cat .build/recording.log 2>/dev/null || echo "No recording.log found"
+          # Kill the recording process by PID if available
+          if [ -n "${{ env.RECORD_PID }}" ]; then
+            echo "Killing recording process {{ env.RECORD_PID }}..."
+            kill -INT ${{ env.RECORD_PID }} 2>/dev/null || echo "Process already gone"
+          fi
           pkill -f "recordVideo" 2>/dev/null || echo "No recordVideo process found"
-          sleep 3
-          echo "Checking if video file exists..."
+          sleep 5
+          echo "=== Final check for video file ==="
           if [ -f ".build/screen-recording.mp4" ]; then
             echo "Video file found!"
             ls -lh .build/screen-recording.mp4
