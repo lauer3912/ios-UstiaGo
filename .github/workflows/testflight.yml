@@ -21,19 +21,6 @@ jobs:
         with:
           xcode-version: "~26.4.0"
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-          working-directory: ios/fastlane
-
-      - name: Install Dependencies
-        run: |
-          bundle config set --local path 'vendor/bundle'
-          bundle update fastlane
-        working-directory: ios/fastlane
-
       - name: Import Code-Signing Certificates
         uses: Apple-Actions/import-codesign-certs@v7
         with:
@@ -64,17 +51,15 @@ jobs:
             archive 2>&1 | tee build/build.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
-      - name: List Archive
-        run: ls -la build/UstiaGo.xcarchive
-
       - name: Upload to TestFlight
-        env:
-          APPSTORE_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
-          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
-          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-        run: |
-          bundle exec fastlane upload_testflight
-        working-directory: ios/fastlane
+        uses: Apple-Actions/upload-testflight-build@v5
+        with:
+          app-path: build/UstiaGo.xcarchive
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          testers: support@techidaily.com
+          notify-testers: true
 
       - name: Upload Logs
         if: failure() || cancelled()
