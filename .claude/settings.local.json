@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "*",
+      "Bash(gh *)",
+      "Bash(gh.exe *)",
+      "Bash(gh repo *)",
+      "Bash(cmd.exe /c \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe *\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(gh auth *)",
+      "Bash(cmd.exe /c \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe auth status\")",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "WebFetch(domain:github.com)",
+      "Bash(git commit *)",
+      "Bash(git rm *)"
+    ]
+  }
+}

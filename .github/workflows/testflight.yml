@@ -34,6 +34,14 @@ jobs:
             > "$HOME/Library/MobileDevice/Provisioning Profiles/UstiaGo_App_Store.mobileprovision"
           echo "Provisioning profile written"
 
+      - name: Write API Key
+        run: |
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 -d \
+            > "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
+          chmod 600 "$HOME/.appstoreconnect/private_keys/ApiKey_${{ vars.APPSTORE_API_KEY_ID }}.p8"
+          echo "API key written to ~/.appstoreconnect/private_keys/"
+
       - name: Build
         run: |
           mkdir -p build
@@ -51,27 +59,17 @@ jobs:
             archive 2>&1 | tee build/build.log
           echo "Archive exit code: ${PIPESTATUS[0]}"
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-          working-directory: ios/fastlane
-
-      - name: Install Dependencies
-        run: |
-          bundle config set --local path 'vendor/bundle'
-          bundle install
-        working-directory: ios/fastlane
-
       - name: Upload to TestFlight
-        env:
-          APPSTORE_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
-          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
-          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
-          ruby ../scripts/upload_testflight.rb
-        working-directory: ios
+          xcrun altool \
+            --upload-app \
+            -f build/UstiaGo.xcarchive \
+            -t ios \
+            --apiKey "${{ vars.APPSTORE_API_KEY_ID }}" \
+            --apiIssuer "${{ vars.APPSTORE_ISSUER_ID }}" \
+            --verbose \
+            2>&1 | tee build/upload.log
+          echo "Upload exit code: ${PIPESTATUS[0]}"
 
       - name: Upload Logs
         if: failure() || cancelled()
