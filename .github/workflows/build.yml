@@ -64,12 +64,6 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     needs: build-and-test
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - type: "iPhone"
-          - type: "iPad"
 
     steps:
       - name: Checkout
@@ -80,66 +74,106 @@ jobs:
         with:
           xcode-version: "~26.4.0"
 
-      - name: Boot Simulator
+      - name: Find available devices
         run: |
-          echo "Available ${{ matrix.type }} devices:"
-          xcrun simctl list devices available | grep "${{ matrix.type}}" | head -10
-          DEVICE_NAME=""
-          # Find latest ${{ matrix.type }} device (iPhone or iPad)
-          DEVICE_NAME=$(xcrun simctl list devices available | grep "${{ matrix.type}}" | grep Shutdown | head -1 | sed 's/.*(//' | sed 's/).*//')
-          if [ -z "$DEVICE_NAME" ]; then
-            echo "ERROR: No available ${{ matrix.type }} device"
-            exit 1
-          fi
-          echo "Using: $DEVICE_NAME"
-          DEVICE_ID=$(xcrun simctl list devices available | grep "$DEVICE_NAME" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1)
-          echo "Booting device ID: $DEVICE_ID"
-          xcrun simctl boot "$DEVICE_ID"
-          echo "DEVICE_NAME=$DEVICE_NAME" >> $GITHUB_ENV
-          echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+          echo "Available iPhone devices:"
+          xcrun simctl list devices available | grep "iPhone" | head -5
+          echo ""
+          echo "Available iPad devices:"
+          xcrun simctl list devices available | grep "iPad" | head -5
 
-      - name: Run Guided Tour Test for Screenshots
+      - name: Boot iPhone Simulator
+        run: |
+          # Find latest iPhone
+          IPHONE_INFO=$(xcrun simctl list devices available | grep "iPhone" | grep Shutdown | head -1)
+          echo "Found iPhone: $IPHONE_INFO"
+          IPHONE_UUID=$(echo "$IPHONE_INFO" | awk -F'(' '{print $2}' | awk -F')' '{print $1}')
+          IPHONE_NAME=$(echo "$IPHONE_INFO" | sed 's/(.*//' | xargs)
+          echo "Booting iPhone: $IPHONE_NAME (UUID: $IPHONE_UUID)"
+          xcrun simctl boot "$IPHONE_UUID"
+          echo "iPhone_NAME=$IPHONE_NAME" >> $GITHUB_ENV
+          echo "iPhone_UUID=$IPHONE_UUID" >> $GITHUB_ENV
+
+      - name: Boot iPad Simulator
+        run: |
+          # Find latest iPad
+          IPAD_INFO=$(xcrun simctl list devices available | grep "iPad" | grep Shutdown | head -1)
+          echo "Found iPad: $IPAD_INFO"
+          IPAD_UUID=$(echo "$IPAD_INFO" | awk -F'(' '{print $2}' | awk -F')' '{print $1}')
+          IPAD_NAME=$(echo "$IPAD_INFO" | sed 's/(.*//' | xargs)
+          echo "Booting iPad: $IPAD_NAME (UUID: $IPAD_UUID)"
+          xcrun simctl boot "$IPAD_UUID"
+          echo "iPad_NAME=$IPAD_NAME" >> $GITHUB_ENV
+          echo "iPad_UUID=$IPAD_UUID" >> $GITHUB_ENV
+
+      - name: Run Screenshot Tests
         run: |
           mkdir -p .build
+          # Run screenshot tests for both devices
           xcrun xcodebuild \
             -project ios/UstiaGo.xcodeproj \
             -scheme UstiaGo \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.DEVICE_NAME }}" \
-            -derivedDataPath .build/DerivedData \
+            -destination "platform=iOS Simulator,name=${{ env.iPhone_NAME }}" \
+            -derivedDataPath .build/DerivedData_iPhone \
             test \
-            -only-testing:UstiaGoUITests/GuidedTourTests \
-            -resultBundlePath .build/screenshots.xcresult 2>&1 | tee .build/screenshots.log
-          echo "Test completed"
+            -only-testing:UstiaGoUITests/ScreenshotTests \
+            -resultBundlePath .build/screenshots_iPhone.xcresult 2>&1 | tee .build/screenshots_iphone.log
 
-      - name: Extract Screenshots from Test Results
+          xcrun xcodebuild \
+            -project ios/UstiaGo.xcodeproj \
+            -scheme UstiaGo \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=${{ env.iPad_NAME }}" \
+            -derivedDataPath .build/DerivedData_iPad \
+            test \
+            -only-testing:UstiaGoUITests/ScreenshotTests \
+            -resultBundlePath .build/screenshots_iPad.xcresult 2>&1 | tee .build/screenshots_ipad.log
+
+          echo "Tests completed"
+
+      - name: Extract Screenshots
         run: |
-          mkdir -p .build/screenshots/${{ matrix.type }}
-          chmod +x .build/DerivedData/Logs/Test/*.xcresult 2>/dev/null || true
+          mkdir -p .build/screenshots/iPhone .build/screenshots/iPad
 
-          # Extract screenshots from xcresult bundle
-          if [ -d ".build/DerivedData/Logs/Test" ]; then
-            find .build/DerivedData/Logs/Test -name "*.xcresult" -type d | while read result; do
-              ATTACHMENTS_DIR="$result/Attachments"
-              if [ -d "$ATTACHMENTS_DIR" ]; then
-                cp "$ATTACHMENTS_DIR"/*.png ".build/screenshots/${{ matrix.type }}/" 2>/dev/null || true
-              fi
-            done
+          # Extract iPhone screenshots
+          if [ -d ".build/screenshots_iPhone.xcresult/Attachments" ]; then
+            cp .build/screenshots_iPhone.xcresult/Attachments/*.png .build/screenshots/iPhone/ 2>/dev/null || true
           fi
+          find .build -path "*DerivedData_iPhone*" -name "Attachments" -type d 2>/dev/null | while read dir; do
+            cp "$dir"/*.png .build/screenshots/iPhone/ 2>/dev/null || true
+          done
 
-          if [ -d ".build/screenshots.xcresult/Attachments" ]; then
-            cp .build/screenshots.xcresult/Attachments/*.png ".build/screenshots/${{ matrix.type }}/" 2>/dev/null || true
+          # Extract iPad screenshots
+          if [ -d ".build/screenshots_iPad.xcresult/Attachments" ]; then
+            cp .build/screenshots_iPad.xcresult/Attachments/*.png .build/screenshots/iPad/ 2>/dev/null || true
           fi
+          find .build -path "*DerivedData_iPad*" -name "Attachments" -type d 2>/dev/null | while read dir; do
+            cp "$dir"/*.png .build/screenshots/iPad/ 2>/dev/null || true
+          done
 
-          echo "=== Screenshots found ==="
-          find .build -name "*.png" -type f 2>/dev/null
-          ls -la .build/screenshots/${{ matrix.type }}/ 2>/dev/null || echo "No screenshots found"
+          echo "=== iPhone Screenshots ==="
+          ls -la .build/screenshots/iPhone/ 2>/dev/null || echo "No iPhone screenshots"
+          echo ""
+          echo "=== iPad Screenshots ==="
+          ls -la .build/screenshots/iPad/ 2>/dev/null || echo "No iPad screenshots"
 
-      - name: Upload Screenshots
+      - name: Upload iPhone Screenshots
+        if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: screenshot-${{ matrix.type }}
-          path: .build/screenshots/${{ matrix.type }}/*.png
+          name: screenshots-iPhone
+          path: .build/screenshots/iPhone/*.png
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload iPad Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots-iPad
+          path: .build/screenshots/iPad/*.png
           if-no-files-found: warn
           retention-days: 30
