@@ -96,10 +96,11 @@ jobs:
 
       - name: Boot iPad Simulator
         run: |
-          # Find latest iPad
+          # Find latest iPad - get the full line and extract UUID from the second parenthesis group
           IPAD_INFO=$(xcrun simctl list devices available | grep "iPad" | grep Shutdown | head -1)
           echo "Found iPad: $IPAD_INFO"
-          IPAD_UUID=$(echo "$IPAD_INFO" | awk -F'(' '{print $2}' | awk -F')' '{print $1}')
+          # UUID is in the second parentheses - extract everything between the last ( and )
+          IPAD_UUID=$(echo "$IPAD_INFO" | grep -oP '\([A-F0-9-]{36}\)' | tail -1 | tr -d '()')
           IPAD_NAME=$(echo "$IPAD_INFO" | sed 's/(.*//' | xargs)
           echo "Booting iPad: $IPAD_NAME (UUID: $IPAD_UUID)"
           xcrun simctl boot "$IPAD_UUID"
