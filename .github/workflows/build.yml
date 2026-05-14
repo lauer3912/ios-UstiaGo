@@ -63,23 +63,27 @@ jobs:
       - name: Extract Screenshots
         run: |
           mkdir -p .build/screenshots
-          # Find screenshots from test attachments
+          # Find screenshots from test attachments - check multiple possible locations
           find .build/DerivedData -name "Attachments" -type d 2>/dev/null | while read dir; do
             if [ -d "$dir" ]; then
               cp "$dir"/*.png .build/screenshots/ 2>/dev/null || true
               cp "$dir"/*.jpg .build/screenshots/ 2>/dev/null || true
             fi
           done
+          # Also check in Logs directory
+          find .build -path "*/Logs/Test/*" -name "Attachments" -type d 2>/dev/null | while read dir; do
+            cp "$dir"/*.png .build/screenshots/ 2>/dev/null || true
+          done
           echo "=== Screenshots found ==="
           ls -la .build/screenshots/ 2>/dev/null || echo "No screenshots found"
-          find .build/screenshots -type f 2>/dev/null
+          find .build -name "*.png" -type f 2>/dev/null | head -20
 
       - name: Upload Screenshots
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: screenshots
-          path: .build/screenshots
+          path: .build/screenshots/*.png
           if-no-files-found: warn
           retention-days: 7
 
