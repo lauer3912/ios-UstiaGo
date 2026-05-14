@@ -44,44 +44,48 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p .build
-          # Get the currently booted simulator for recording
-          echo "Getting currently booted simulator..."
-          DEVICE_ID=$(xcrun simctl list devices booted | grep "iPhone" | head -1 | awk -F'(' '{print $2}' | awk -F')' '{print $1}')
+
+          # Use the device ID from previous step
+          DEVICE_ID="${{ env.DEVICE_ID }}"
           if [ -z "$DEVICE_ID" ]; then
-            echo "ERROR: No booted iPhone simulator found"
+            echo "ERROR: DEVICE_ID not set from previous step"
             exit 1
           fi
           echo "Using device: $DEVICE_ID"
-          echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
 
           # Kill any existing recordVideo processes
           pkill -f "recordVideo" 2>/dev/null || true
           sleep 1
 
-          # Start recording - run in background with disown to detach completely
+          # Start recording with explicit full path
           echo "Starting recording to: $RECORDING_PATH"
-          (xcrun simctl io "$DEVICE_ID" recordVideo \
+          xcrun simctl io "$DEVICE_ID" recordVideo \
             --codec=h264 \
             --mask=black \
             --force \
-            "$RECORDING_PATH" > .build/recording.log 2>&1 &) && disown
-          echo "Recording command launched"
+            "$RECORDING_PATH" &
+          RECORD_PID=$!
+          echo "Recording PID: $RECORD_PID"
 
-          # Wait for recording to actually start and file to appear
-          for i in {1..15}; do
+          # Wait for recording to start - simctl writes "Recording started" to stderr
+          echo "Waiting for recording to start..."
+          for i in {1..20}; do
             if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
               echo "Video file created: $(ls -lh "$RECORDING_PATH")"
               break
             fi
-            echo "Waiting for video file... ($i)"
+            # Check if process is still running
+            if ! ps -p $RECORD_PID > /dev/null 2>&1; then
+              echo "Recording process died!"
+              break
+            fi
+            echo "Waiting... ($i)"
             sleep 2
           done
 
           if [ ! -f "$RECORDING_PATH" ]; then
             echo "ERROR: Recording file was never created!"
-            echo "Recording log:"
-            cat .build/recording.log
             exit 1
           fi
 
@@ -101,11 +105,11 @@ jobs:
 
           # Stop recording
           echo "Stopping recording..."
-          pkill -f "recordVideo" 2>/dev/null || true
+          kill $RECORD_PID 2>/dev/null || pkill -f "recordVideo" 2>/dev/null || true
           sleep 3
 
           # Verify final video
-          echo "Final video: $(ls -lh "$RECORDING_PATH")"
+          echo "Final video: $(ls -lh "$RECORDING_PATH" 2>/dev/null || echo 'not found')"
 
       - name: Upload Video
         uses: actions/upload-artifact@v7
