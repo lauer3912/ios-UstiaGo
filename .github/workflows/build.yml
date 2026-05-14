@@ -122,21 +122,10 @@ jobs:
           # Find latest iPad
           IPAD_INFO=$(xcrun simctl list devices available | grep "iPad" | grep Shutdown | head -1)
           echo "Found iPad: $IPAD_INFO"
-          # Use Python to properly parse the device info
-          IPAD_PARSED=$(python3 -c "
-import sys
-info = '$IPAD_INFO'.strip()
-# Find UUID - it's the second parenthesized item
-import re
-uuid_match = re.search(r'\(([A-F0-9-]{36})\)', info)
-uuid = uuid_match.group(1) if uuid_match else ''
-# Find name - everything before the first (
-name_match = re.match(r'([^)]+)', info)
-name = name_match.group(1).strip() if name_match else ''
-print(f'{name}|{uuid}')
-")
-          IPAD_NAME=$(echo "$IPAD_PARSED" | cut -d'|' -f1)
-          IPAD_UUID=$(echo "$IPAD_PARSED" | cut -d'|' -f2)
+          # Extract UUID using sed
+          IPAD_UUID=$(echo "$IPAD_INFO" | sed 's/.*(\([A-F0-9-]*\))/\1/' | awk '{print $1}')
+          # Extract name (everything before first parenthesis)
+          IPAD_NAME=$(echo "$IPAD_INFO" | sed 's/(.*//' | awk '{print $1}')
           echo "Booting iPad: $IPAD_NAME (UUID: $IPAD_UUID)"
           xcrun simctl boot "$IPAD_UUID"
           echo "iPad_NAME=$IPAD_NAME" >> $GITHUB_ENV
