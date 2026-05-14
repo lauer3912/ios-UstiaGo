@@ -26,7 +26,6 @@ jobs:
           xcrun simctl list devices booted
           echo ""
           echo "=== Looking for iPhone 17 Pro ==="
-          # First try to boot an iPhone 17 Pro
           DEVICE_ID=""
           for UUID in $(xcrun simctl list devices available | grep "iPhone 17" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1); do
             echo "Booting device: $UUID"
@@ -41,77 +40,55 @@ jobs:
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
           echo "Booted device: $DEVICE_ID"
 
-      - name: Start Recording
-        run: |
-          mkdir -p .build
-          RECORDING_PATH="$PWD/.build/screen-recording.mp4"
-          echo "Starting recording to: $RECORDING_PATH"
-          # Simulator is already booted by previous step, just launch the app to initialize display
-          echo "Launching UstiaGo app to initialize display..."
-          xcrun simctl launch "${{ env.DEVICE_ID }}" com.ggsheng.UstiaGo || true
-          sleep 3
-          # Start recording - the display should be actively rendering
-          nohup xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
-            --codec=h264 \
-            --mask=black \
-            --force \
-            "$RECORDING_PATH" > .build/recording.log 2>&1 &
-          echo "Recording started"
-          # Wait for recording to start and file to appear
-          for i in {1..10}; do
-            if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
-              echo "Video file active: $(ls -lh "$RECORDING_PATH")"
-              break
-            fi
-            echo "Waiting... ($i)"
-            sleep 2
-          done
-
       - name: Build & Run Guided Tour Test
         run: |
           set -o pipefail
           mkdir -p .build
+          # Get the currently booted simulator for recording
+          echo "Getting currently booted simulator..."
+          DEVICE_ID=$(xcrun simctl list devices booted | grep "iPhone" | head -1 | awk -F'(' '{print $2}' | awk -F')' '{print $1}')
+          if [ -z "$DEVICE_ID" ]; then
+            echo "ERROR: No booted iPhone simulator found"
+            exit 1
+          fi
+          echo "Using device: $DEVICE_ID"
+          echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+          RECORDING_PATH="$PWD/.build/screen-recording.mp4"
+
+          # Start recording BEFORE test runs
+          echo "Starting recording..."
+          nohup xcrun simctl io "$DEVICE_ID" recordVideo \
+            --codec=h264 \
+            --mask=black \
+            --force \
+            "$RECORDING_PATH" > .build/recording.log 2>&1 &
+          sleep 5
+
+          # Verify recording started
+          if [ -f "$RECORDING_PATH" ]; then
+            echo "Recording active: $(ls -lh "$RECORDING_PATH")"
+          else
+            echo "Warning: Recording file not found yet"
+          fi
+
+          # Run the test
+          echo "Starting UI test..."
           xcrun xcodebuild \
             -project ios/UstiaGo.xcodeproj \
             -scheme UstiaGo \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 17 Pro" \
+            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
             -derivedDataPath .build/DerivedData \
             test \
             -only-testing:UstiaGoUITests/GuidedTourTests 2>&1 | tee .build/guided-tour.log
           TEST_RESULT=${PIPESTATUS[0]}
           echo "Test exit code: $TEST_RESULT"
-          if [ $TEST_RESULT -ne 0 ]; then
-            echo "Test may have had issues, checking log..."
-          fi
 
-      - name: Stop Recording
-        run: |
-          echo "Stopping screen recording..."
-          echo "Current working directory: $PWD"
-          # Find and kill the recordVideo process with SIGINT to properly finalize
-          RECORD_PID=$(pgrep -f "recordVideo")
-          if [ -n "$RECORD_PID" ]; then
-            echo "Sending SIGINT to recording process: $RECORD_PID"
-            kill -INT $RECORD_PID 2>/dev/null
-            echo "Waiting for recording to finalize..."
-            sleep 5
-          else
-            echo "No recordVideo process found"
-          fi
-          echo "=== Checking for video file ==="
-          ls -la .build/ 2>/dev/null || echo ".build directory does not exist"
-          echo "=== Looking for mp4 files ==="
-          find . -name "*.mp4" -type f 2>/dev/null | head -10
-          echo "=== Final check ==="
-          if [ -f ".build/screen-recording.mp4" ]; then
-            echo "Video file found: $(ls -lh .build/screen-recording.mp4)"
-          else
-            echo "Video file not found"
-            echo "Recording log contents:"
-            cat .build/recording.log 2>/dev/null | head -30
-          fi
+          # Stop recording
+          echo "Stopping recording..."
+          pkill -f "recordVideo" 2>/dev/null || true
+          sleep 3
 
       - name: Upload Video
         uses: actions/upload-artifact@v7
