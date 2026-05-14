@@ -60,6 +60,29 @@ jobs:
           path: .build/DerivedData
           if-no-files-found: error
 
+      - name: Extract Screenshots
+        run: |
+          mkdir -p .build/screenshots
+          # Find screenshots from test attachments
+          find .build/DerivedData -name "Attachments" -type d 2>/dev/null | while read dir; do
+            if [ -d "$dir" ]; then
+              cp "$dir"/*.png .build/screenshots/ 2>/dev/null || true
+              cp "$dir"/*.jpg .build/screenshots/ 2>/dev/null || true
+            fi
+          done
+          echo "=== Screenshots found ==="
+          ls -la .build/screenshots/ 2>/dev/null || echo "No screenshots found"
+          find .build/screenshots -type f 2>/dev/null
+
+      - name: Upload Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: .build/screenshots
+          if-no-files-found: warn
+          retention-days: 7
+
   screenshots:
     runs-on: macos-26
     timeout-minutes: 30
