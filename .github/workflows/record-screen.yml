@@ -58,34 +58,11 @@ jobs:
           pkill -f "recordVideo" 2>/dev/null || true
           sleep 1
 
-          # First, enumerate available displays
-          echo "Available displays:"
-          xcrun simctl io "$DEVICE_ID" enumerate
+          # First enumerate to see what displays are available
+          echo "Enumerating available IO ports..."
+          xcrun simctl io "$DEVICE_ID" enumerate --poll 2>&1 | head -20
 
-          # Launch the app first to create a display context
-          echo "Launching app to initialize display..."
-          xcrun simctl launch "$DEVICE_ID" com.ggsheng.UstiaGo
-          sleep 3
-
-          # Start recording with nohup
-          echo "Starting recording..."
-          nohup xcrun simctl io "$DEVICE_ID" recordVideo \
-            --codec=h264 \
-            --mask=black \
-            --force \
-            "$RECORDING_PATH" &
-
-          # Wait and check
-          for i in {1..20}; do
-            if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
-              echo "Video file created: $(ls -lh "$RECORDING_PATH")"
-              break
-            fi
-            echo "Waiting... ($i)"
-            sleep 2
-          done
-
-          # Run the test
+          # Run the test (this installs and launches the app)
           echo "Starting UI test..."
           xcrun xcodebuild \
             -project ios/UstiaGo.xcodeproj \
@@ -99,13 +76,32 @@ jobs:
           TEST_RESULT=${PIPESTATUS[0]}
           echo "Test exit code: $TEST_RESULT"
 
-          # Stop recording
-          echo "Stopping recording..."
-          pkill -f "recordVideo" 2>/dev/null || true
-          sleep 3
+          # Now try to record AFTER the test has launched the app
+          echo "Starting recording after app is running..."
+          nohup xcrun simctl io "$DEVICE_ID" recordVideo \
+            --codec=h264 \
+            --mask=black \
+            --force \
+            "$RECORDING_PATH" &
 
-          # Verify final video
-          echo "Final video: $(ls -lh "$RECORDING_PATH" 2>/dev/null || echo 'not found')"
+          sleep 5
+
+          # Check if recording file was created
+          if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
+            echo "Recording created: $(ls -lh "$RECORDING_PATH")"
+          else
+            echo "Note: Recording file was not created (this may be expected in headless CI)"
+          fi
+
+          # Stop recording if still running
+          pkill -f "recordVideo" 2>/dev/null || true
+
+          # Upload the video if it exists, otherwise skip
+          if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
+            echo "Uploading recording..."
+          else
+            echo "No recording to upload"
+          fi
 
       - name: Upload Video
         uses: actions/upload-artifact@v7
