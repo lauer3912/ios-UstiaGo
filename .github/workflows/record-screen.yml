@@ -46,15 +46,11 @@ jobs:
           mkdir -p .build
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
           echo "Starting recording to: $RECORDING_PATH"
-          # Boot simulator and wait for it to be fully initialized
-          echo "Booting simulator and waiting for display initialization..."
-          xcrun simctl boot "${{ env.DEVICE_ID }}"
-          sleep 8
-          # Start the app first to initialize the display rendering
+          # Simulator is already booted by previous step, just launch the app to initialize display
           echo "Launching UstiaGo app to initialize display..."
-          xcrun simctl launch "${{ env.DEVICE_ID }}" com.ggsheng.UstiaGo
+          xcrun simctl launch "${{ env.DEVICE_ID }}" com.ggsheng.UstiaGo || true
           sleep 3
-          # Now start recording - the display should be actively rendering
+          # Start recording - the display should be actively rendering
           nohup xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
             --codec=h264 \
             --mask=black \
