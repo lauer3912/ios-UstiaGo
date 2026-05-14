@@ -55,20 +55,34 @@ jobs:
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
 
-          # Start recording BEFORE test runs
-          echo "Starting recording..."
-          nohup xcrun simctl io "$DEVICE_ID" recordVideo \
+          # Kill any existing recordVideo processes
+          pkill -f "recordVideo" 2>/dev/null || true
+          sleep 1
+
+          # Start recording - run in background with disown to detach completely
+          echo "Starting recording to: $RECORDING_PATH"
+          (xcrun simctl io "$DEVICE_ID" recordVideo \
             --codec=h264 \
             --mask=black \
             --force \
-            "$RECORDING_PATH" > .build/recording.log 2>&1 &
-          sleep 5
+            "$RECORDING_PATH" > .build/recording.log 2>&1 &) && disown
+          echo "Recording command launched"
 
-          # Verify recording started
-          if [ -f "$RECORDING_PATH" ]; then
-            echo "Recording active: $(ls -lh "$RECORDING_PATH")"
-          else
-            echo "Warning: Recording file not found yet"
+          # Wait for recording to actually start and file to appear
+          for i in {1..15}; do
+            if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
+              echo "Video file created: $(ls -lh "$RECORDING_PATH")"
+              break
+            fi
+            echo "Waiting for video file... ($i)"
+            sleep 2
+          done
+
+          if [ ! -f "$RECORDING_PATH" ]; then
+            echo "ERROR: Recording file was never created!"
+            echo "Recording log:"
+            cat .build/recording.log
+            exit 1
           fi
 
           # Run the test
@@ -89,6 +103,9 @@ jobs:
           echo "Stopping recording..."
           pkill -f "recordVideo" 2>/dev/null || true
           sleep 3
+
+          # Verify final video
+          echo "Final video: $(ls -lh "$RECORDING_PATH")"
 
       - name: Upload Video
         uses: actions/upload-artifact@v7
