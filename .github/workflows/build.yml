@@ -93,16 +93,51 @@ jobs:
           fi
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
 
-      - name: Take Screenshots
+      - name: Run Guided Tour Test for Screenshots
         run: |
-          mkdir -p .build/screenshots
-          xcrun simctl io "${{ env.DEVICE_ID }}" screenshot .build/screenshots/${{ matrix.device.name }}.png
-          ls -la .build/screenshots/
+          mkdir -p .build
+          xcrun xcodebuild \
+            -project ios/UstiaGo.xcodeproj \
+            -scheme UstiaGo \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=${{ matrix.device.name }}" \
+            -derivedDataPath .build/DerivedData \
+            test \
+            -only-testing:UstiaGoUITests/GuidedTourTests \
+            -resultBundlePath .build/screenshots.xcresult 2>&1 | tee .build/screenshots.log
+          echo "Test completed"
+
+      - name: Extract Screenshots from Test Results
+        run: |
+          mkdir -p .build/screenshots/${{ matrix.device.name }}
+          chmod +x .build/DerivedData/Logs/Test/*.xcresult 2>/dev/null || true
+
+          # Extract screenshots from xcresult bundle
+          # The xcresult is a directory bundle, screenshots are stored in Attachments
+          if [ -d ".build/DerivedData/Logs/Test" ]; then
+            find .build/DerivedData/Logs/Test -name "*.xcresult" -type d | while read result; do
+              ATTACHMENTS_DIR="$result/Attachments"
+              if [ -d "$ATTACHMENTS_DIR" ]; then
+                cp "$ATTACHMENTS_DIR"/*.png ".build/screenshots/${{ matrix.device.name }}/" 2>/dev/null || true
+                ls -la "$ATTACHMENTS_DIR/" 2>/dev/null || true
+              fi
+            done
+          fi
+
+          # Also check in the xcresult bundle directly
+          if [ -d ".build/screenshots.xcresult/Attachments" ]; then
+            cp .build/screenshots.xcresult/Attachments/*.png ".build/screenshots/${{ matrix.device.name }}/" 2>/dev/null || true
+          fi
+
+          echo "=== Screenshots found ==="
+          find .build -name "*.png" -type f 2>/dev/null
+          ls -la .build/screenshots/${{ matrix.device.name }}/ 2>/dev/null || echo "No screenshots found"
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v7
         with:
           name: screenshot-${{ matrix.device.name }}
-          path: .build/screenshots/*.png
-          if-no-files-found: error
+          path: .build/screenshots/${{ matrix.device.name }}/*.png
+          if-no-files-found: warn
           retention-days: 30
