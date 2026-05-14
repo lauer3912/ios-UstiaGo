@@ -46,27 +46,30 @@ jobs:
           mkdir -p .build
           RECORDING_PATH="$PWD/.build/screen-recording.mp4"
           echo "Starting recording to: $RECORDING_PATH"
-          # Start recording - note the = syntax for options
+          # Boot simulator and wait for it to be fully initialized
+          echo "Booting simulator and waiting for display initialization..."
+          xcrun simctl boot "${{ env.DEVICE_ID }}"
+          sleep 8
+          # Start the app first to initialize the display rendering
+          echo "Launching UstiaGo app to initialize display..."
+          xcrun simctl launch "${{ env.DEVICE_ID }}" com.ggsheng.UstiaGo
+          sleep 3
+          # Now start recording - the display should be actively rendering
           nohup xcrun simctl io "${{ env.DEVICE_ID }}" recordVideo \
             --codec=h264 \
             --mask=black \
             --force \
             "$RECORDING_PATH" > .build/recording.log 2>&1 &
-          echo "Recording started in background"
-          sleep 5
-          # Check if video file has started being created
-          for i in {1..5}; do
-            if [ -f "$RECORDING_PATH" ]; then
-              echo "Video file is being created: $(ls -lh "$RECORDING_PATH")"
+          echo "Recording started"
+          # Wait for recording to start and file to appear
+          for i in {1..10}; do
+            if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
+              echo "Video file active: $(ls -lh "$RECORDING_PATH")"
               break
             fi
-            echo "Waiting for video file... ($i)"
+            echo "Waiting... ($i)"
             sleep 2
           done
-          if [ ! -f "$RECORDING_PATH" ]; then
-            echo "Warning: Video file not detected yet, checking log:"
-            cat .build/recording.log | head -20
-          fi
 
       - name: Build & Run Guided Tour Test
         run: |
