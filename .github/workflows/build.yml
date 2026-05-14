@@ -67,9 +67,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device:
-          - name: "iPhone 17 Pro"
-          - name: "iPhone 17"
+        include:
+          - type: "iPhone"
+          - type: "iPad"
 
     steps:
       - name: Checkout
@@ -82,18 +82,20 @@ jobs:
 
       - name: Boot Simulator
         run: |
-          echo "Available devices:"
-          xcrun simctl list devices available | grep -E "iPhone|iPad" | head -10
-          DEVICE_ID=""
-          for UUID in $(xcrun simctl list devices available | grep "${{ matrix.device.name }}" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1); do
-            echo "Booting: $UUID"
-            xcrun simctl boot "$UUID" && DEVICE_ID="$UUID" && break
-          done
-
-          if [ -z "$DEVICE_ID" ]; then
-            echo "ERROR: Could not boot ${{ matrix.device.name }}"
+          echo "Available ${{ matrix.type }} devices:"
+          xcrun simctl list devices available | grep "${{ matrix.type}}" | head -10
+          DEVICE_NAME=""
+          # Find latest ${{ matrix.type }} device (iPhone or iPad)
+          DEVICE_NAME=$(xcrun simctl list devices available | grep "${{ matrix.type}}" | grep Shutdown | head -1 | sed 's/.*(//' | sed 's/).*//')
+          if [ -z "$DEVICE_NAME" ]; then
+            echo "ERROR: No available ${{ matrix.type }} device"
             exit 1
           fi
+          echo "Using: $DEVICE_NAME"
+          DEVICE_ID=$(xcrun simctl list devices available | grep "$DEVICE_NAME" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1)
+          echo "Booting device ID: $DEVICE_ID"
+          xcrun simctl boot "$DEVICE_ID"
+          echo "DEVICE_NAME=$DEVICE_NAME" >> $GITHUB_ENV
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
 
       - name: Run Guided Tour Test for Screenshots
@@ -104,7 +106,7 @@ jobs:
             -scheme UstiaGo \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ matrix.device.name }}" \
+            -destination "platform=iOS Simulator,name=${{ env.DEVICE_NAME }}" \
             -derivedDataPath .build/DerivedData \
             test \
             -only-testing:UstiaGoUITests/GuidedTourTests \
@@ -113,33 +115,31 @@ jobs:
 
       - name: Extract Screenshots from Test Results
         run: |
-          mkdir -p .build/screenshots/${{ matrix.device.name }}
+          mkdir -p .build/screenshots/${{ matrix.type }}
           chmod +x .build/DerivedData/Logs/Test/*.xcresult 2>/dev/null || true
 
           # Extract screenshots from xcresult bundle
-          # The xcresult is a directory bundle, screenshots are stored in Attachments
           if [ -d ".build/DerivedData/Logs/Test" ]; then
             find .build/DerivedData/Logs/Test -name "*.xcresult" -type d | while read result; do
               ATTACHMENTS_DIR="$result/Attachments"
               if [ -d "$ATTACHMENTS_DIR" ]; then
-                cp "$ATTACHMENTS_DIR"/*.png ".build/screenshots/${{ matrix.device.name }}/" 2>/dev/null || true
+                cp "$ATTACHMENTS_DIR"/*.png ".build/screenshots/${{ matrix.type }}/" 2>/dev/null || true
               fi
             done
           fi
 
-          # Also check in the xcresult bundle directly
           if [ -d ".build/screenshots.xcresult/Attachments" ]; then
-            cp .build/screenshots.xcresult/Attachments/*.png ".build/screenshots/${{ matrix.device.name }}/" 2>/dev/null || true
+            cp .build/screenshots.xcresult/Attachments/*.png ".build/screenshots/${{ matrix.type }}/" 2>/dev/null || true
           fi
 
           echo "=== Screenshots found ==="
           find .build -name "*.png" -type f 2>/dev/null
-          ls -la .build/screenshots/${{ matrix.device.name }}/ 2>/dev/null || echo "No screenshots found"
+          ls -la .build/screenshots/${{ matrix.type }}/ 2>/dev/null || echo "No screenshots found"
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v7
         with:
-          name: screenshot-${{ matrix.device.name }}
-          path: .build/screenshots/${{ matrix.device.name }}/*.png
+          name: screenshot-${{ matrix.type }}
+          path: .build/screenshots/${{ matrix.type }}/*.png
           if-no-files-found: warn
           retention-days: 30
