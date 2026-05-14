@@ -58,36 +58,32 @@ jobs:
           pkill -f "recordVideo" 2>/dev/null || true
           sleep 1
 
-          # Start recording with explicit full path
-          echo "Starting recording to: $RECORDING_PATH"
-          xcrun simctl io "$DEVICE_ID" recordVideo \
+          # First, enumerate available displays
+          echo "Available displays:"
+          xcrun simctl io "$DEVICE_ID" enumerate
+
+          # Launch the app first to create a display context
+          echo "Launching app to initialize display..."
+          xcrun simctl launch "$DEVICE_ID" com.ggsheng.UstiaGo
+          sleep 3
+
+          # Start recording with nohup
+          echo "Starting recording..."
+          nohup xcrun simctl io "$DEVICE_ID" recordVideo \
             --codec=h264 \
             --mask=black \
             --force \
             "$RECORDING_PATH" &
-          RECORD_PID=$!
-          echo "Recording PID: $RECORD_PID"
 
-          # Wait for recording to start - simctl writes "Recording started" to stderr
-          echo "Waiting for recording to start..."
+          # Wait and check
           for i in {1..20}; do
             if [ -f "$RECORDING_PATH" ] && [ -s "$RECORDING_PATH" ]; then
               echo "Video file created: $(ls -lh "$RECORDING_PATH")"
               break
             fi
-            # Check if process is still running
-            if ! ps -p $RECORD_PID > /dev/null 2>&1; then
-              echo "Recording process died!"
-              break
-            fi
             echo "Waiting... ($i)"
             sleep 2
           done
-
-          if [ ! -f "$RECORDING_PATH" ]; then
-            echo "ERROR: Recording file was never created!"
-            exit 1
-          fi
 
           # Run the test
           echo "Starting UI test..."
@@ -105,7 +101,7 @@ jobs:
 
           # Stop recording
           echo "Stopping recording..."
-          kill $RECORD_PID 2>/dev/null || pkill -f "recordVideo" 2>/dev/null || true
+          pkill -f "recordVideo" 2>/dev/null || true
           sleep 3
 
           # Verify final video
