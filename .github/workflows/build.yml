@@ -65,10 +65,11 @@ jobs:
     timeout-minutes: 30
     needs: build-and-test
     strategy:
+      fail-fast: false
       matrix:
         device:
           - name: "iPhone 17 Pro"
-          - name: "iPad Pro 13-inch (M4)"
+          - name: "iPhone 17"
 
     steps:
       - name: Checkout
@@ -81,6 +82,8 @@ jobs:
 
       - name: Boot Simulator
         run: |
+          echo "Available devices:"
+          xcrun simctl list devices available | grep -E "iPhone|iPad" | head -10
           DEVICE_ID=""
           for UUID in $(xcrun simctl list devices available | grep "${{ matrix.device.name }}" | grep Shutdown | awk -F'(' '{print $2}' | awk -F')' '{print $1}' | head -1); do
             echo "Booting: $UUID"
@@ -120,7 +123,6 @@ jobs:
               ATTACHMENTS_DIR="$result/Attachments"
               if [ -d "$ATTACHMENTS_DIR" ]; then
                 cp "$ATTACHMENTS_DIR"/*.png ".build/screenshots/${{ matrix.device.name }}/" 2>/dev/null || true
-                ls -la "$ATTACHMENTS_DIR/" 2>/dev/null || true
               fi
             done
           fi
