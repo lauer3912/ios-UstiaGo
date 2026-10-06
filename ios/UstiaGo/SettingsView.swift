@@ -5,6 +5,7 @@ struct SettingsView: View {
     @EnvironmentObject var appState: AppState
     @State private var showResetAlert = false
     @State private var showExportSheet = false
+    @State private var showCredits = false
     @State private var exportedCSV: String = ""
     
     var body: some View {
@@ -132,13 +133,25 @@ struct SettingsView: View {
                     }
                 }
                 
+                // Credits & Membership Section
+                SettingsSection(title: "Credits & Membership") {
+                    SettingsActionRow(
+                        icon: "timer.circle.fill",
+                        iconColor: UstiaTheme.accentPrimary,
+                        title: "Focus Credits & Daily Bonus",
+                        subtitle: "100 initial credits + 10 daily check-in"
+                    ) {
+                        showCredits = true
+                    }
+                }
+
                 // About Section
                 SettingsSection(title: "About") {
                     SettingsInfoRow(
                         icon: "info.circle",
                         iconColor: UstiaTheme.textSecondary,
                         title: "Version",
-                        value: "1.0.0"
+                        value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.2.0"
                     )
                     
                     SettingsActionRow(
@@ -179,6 +192,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showExportSheet) {
             ExportDataSheet(csv: exportedCSV)
+        }
+        .sheet(isPresented: $showCredits) {
+            UstiaCreditsView()
         }
     }
     
